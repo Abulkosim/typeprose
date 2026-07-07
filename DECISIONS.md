@@ -43,3 +43,15 @@ One line per decision: what, why.
 - Integrator: recreated the local Postgres volume and applied schema via `pnpm db:migrate` (drizzle-kit) instead of the earlier manual psql apply, so the drizzle migration journal exists and re-running `db:migrate` is a no-op.
 - Integrator: ran Prettier over `corpus/passages.yaml` (double→single quote style only; passage text blocks untouched, hashes unchanged, re-ingest confirmed idempotent at 30 passages).
 - Integrator: `curation-report.txt` (output of `pnpm ingest`) committed at the repo root so the Gate 0 reviewer can read the difficulty/band report without running ingest.
+- engine depends on `@prosetype/schema` as a type-only devDependency (CharEvent/CharEvents/CharEventCodeValue), keeping schema the single source of truth for the wire format while the engine stays zero-runtime-dependency.
+- engine defines its own `RunStats` interface (structurally identical to schema's) since importing the zod-derived type would pull a runtime schema dependency for a non-charEvents shape.
+- engine event-index conventions where §7.5 is silent: slot adds use the target char's passage index; extras, over-cap presses, and space commits use the word-end (space) index; backspacing into the previous word logs a delete at that word's space index; all indices stay within the passage.
+- over-cap keypresses (beyond +8 extras) are logged as code-1 events so replay reproduces accuracy, but they add no char: counted as incorrect keypresses, excluded from rawWpm and per-second buckets.
+- accuracy counts every keypress (retypes included; "first-attempt basis" means the original miss is never erased); a space keypress is correct iff it commits a fully correct word (Monkeytype `incrementAccuracy(isWordCorrect)`); backspaces are never keypresses.
+- kogasa/stdDev/mean verified verbatim against monkeytype `packages/util/src/numbers.ts` (2026-07-07): population stddev, `100*(1-tanh(cov+cov^3/3+cov^5/5))` — no divergence.
+- consistency buckets (plan silent on binning): `max(1, ceil(durationMs/1000))` buckets, events at `floor(t/1000)` clamped into the last bucket, bucket raw wpm = chars*12, partial last second not scaled.
+- engine stats are rounded to 2 decimals (Monkeytype-style, and what §7.4's "exact to 2 decimals" tests pin); mid-run wpm counts only committed fully-correct words (the in-progress word counts only as the last word at completion).
+- space on the last word and space on an empty word are no-ops (nothing logged, not keypresses; plan silent — quote mode has no trailing space and Monkeytype ignores empty-word space).
+- Ctrl/Alt+Backspace emits one code-2 delete per cleared char (same timestamp) so §7.5 needs no extra code; on an empty word it falls back to the single-step cross-into-previous rule.
+- engine timestamps: caller clock (`performance.now()`) normalized to integer ms since first keystroke via `Math.round`, clamped monotonic non-decreasing (a backwards clock can never corrupt the log).
+- engine does not enforce the 6000-event/64KB caps while typing (correctness first); the caps are wire-level and enforced by the shared zod schema at the submission boundary.
