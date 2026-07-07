@@ -4,123 +4,123 @@ PROSETYPE ingest — curation report
 ==================================
 
 #1 Fyodor Dostoevsky — Crime and Punishment
-  chars 174 · words 33 · difficulty 20.11 · band warmup
+  chars 174 · words 33 · difficulty 27.78 · band warmup
   text: On an exceptionally hot evening early in July a young man came out of th...
 
 #2 Fyodor Dostoevsky — Notes from the Underground
-  chars 288 · words 58 · difficulty 24.33 · band warmup
+  chars 288 · words 58 · difficulty 32.34 · band standard
   text: I am a sick man.... I am a spiteful man. I am an unattractive man. I bel...
 
 #3 Fyodor Dostoevsky — The Brothers Karamazov
-  chars 192 · words 38 · difficulty 20.56 · band warmup
+  chars 192 · words 38 · difficulty 46.20 · band hard
   text: The man who lies to himself and listens to his own lie comes to such a p...
 
 #4 Fyodor Dostoevsky — White Nights
-  chars 250 · words 46 · difficulty 24.64 · band warmup
+  chars 250 · words 46 · difficulty 41.07 · band standard
   text: It was a wonderful night, such a night as is only possible when we are y...
 
 #5 Leo Tolstoy — Anna Karenina
-  chars 358 · words 66 · difficulty 23.41 · band warmup
+  chars 358 · words 66 · difficulty 38.98 · band standard
   text: Happy families are all alike; every unhappy family is unhappy in its own...
 
 #6 Anton Chekhov — The Lady with the Dog
-  chars 444 · words 78 · difficulty 25.16 · band warmup
+  chars 444 · words 78 · difficulty 43.46 · band standard
   text: Yalta was hardly visible through the morning mist; white clouds stood mo...
 
 #7 Nikolai Gogol — The Mantle
-  chars 280 · words 54 · difficulty 28.16 · band warmup
+  chars 280 · words 54 · difficulty 65.91 · band brutal
   text: However many of his superiors might come and go, he was always seen in t...
 
 #8 Ivan Turgenev — Fathers and Children
-  chars 296 · words 50 · difficulty 31.92 · band standard
+  chars 296 · words 50 · difficulty 67.26 · band brutal
   text: However passionate, sinning, and rebellious the heart hidden in the tomb...
 
 #9 Friedrich Nietzsche — Thus Spake Zarathustra
-  chars 189 · words 31 · difficulty 35.07 · band standard
+  chars 189 · words 31 · difficulty 48.54 · band hard
   text: Man is a rope stretched between the animal and the Superman - a rope ove...
 
 #10 Friedrich Nietzsche — Thus Spake Zarathustra
-  chars 271 · words 56 · difficulty 18.32 · band warmup
+  chars 271 · words 56 · difficulty 27.92 · band warmup
   text: Alas! there cometh the time when man will no longer launch the arrow of ...
 
 #11 Friedrich Nietzsche — Beyond Good and Evil
-  chars 152 · words 29 · difficulty 17.56 · band warmup
+  chars 152 · words 29 · difficulty 26.95 · band warmup
   text: He who fights with monsters should be careful lest he thereby become a m...
 
 #12 Marcus Aurelius — Meditations
-  chars 214 · words 36 · difficulty 29.11 · band warmup
+  chars 214 · words 36 · difficulty 42.87 · band standard
   text: Begin the morning by saying to thyself, I shall meet with the busybody, ...
 
 #13 Marcus Aurelius — Meditations
-  chars 203 · words 42 · difficulty 23.22 · band warmup
+  chars 203 · words 42 · difficulty 52.24 · band hard
   text: Time is like a river made up of the events which happen, and a violent s...
 
 #14 Epictetus — The Enchiridion
-  chars 360 · words 67 · difficulty 27.40 · band warmup
+  chars 360 · words 67 · difficulty 40.47 · band standard
   text: Men are disturbed not by things, but by the views which they take of thi...
 
 #15 Dashiell Hammett — The Maltese Falcon
-  chars 431 · words 80 · difficulty 22.72 · band warmup
+  chars 431 · words 80 · difficulty 34.18 · band standard
   text: Samuel Spade's jaw was long and bony, his chin a jutting v under the mor...
 
 #16 Dashiell Hammett — The Maltese Falcon
-  chars 437 · words 76 · difficulty 28.33 · band warmup
+  chars 437 · words 76 · difficulty 55.23 · band hard
   text: Spade sat down in the armchair beside the table and without any prelimin...
 
 #17 Joseph Conrad — The Secret Agent
-  chars 330 · words 56 · difficulty 28.44 · band warmup
+  chars 330 · words 56 · difficulty 39.46 · band standard
   text: Mr Verloc, going out in the morning, left his shop nominally in charge o...
 
 #18 Joseph Conrad — Heart of Darkness
-  chars 347 · words 61 · difficulty 25.51 · band warmup
+  chars 347 · words 61 · difficulty 46.90 · band hard
   text: The sea-reach of the Thames stretched before us like the beginning of an...
 
 #19 Joseph Conrad — Heart of Darkness
-  chars 209 · words 39 · difficulty 25.13 · band warmup
+  chars 209 · words 39 · difficulty 52.28 · band hard
   text: The offing was barred by a black bank of clouds, and the tranquil waterw...
 
 #20 F. Scott Fitzgerald — The Great Gatsby
-  chars 336 · words 61 · difficulty 22.74 · band warmup
+  chars 336 · words 61 · difficulty 36.95 · band standard
   text: He smiled understandingly - much more than understandingly. It was one o...
 
 #21 F. Scott Fitzgerald — The Great Gatsby
-  chars 182 · words 32 · difficulty 20.32 · band warmup
+  chars 182 · words 32 · difficulty 30.97 · band standard
   text: There was music from my neighbour's house through the summer nights. In ...
 
 #22 F. Scott Fitzgerald — The Great Gatsby
-  chars 288 · words 57 · difficulty 20.11 · band warmup
+  chars 288 · words 57 · difficulty 39.46 · band standard
   text: He had come a long way to this blue lawn, and his dream must have seemed...
 
 #23 Ernest Hemingway — The Sun Also Rises
-  chars 362 · words 67 · difficulty 23.24 · band warmup
+  chars 362 · words 67 · difficulty 39.03 · band standard
   text: Robert Cohn was once middleweight boxing champion of Princeton. Do not t...
 
 #24 Ernest Hemingway — The Sun Also Rises
-  chars 300 · words 52 · difficulty 21.07 · band warmup
+  chars 300 · words 52 · difficulty 28.15 · band warmup
   text: The fiesta was really started. It kept up day and night for seven days. ...
 
 #25 Virginia Woolf — Mrs. Dalloway
-  chars 262 · words 46 · difficulty 26.51 · band warmup
+  chars 262 · words 46 · difficulty 34.11 · band standard
   text: Mrs. Dalloway said she would buy the flowers herself. For Lucy had her w...
 
 #26 Virginia Woolf — Mrs. Dalloway
-  chars 330 · words 55 · difficulty 38.39 · band standard
+  chars 330 · words 55 · difficulty 78.38 · band brutal
   text: In people's eyes, in the swing, tramp, and trudge; in the bellow and the...
 
 #27 Edgar Allan Poe — The Fall of the House of Usher
-  chars 330 · words 60 · difficulty 31.61 · band standard
+  chars 330 · words 60 · difficulty 73.78 · band brutal
   text: During the whole of a dull, dark, and soundless day in the autumn of the...
 
 #28 Edgar Allan Poe — The Masque of the Red Death
-  chars 418 · words 80 · difficulty 19.73 · band warmup
+  chars 418 · words 80 · difficulty 28.95 · band warmup
   text: And now was acknowledged the presence of the Red Death. He had come like...
 
 #29 Oscar Wilde — The Picture of Dorian Gray
-  chars 243 · words 44 · difficulty 24.63 · band warmup
+  chars 243 · words 44 · difficulty 54.69 · band hard
   text: The studio was filled with the rich odour of roses, and when the light s...
 
 #30 Oscar Wilde — The Picture of Dorian Gray
-  chars 355 · words 66 · difficulty 22.93 · band warmup
+  chars 355 · words 66 · difficulty 34.84 · band standard
   text: Experience was of no ethical value. It was merely the name men gave to t...
 
-Summary: 30 passages ingested · warmup 26 · standard 4 · hard 0 · brutal 0
+Summary: 30 passages ingested · warmup 5 · standard 14 · hard 7 · brutal 4

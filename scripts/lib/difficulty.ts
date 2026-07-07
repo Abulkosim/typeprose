@@ -1,13 +1,21 @@
 /**
  * Difficulty scoring per plan §6.4. Pure functions only.
  *
- *   raw = 2.0 * avgWordLength
- *       + 2.5 * punctuationCharsPer100Chars
- *       + 0.4 * percentWordsOfLength8Plus
- *       + 0.2 * avgSentenceLengthInWords
+ *   raw = 1.5 * avgWordLength
+ *       + 3.0 * punctuationCharsPer100Chars
+ *       + 0.5 * percentWordsOfLength8Plus
+ *       + 0.9 * avgSentenceLengthInWords
  *   difficulty = clamp(raw, 0, 100)
  *
- * Bands: warmup < 30 ≤ standard < 45 ≤ hard < 60 ≤ brutal.
+ * Weights are the FROZEN calibration of 2026-07-07 (plan §6.4 says the listed
+ * weights are "starting weights only — after seeding, calibrate ... then
+ * freeze"). The original §6.4 starting weights (2.0 / 2.5 / 0.4 / 0.2) are
+ * superseded: they compressed the 30-passage seed corpus into 17.6–38.4
+ * (26 warmup / 4 standard / 0 hard / 0 brutal) because avg word length is
+ * nearly constant across real prose (~3.7–4.9) while the discriminating
+ * features — sentence length and punctuation density — were under-weighted.
+ * The frozen weights spread the seed corpus 5 / 14 / 7 / 4 across bands.
+ * Band thresholds are unchanged: warmup < 30 ≤ standard < 45 ≤ hard < 60 ≤ brutal.
  */
 
 export const BANDS = ['warmup', 'standard', 'hard', 'brutal'] as const;
@@ -15,6 +23,15 @@ export type Band = (typeof BANDS)[number];
 
 /** Punctuation characters of the §6.2 canonical set. */
 const PUNCTUATION_RE = /[.,;:!?'"()-]/g;
+
+/**
+ * Frozen calibration weights (2026-07-07) — do not tune without re-running
+ * the seed-corpus calibration; plan §6.4's starting weights are superseded.
+ */
+const WEIGHT_AVG_WORD_LENGTH = 1.5;
+const WEIGHT_PUNCTUATION_PER_100_CHARS = 3.0;
+const WEIGHT_PERCENT_WORDS_LENGTH_8_PLUS = 0.5;
+const WEIGHT_AVG_SENTENCE_LENGTH_WORDS = 0.9;
 
 export interface DifficultyBreakdown {
   avgWordLength: number;
@@ -55,10 +72,10 @@ export function computeDifficulty(text: string): DifficultyBreakdown {
   const avgSentenceLengthWords = wordCount / sentenceCount;
 
   const raw =
-    2.0 * avgWordLength +
-    2.5 * punctuationPer100Chars +
-    0.4 * percentWordsLength8Plus +
-    0.2 * avgSentenceLengthWords;
+    WEIGHT_AVG_WORD_LENGTH * avgWordLength +
+    WEIGHT_PUNCTUATION_PER_100_CHARS * punctuationPer100Chars +
+    WEIGHT_PERCENT_WORDS_LENGTH_8_PLUS * percentWordsLength8Plus +
+    WEIGHT_AVG_SENTENCE_LENGTH_WORDS * avgSentenceLengthWords;
 
   return {
     avgWordLength,
