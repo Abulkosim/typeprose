@@ -37,3 +37,14 @@ export {
 } from './results.ts';
 
 export { postProfilesResponseSchema, type PostProfilesResponse } from './profiles.ts';
+
+export {
+  resultSummarySchema,
+  bestRunSchema,
+  authorAggregateSchema,
+  profileStatsSchema,
+  type ResultSummary,
+  type BestRun,
+  type AuthorAggregate,
+  type ProfileStats,
+} from './stats.ts';
