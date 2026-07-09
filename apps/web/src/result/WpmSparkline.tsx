@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 
-/** ViewBox geometry — rendered at 100% width, aspect preserved (no text distortion). */
+/** ViewBox geometry, rendered at 100% width, aspect preserved (no text distortion). */
 const W = 600;
 const H = 120;
 const TOP = 16; // y of the peak gridline
@@ -13,9 +13,9 @@ function formatClock(ms: number): string {
 }
 
 /**
- * Hand-rolled SVG wpm-over-time sparkline (§9.3 — no chart library). One
+ * Hand-rolled SVG wpm-over-time sparkline (§9.3, no chart library). One
  * series, so it carries no legend: a single tungsten 2px line over minimal
- * dim-smoke axes — the zero baseline, a dashed gridline at the run's peak with
+ * dim-smoke axes, the zero baseline, a dashed gridline at the run's peak with
  * its value, and start/end time labels. The y-domain is anchored at 0 so
  * pauses read as honest dips, not rescaled drama.
  */

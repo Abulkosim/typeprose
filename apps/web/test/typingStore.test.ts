@@ -82,9 +82,9 @@ describe('typingStore.loadNext', () => {
   it('abandons a completed run and resets the restarted flag', async () => {
     installFetch([makePassage(1, 'it is'), makePassage(2, 'so it goes')]);
     await useTypingStore.getState().loadNext();
-    useTypingStore.getState().restart(); // no keystrokes yet — not marked
+    useTypingStore.getState().restart(); // no keystrokes yet, not marked
     useTypingStore.getState().typeChar('i', 0);
-    useTypingStore.getState().restart(); // started — marked
+    useTypingStore.getState().restart(); // started, marked
     expect(useTypingStore.getState().restarted).toBe(true);
     await useTypingStore.getState().loadNext();
     expect(useTypingStore.getState().restarted).toBe(false);

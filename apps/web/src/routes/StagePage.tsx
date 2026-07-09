@@ -7,7 +7,7 @@ import { TypingStage } from '../stage/TypingStage';
 import { useTypingStore } from '../stage/typingStore';
 
 /**
- * `/` — the test (§9.1). Reads any library filter from the query string
+ * `/`, the test (§9.1). Reads any library filter from the query string
  * (`?band`/`?theme`/`?author`) and drives passage loading: a filter present in
  * the URL always (re)loads a matching passage (a library pick), while a bare
  * `/` only loads when there is no live run, so returning from another route

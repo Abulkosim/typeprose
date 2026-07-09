@@ -1,4 +1,4 @@
-// @prosetype/schema — zod schemas + shared DTOs (plan §3, §7.5, §8).
+// @prosetype/schema, zod schemas + shared DTOs (plan §3, §7.5, §8).
 
 export {
   CHAR_EVENTS_VERSION,

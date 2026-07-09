@@ -9,13 +9,13 @@ describe('normalizeText', () => {
     expect(result.foldedWords).toEqual([]);
   });
 
-  it('spaces tight em dashes: word—word becomes word - word', () => {
-    expect(normalizeText('heart—and mind').text).toBe('heart - and mind');
+  it('spaces tight em dashes into a spaced hyphen', () => {
+    expect(normalizeText('heart\u2014and mind').text).toBe('heart - and mind');
   });
 
   it('collapses already-spaced em/en dashes to a single spaced hyphen', () => {
-    expect(normalizeText('heart — and mind').text).toBe('heart - and mind');
-    expect(normalizeText('1914 – 1918').text).toBe('1914 - 1918');
+    expect(normalizeText('heart \u2014 and mind').text).toBe('heart - and mind');
+    expect(normalizeText('1914 \u2013 1918').text).toBe('1914 - 1918');
   });
 
   it('converts ellipsis to three dots', () => {
@@ -42,7 +42,7 @@ describe('normalizeText', () => {
   });
 
   it('fails loudly, naming the character, when a non-canonical character survives', () => {
-    expect(() => normalizeText('price — 40€')).toThrowError(IllegalCharacterError);
+    expect(() => normalizeText('price \u2014 40€')).toThrowError(IllegalCharacterError);
     expect(() => normalizeText('40€')).toThrowError(/"€" \(U\+20AC\)/);
   });
 

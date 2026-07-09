@@ -1,6 +1,6 @@
 import type { Band, CharEvents } from '@prosetype/schema';
 
-/** A result to persist — server-computed stats plus the raw log (plan §4, §8). */
+/** A result to persist, server-computed stats plus the raw log (plan §4, §8). */
 export interface NewResult {
   profileId: string;
   passageId: number;

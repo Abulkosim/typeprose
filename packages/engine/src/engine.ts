@@ -87,7 +87,7 @@ export class TypingEngine {
   }
 
   /**
-   * Type one printable character (never a space — route space through
+   * Type one printable character (never a space, route space through
    * {@link commitSpace}). Starts the timer on the first call (§7.1). Beyond a
    * word's length appends `extra` chars capped at +8; keypresses past the cap
    * are ignored but still logged and counted as incorrect (§7.2). Completes

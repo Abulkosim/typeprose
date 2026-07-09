@@ -5,7 +5,7 @@ import { formatAttribution } from '../lib/shareCard';
 
 /**
  * Attribution epigraph (§9.4): EB Garamond italic, e.g.
- * "— Fyodor Dostoevsky, Crime and Punishment, trans. Garnett". The text is
+ * "Fyodor Dostoevsky, Crime and Punishment, trans. Garnett". The text is
  * built by `formatAttribution` (shared with the shareable result card).
  */
 export function Epigraph({ passage }: { passage: Passage }): ReactElement {

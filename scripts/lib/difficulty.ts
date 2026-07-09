@@ -8,12 +8,12 @@
  *   difficulty = clamp(raw, 0, 100)
  *
  * Weights are the FROZEN calibration of 2026-07-07 (plan §6.4 says the listed
- * weights are "starting weights only — after seeding, calibrate ... then
+ * weights are "starting weights only, after seeding, calibrate ... then
  * freeze"). The original §6.4 starting weights (2.0 / 2.5 / 0.4 / 0.2) are
- * superseded: they compressed the 30-passage seed corpus into 17.6–38.4
+ * superseded: they compressed the 30-passage seed corpus into 17.6-38.4
  * (26 warmup / 4 standard / 0 hard / 0 brutal) because avg word length is
- * nearly constant across real prose (~3.7–4.9) while the discriminating
- * features — sentence length and punctuation density — were under-weighted.
+ * nearly constant across real prose (~3.7-4.9) while the discriminating
+ * features, sentence length and punctuation density, were under-weighted.
  * The frozen weights spread the seed corpus 5 / 14 / 7 / 4 across bands.
  * Band thresholds are unchanged: warmup < 30 ≤ standard < 45 ≤ hard < 60 ≤ brutal.
  */
@@ -25,7 +25,7 @@ export type Band = (typeof BANDS)[number];
 const PUNCTUATION_RE = /[.,;:!?'"()-]/g;
 
 /**
- * Frozen calibration weights (2026-07-07) — do not tune without re-running
+ * Frozen calibration weights (2026-07-07), do not tune without re-running
  * the seed-corpus calibration; plan §6.4's starting weights are superseded.
  */
 const WEIGHT_AVG_WORD_LENGTH = 1.5;
@@ -52,7 +52,7 @@ function round2(value: number): number {
 
 /**
  * Compute the difficulty breakdown for normalized (§6.2-canonical) text.
- * Word length counts letters/digits only — punctuation weight is already
+ * Word length counts letters/digits only, punctuation weight is already
  * carried by the punctuation term. Sentence count = number of `.!?` runs
  * (minimum 1).
  */

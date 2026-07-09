@@ -143,7 +143,7 @@ describe('malformed logs throw typed errors', () => {
 });
 
 describe('fuzzed corruption of valid logs (seeded)', () => {
-  it('replay either succeeds or throws a typed EngineError — never anything else', () => {
+  it('replay either succeeds or throws a typed EngineError, never anything else', () => {
     let threw = 0;
     for (let seed = 1; seed <= 150; seed += 1) {
       const rng = mulberry32(seed * 0x27d4eb2f);
