@@ -8,6 +8,8 @@ function makeContext(overrides: Partial<CommandContext> = {}): CommandContext {
     navigate: vi.fn(),
     restart: vi.fn(),
     next: vi.fn(),
+    theme: 'noir',
+    toggleTheme: vi.fn(),
     ...overrides,
   };
 }
@@ -39,6 +41,16 @@ describe('buildCommands', () => {
         'band-brutal',
       ]),
     );
+  });
+
+  it('names the theme command after its destination and wires the toggle', () => {
+    const ctx = makeContext({ theme: 'noir' });
+    const noir = buildCommands(ctx).find((c) => c.id === 'theme');
+    expect(noir?.title).toBe('Switch to matinee (light)');
+    noir?.run();
+    expect(ctx.toggleTheme).toHaveBeenCalledOnce();
+    const matinee = buildCommands(makeContext({ theme: 'matinee' })).find((c) => c.id === 'theme');
+    expect(matinee?.title).toBe('Switch to noir (dark)');
   });
 
   it('wires run() to the context callbacks', () => {

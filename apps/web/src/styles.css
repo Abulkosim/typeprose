@@ -11,6 +11,10 @@
   /* Letterbox bars: a touch darker than the stage, never decorative */
   --color-bar: #0b0906;
 
+  /* Vignette tint (film-stage edge darkening); themeable so light mode eases it */
+  --color-vignette: 0 0 0;
+  --vignette-strength: 0.28;
+
   /* Two faces only (§9.4): Plex Mono for typing/data, EB Garamond for epigraphs */
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
@@ -26,6 +30,19 @@
       opacity: 1;
     }
   }
+}
+
+/* Matinee (light) theme — Phase 3. Re-points the §9.4 tokens for afternoon
+   paper light; utilities reference var(--color-*), so nothing else changes.
+   Values chosen for legibility on cream, to be nudged at the feel review. */
+:root[data-theme='matinee'] {
+  --color-stage: #e9e2d0; /* warm paper, never pure white */
+  --color-bone: #2a2620; /* dark warm ink — foreground/typed text */
+  --color-smoke: #857c6b; /* muted warm gray — pending text */
+  --color-tungsten: #a9761a; /* amber accent, darkened for contrast on light */
+  --color-blood: #9a2e2e; /* errors, deepened for contrast */
+  --color-bar: #ddd4c0; /* letterbox bars, a touch darker than the stage */
+  --vignette-strength: 0.1; /* far gentler edge on paper */
 }
 
 @layer base {
@@ -71,7 +88,7 @@
     background: radial-gradient(
       ellipse 130% 100% at 50% 45%,
       transparent 55%,
-      rgb(0 0 0 / 0.28) 100%
+      rgb(var(--color-vignette) / var(--vignette-strength)) 100%
     );
   }
 

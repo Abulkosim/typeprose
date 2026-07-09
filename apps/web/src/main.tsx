@@ -8,6 +8,9 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
 
 import { App } from './App';
+import { initTheme } from './settings/theme';
+
+initTheme();
 
 const rootElement = document.getElementById('root');
 if (rootElement === null) {

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactElement } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
+import { useThemeStore } from '../settings/theme';
 import { useTypingStore } from '../stage/typingStore';
 import { buildCommands, filterCommands } from './commands';
 import { useCommandStore } from './commandStore';
@@ -17,6 +18,7 @@ export function CommandPalette(): ReactElement | null {
   const close = useCommandStore((s) => s.close);
   const navigate = useNavigate();
   const location = useLocation();
+  const theme = useThemeStore((s) => s.theme);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState(0);
@@ -51,8 +53,10 @@ export function CommandPalette(): ReactElement | null {
         navigate,
         restart: () => useTypingStore.getState().restart(),
         next: () => void useTypingStore.getState().loadNext(),
+        theme,
+        toggleTheme: () => useThemeStore.getState().toggle(),
       }),
-    [location.pathname, navigate],
+    [location.pathname, navigate, theme],
   );
   const results = useMemo(() => filterCommands(commands, query), [commands, query]);
 

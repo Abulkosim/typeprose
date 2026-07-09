@@ -21,6 +21,9 @@ export interface CommandContext {
   restart: () => void;
   /** Tab's action, also offered here: abandon and load a new passage. */
   next: () => void;
+  /** Active theme, so the toggle command can name its destination. */
+  theme: 'noir' | 'matinee';
+  toggleTheme: () => void;
 }
 
 /** The four difficulty bands (§6.4); picking one starts a filtered test. */
@@ -78,6 +81,14 @@ export function buildCommands(ctx: CommandContext): Command[] {
       run: () => ctx.navigate(`/?band=${band}`),
     });
   }
+
+  commands.push({
+    id: 'theme',
+    title: ctx.theme === 'noir' ? 'Switch to matinee (light)' : 'Switch to noir (dark)',
+    hint: 'theme',
+    keywords: ['theme', 'appearance', 'light', 'dark', 'matinee', 'noir'],
+    run: ctx.toggleTheme,
+  });
 
   return commands;
 }
