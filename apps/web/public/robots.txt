@@ -1,0 +1,6 @@
+# prosetype — allow everything; point crawlers at the sitemap.
+# Replace the host below with the real domain when one is chosen.
+User-agent: *
+Allow: /
+
+Sitemap: https://prosetype.example.com/sitemap.xml

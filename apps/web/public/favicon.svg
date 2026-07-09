@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="prosetype">
+  <!--
+    prosetype favicon — a caret at the end of a line of prose. Gray, muted,
+    matching the noir "typewriter in a film frame" brand (plan §9.4). The tile
+    and glyph re-tint for light tab bars via prefers-color-scheme; the caret
+    stays the brightest element at any size so it reads down to 16px.
+  -->
+  <style>
+    .tile  { fill: #201d18; }
+    .text  { fill: #6e675c; }
+    .caret { fill: #cfc7b6; }
+    @media (prefers-color-scheme: light) {
+      .tile  { fill: #e7e1d3; }
+      .text  { fill: #948b78; }
+      .caret { fill: #2a2620; }
+    }
+  </style>
+  <rect class="tile" x="2" y="2" width="60" height="60" rx="15" />
+  <rect class="text" x="13" y="29" width="21" height="6" rx="3" />
+  <rect class="caret" x="38" y="17" width="7" height="30" rx="3.5" />
+</svg>
