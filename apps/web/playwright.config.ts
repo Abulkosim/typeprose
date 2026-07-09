@@ -7,9 +7,8 @@ const DATABASE_URL =
 
 /**
  * Playwright config for the single Phase 2 smoke (plan §11): it exists to catch
- * input-wiring regressions, not to re-test the engine. Two web servers — the
- * Fastify API (:3001) and the Vite dev server (:5173, which proxies /api) —
- * are started for the run (reused if already up outside CI).
+ * input-wiring regressions, not to re-test the engine. Two web servers, the
+ * Fastify API (:3001) and the Vite dev server (:5173, which proxies /api), * are started for the run (reused if already up outside CI).
  */
 export default defineConfig({
   testDir: './e2e',

@@ -4,9 +4,9 @@ import { IllegalCharacterError, normalizeText } from './normalize.ts';
 /**
  * Auto-excerpt proposer (Phase 3, plan §10.3). Given a public-domain source
  * text, propose sentence-aligned candidate excerpts that fit the §6.1 curation
- * guidelines (140–450 chars, 25–80 words, whole sentences, dialogue avoided),
+ * guidelines (140-450 chars, 25-80 words, whole sentences, dialogue avoided),
  * each already normalized (§6.3) and scored with its difficulty/band. It is a
- * curator aid only — a human still picks and pastes into `corpus/passages.yaml`.
+ * curator aid only, a human still picks and pastes into `corpus/passages.yaml`.
  */
 
 export interface Candidate {
@@ -16,7 +16,7 @@ export interface Candidate {
   wordCount: number;
   difficulty: number;
   band: Band;
-  /** Contains quotation marks — likely dialogue, which §6.1 says to avoid. */
+  /** Contains quotation marks, likely dialogue, which §6.1 says to avoid. */
   hasDialogue: boolean;
   /** Fitness score (higher is better); used to rank proposals. */
   score: number;
@@ -64,7 +64,7 @@ function scoreOf(text: string, charCount: number, hasDialogue: boolean): number 
 
 /**
  * Propose excerpts, best first. For each starting sentence it grows a window of
- * consecutive sentences and emits the first that lands in range — so proposals
+ * consecutive sentences and emits the first that lands in range, so proposals
  * begin and end at sentence boundaries. Windows with characters that can't be
  * normalized to the §6.2 set are skipped.
  */

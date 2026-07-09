@@ -29,7 +29,7 @@ export type SaveStatus = 'idle' | 'saving' | 'saved' | 'not-saved';
 interface TypingState {
   phase: StagePhase;
   passage: Passage | null;
-  /** The live engine — mutated in place; never render from it directly. */
+  /** The live engine, mutated in place; never render from it directly. */
   engine: TypingEngine | null;
   /** Derived render state; replaced after every applied input. */
   snapshot: EngineSnapshot | null;
@@ -58,7 +58,7 @@ interface TypingState {
   commitSpace: (timestampMs: number) => void;
   backspace: (timestampMs: number, wholeWord: boolean) => void;
   setCapsLock: (on: boolean) => void;
-  /** Live §7.3 stats for the HUD (display only — never used for stat math). */
+  /** Live §7.3 stats for the HUD (display only, never used for stat math). */
   getLiveStats: () => RunStats | null;
 }
 

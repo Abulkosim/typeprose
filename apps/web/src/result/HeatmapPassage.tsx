@@ -4,7 +4,7 @@ import { Fragment, type ReactElement } from 'react';
 /**
  * Hesitation ramp (§7.6): heat is the engine's 0..1 log-scaled latency
  * (clamped at the run p95), mapped smoke → tungsten with a subtle opacity
- * lift — hesitation glows like the desk lamp caught it. Sequential job, one
+ * lift, hesitation glows like the desk lamp caught it. Sequential job, one
  * perceptual direction, palette tokens only.
  */
 function heatStyle(heat: number): { color: string; opacity: number } {
@@ -27,7 +27,7 @@ function charTitle(heat: CharHeat): string | undefined {
 
 /**
  * The passage re-rendered as the per-character hesitation heatmap (§7.6),
- * straight from the engine's `computeHeatmap` output — nothing is recomputed
+ * straight from the engine's `computeHeatmap` output, nothing is recomputed
  * here. Error-touched characters are marked in blood (reserved for errors)
  * with a thin underline so the mark is never color-alone; never-typed
  * characters stay dim smoke. Words are inline-blocks so lines break at word

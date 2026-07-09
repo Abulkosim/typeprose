@@ -4,7 +4,7 @@ A typing practice app built on public-domain prose, with Monkeytype-compatible s
 
 ## Stack
 
-pnpm monorepo — TypeScript, Fastify API, React/Vite web app, Postgres via Drizzle.
+pnpm monorepo, TypeScript, Fastify API, React/Vite web app, Postgres via Drizzle.
 
 ## Getting started
 

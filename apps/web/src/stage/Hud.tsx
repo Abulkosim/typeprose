@@ -9,7 +9,7 @@ function formatClock(elapsedMs: number): string {
 
 /**
  * Live HUD (§9.3): wpm + elapsed, dim, hidden until the first keystroke.
- * Repaints on a 100ms interval — display only; the numbers come straight
+ * Repaints on a 100ms interval, display only; the numbers come straight
  * from the engine and the interval is never used for stat math. Space is
  * reserved while hidden so the passage never shifts.
  */

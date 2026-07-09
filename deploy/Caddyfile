@@ -1,7 +1,6 @@
 # Caddy serves the static SPA and reverse-proxies the API (plan §12).
 # SITE_ADDRESS is the public hostname; Caddy auto-provisions TLS for a real
-# domain (use `localhost` or `:80` locally). The /api prefix is preserved —
-# the API mounts its routes under /api/v1.
+# domain (use `localhost` or `:80` locally). The /api prefix is preserved,# the API mounts its routes under /api/v1.
 {$SITE_ADDRESS:localhost} {
 	encode gzip
 

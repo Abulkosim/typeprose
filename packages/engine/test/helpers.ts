@@ -38,7 +38,7 @@ export function typeEvenly(engine: TypingEngine, text: string, totalMs: number):
 
 const WORD_ALPHABET = [...'abcdefgho,.;\'"-'];
 
-/** A random canonical passage: 1–10 words of 1–8 chars. */
+/** A random canonical passage: 1-10 words of 1-8 chars. */
 export function randomPassage(rng: () => number): string {
   const wordCount = 1 + Math.floor(rng() * 10);
   const words: string[] = [];

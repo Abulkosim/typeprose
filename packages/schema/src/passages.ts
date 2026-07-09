@@ -23,7 +23,7 @@ export const passageWorkSchema = z.object({
 /**
  * Passage DTO returned by GET /passages/next and GET /passages/:id (plan §8).
  * Carries full attribution so the client can render the epigraph
- * ("— Fyodor Dostoevsky, Crime and Punishment, trans. Garnett").
+ * ("Fyodor Dostoevsky, Crime and Punishment, trans. Garnett").
  */
 export const passageSchema = z.object({
   id: z.int().positive(),

@@ -1,4 +1,4 @@
-// @prosetype/engine — pure TS typing engine + stats (plan §7).
+// @prosetype/engine, pure TS typing engine + stats (plan §7).
 // Zero runtime dependencies, no DOM. Deterministic: given (passageText,
 // eventLog) every output is reproducible; the live engine and the pure replay
 // share one reducer, so live stats and computeStats cannot drift.

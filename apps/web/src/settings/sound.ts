@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 /**
  * Optional keystroke sound (Phase 3, plan §10.3 "typewriter thock"). Synthesized
- * with the Web Audio API — no audio assets — so it stays a zero-dependency,
+ * with the Web Audio API, no audio assets, so it stays a zero-dependency,
  * self-hosted concern like the fonts. Off by default (sound is intrusive; this
  * mirrors Monkeytype). The mute toggle persists; a keystroke is a user gesture,
  * so the AudioContext resumes fine under the autoplay policy.

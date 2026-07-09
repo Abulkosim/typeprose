@@ -1,16 +1,17 @@
-# DRAFT — pending curator review (Gate 0)
+# DRAFT: pending curator review (Gate 0)
 #
-# 30 passages drafted verbatim from Project Gutenberg plain-text editions
-# (fetched 2026-07-07). Text is NOT pre-normalized: curly quotes, em dashes,
-# and original punctuation are kept as fetched; scripts/ingest.ts normalizes
-# per plan §6.3 and its curation report flags every fold for human veto.
+# 30 passages drafted from Project Gutenberg plain-text editions (fetched
+# 2026-07-07), with em dashes rewritten to plain ASCII punctuation (commas and
+# periods) rather than kept verbatim. Curly quotes and other original
+# punctuation are kept as fetched; scripts/ingest.ts normalizes per plan §6.3
+# and its curation report flags every fold for human veto.
 #
 # Substitutions vs the plan §5 seed list (noted per instructions):
-#   - Faulkner, "As I Lay Dying" (PD 2026): not yet on Project Gutenberg —
+#   - Faulkner, "As I Lay Dying" (PD 2026): not yet on Project Gutenberg,
 #     substituted extra Fitzgerald/Woolf passages in the modernist group.
-#   - Kafka, "The Castle" (Muir, 1930): not on Project Gutenberg —
+#   - Kafka, "The Castle" (Muir, 1930): not on Project Gutenberg,
 #     substituted within the modernist group as above.
-#   - Hammett, "Red Harvest" (PD 2025): not on Project Gutenberg —
+#   - Hammett, "Red Harvest" (PD 2025): not on Project Gutenberg,
 #     substituted a second Maltese Falcon (gutenberg:77600) passage.
 #   - Tolstoy "Anna Karenina" on PG (#1399) is the Constance Garnett
 #     translation, not Maude as the plan guessed; recorded as fetched.
@@ -154,7 +155,7 @@
   source: 'gutenberg:1998'
   themes: [aphorisms]
   text: >
-    Man is a rope stretched between the animal and the Superman—a rope over an
+    Man is a rope stretched between the animal and the Superman, a rope over an
     abyss. A dangerous crossing, a dangerous wayfaring, a dangerous
     looking-back, a dangerous trembling and halting.
 
@@ -169,7 +170,7 @@
   themes: [aphorisms]
   text: >
     Alas! there cometh the time when man will no longer launch the arrow of
-    his longing beyond man—and the string of his bow will have unlearned to
+    his longing beyond man, and the string of his bow will have unlearned to
     whizz! I tell you: one must still have chaos in one, to give birth to a
     dancing star. I tell you: ye have still chaos in you.
 
@@ -229,7 +230,7 @@
     things. Thus death is nothing terrible, else it would have appeared so to
     Socrates. But the terror consists in our notion of death, that it is
     terrible. When, therefore, we are hindered or disturbed, or grieved, let
-    us never impute it to others, but to ourselves—that is, to our own views.
+    us never impute it to others, but to ourselves, that is, to our own views.
 
 - author: hammett
   author_name: Dashiell Hammett
@@ -244,7 +245,7 @@
     flexible v of his mouth. His nostrils curved back to make another,
     smaller, v. His yellow-grey eyes were horizontal. The v motif was picked
     up again by thickish brows rising outward from twin creases above a hooked
-    nose, and his pale brown hair grew down—from high flat temples—in a point
+    nose, and his pale brown hair grew down, from high flat temples, in a point
     on his forehead. He looked rather pleasantly like a blond satan.
 
 - author: hammett
@@ -305,7 +306,7 @@
   text: >
     The offing was barred by a black bank of clouds, and the tranquil waterway
     leading to the uttermost ends of the earth flowed sombre under an overcast
-    sky—seemed to lead into the heart of an immense darkness.
+    sky, seemed to lead into the heart of an immense darkness.
 
 - author: fitzgerald
   author_name: F. Scott Fitzgerald
@@ -316,9 +317,9 @@
   source: 'gutenberg:64317'
   themes: [modernist]
   text: >
-    He smiled understandingly—much more than understandingly. It was one of
+    He smiled understandingly, much more than understandingly. It was one of
     those rare smiles with a quality of eternal reassurance in it, that you
-    may come across four or five times in life. It faced—or seemed to face—the
+    may come across four or five times in life. It faced, or seemed to face, the
     whole eternal world for an instant, and then concentrated on you with an
     irresistible prejudice in your favour.
 

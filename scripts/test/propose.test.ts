@@ -20,7 +20,7 @@ describe('splitSentences', () => {
 });
 
 describe('proposeExcerpts', () => {
-  // Three sentences that together land in the 140–450 char, 25–80 word window.
+  // Three sentences that together land in the 140-450 char, 25-80 word window.
   const prose = [
     'The lamp threw a narrow cone of amber light across the desk and left the corners of the room in a warm, uncertain dark.',
     'He read the letter twice, folded it along its old creases, and set it down beside the cooling cup of coffee.',

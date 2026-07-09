@@ -125,7 +125,7 @@ export function buildCommands(ctx: CommandContext): Command[] {
 
 /**
  * Case-insensitive substring match over title and keywords (boring choice over
- * a fuzzy matcher — the command set is small and stable). Empty query = all.
+ * a fuzzy matcher, the command set is small and stable). Empty query = all.
  */
 export function filterCommands(commands: readonly Command[], query: string): Command[] {
   const q = query.trim().toLowerCase();

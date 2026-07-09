@@ -40,7 +40,7 @@ export interface ResultRoutesOptions {
   results: ResultRepository;
 }
 
-/** Default and max leaderboard size (plan silent — boring bounds). */
+/** Default and max leaderboard size (plan silent, boring bounds). */
 export const DEFAULT_LEADERBOARD_LIMIT = 20;
 export const MAX_LEADERBOARD_LIMIT = 100;
 
@@ -53,7 +53,7 @@ const leaderboardQuerySchema = z.object({
  * POST /results (plan §8): validate, recompute stats server-side via the shared
  * engine, compare with the client's numbers, and persist the server-computed
  * values. Mismatches are stored and flagged (`client_match = false`), never
- * rejected — a mismatch may be a client bug, not cheating. Rate-limited to
+ * rejected, a mismatch may be a client bug, not cheating. Rate-limited to
  * 20/min (tighter than the global 100/min).
  */
 export async function resultRoutes(app: FastifyInstance, opts: ResultRoutesOptions): Promise<void> {

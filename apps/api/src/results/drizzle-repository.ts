@@ -116,7 +116,7 @@ export function createDrizzleResultRepository(db: Db): ResultRepository {
         workTitle: r.workTitle,
         authorName: r.authorName,
         // db.execute returns timestamptz as a string (unlike the typed select
-        // paths, which yield a Date) — normalize so the route can serialize it.
+        // paths, which yield a Date), normalize so the route can serialize it.
         createdAt: new Date(r.createdAt),
       }));
     },

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="prosetype">
   <!--
-    prosetype favicon — a caret at the end of a line of prose. Gray, muted,
+    prosetype favicon: a caret at the end of a line of prose. Gray, muted,
     matching the noir "typewriter in a film frame" brand (plan §9.4). The tile
     and glyph re-tint for light tab bars via prefers-color-scheme; the caret
     stays the brightest element at any size so it reads down to 16px.

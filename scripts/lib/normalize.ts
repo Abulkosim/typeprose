@@ -2,7 +2,7 @@
  * Text normalization per plan §6.3, targeting the canonical set of §6.2:
  * ASCII letters, digits, space, and the punctuation set . , ; : ! ? ' " - ( )
  *
- * Pure functions only — no I/O, no globals.
+ * Pure functions only; no I/O, no globals.
  */
 
 /** Matches exactly one character of the §6.2 canonical set. */
@@ -14,16 +14,16 @@ const CURLY_SINGLE_QUOTE_RE = /[\u2018\u2019]/g;
 const CURLY_DOUBLE_QUOTE_RE = /[\u201C\u201D]/g;
 /** Ellipsis … (U+2026). */
 const ELLIPSIS_RE = /\u2026/g;
-/** Em/en dash — – (U+2014, U+2013) with any surrounding whitespace. */
+/** Em and en dash (U+2014, U+2013) with any surrounding whitespace. */
 const DASH_RE = /\s*[\u2014\u2013]\s*/g;
 /**
- * Non-breaking and exotic spaces: NBSP, Ogham space, U+2000–U+200A quad/thin
+ * Non-breaking and exotic spaces: NBSP, Ogham space, U+2000-U+200A quad/thin
  * spaces, narrow NBSP, math space, ideographic space, BOM-as-space.
  */
 const EXOTIC_SPACE_RE = /[\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000\uFEFF]/g;
-/** Zero-width space/non-joiner/joiner — removed outright. */
+/** Zero-width space/non-joiner/joiner, removed outright. */
 const ZERO_WIDTH_RE = /[\u200B-\u200D]/g;
-/** Combining diacritical marks (U+0300–U+036F), stripped after NFD. */
+/** Combining diacritical marks (U+0300-U+036F), stripped after NFD. */
 const COMBINING_MARKS_RE = /[\u0300-\u036F]/g;
 
 /**
@@ -88,7 +88,7 @@ function foldChar(char: string): string | null {
  * Normalize raw excerpt text per §6.3:
  *  1. curly quotes → straight quotes
  *  2. ellipsis `…` → `...`
- *  3. em/en dashes (spaced or not) → single spaced hyphen: `word—word` → `word - word`
+ *  3. em/en dashes (spaced or not) collapse to a single spaced hyphen (so `word-word` becomes `word - word`)
  *  4. non-breaking/exotic spaces → regular space; zero-width characters removed
  *  5. whitespace runs collapsed to single spaces; trimmed
  *  6. accented Latin folded to ASCII, with every changed word recorded

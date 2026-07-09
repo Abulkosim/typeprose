@@ -5,7 +5,7 @@ node_modules/
 dist/
 *.tsbuildinfo
 
-# env — keep .env.example current, never commit real env files
+# env, keep .env.example current, never commit real env files
 .env
 .env.*
 !.env.example
