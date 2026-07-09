@@ -17,15 +17,20 @@ export function StagePage(): ReactElement {
   const band = params.get('band') ?? undefined;
   const theme = params.get('theme') ?? undefined;
   const author = params.get('author') ?? undefined;
+  const daily = params.get('daily') !== null;
 
   useEffect(() => {
+    const state = useTypingStore.getState();
+    if (daily) {
+      void state.loadDaily();
+      return;
+    }
     const query: PassageQuery = { band, theme, author };
     const hasFilter = band !== undefined || theme !== undefined || author !== undefined;
-    const state = useTypingStore.getState();
     if (hasFilter || state.passage === null) {
       void state.loadNext(query);
     }
-  }, [band, theme, author]);
+  }, [band, theme, author, daily]);
 
   return <TypingStage />;
 }

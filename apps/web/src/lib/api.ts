@@ -56,6 +56,12 @@ export async function fetchNextPassage(
   return parseJson(response, passageSchema, 'GET /passages/next');
 }
 
+/** GET /passages/daily — the deterministic passage of the day (§10.3). */
+export async function fetchDailyPassage(): Promise<Passage> {
+  const response = await fetch(`${BASE}/passages/daily`);
+  return parseJson(response, passageSchema, 'GET /passages/daily');
+}
+
 /** POST /profiles — create an anonymous profile, returns its uuid (§8, §9.2). */
 export async function postProfile(): Promise<string> {
   const response = await fetch(`${BASE}/profiles`, { method: 'POST' });

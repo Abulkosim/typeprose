@@ -74,6 +74,9 @@ export function createStubPassageRepo(fixtures: Passage[]): PassageRepository {
         ) ?? null
       );
     },
+    async findDaily(dateKey: string): Promise<Passage | null> {
+      return dailyPick(fixtures, dateKey);
+    },
     async findById(id: number): Promise<Passage | null> {
       return fixtures.find((p) => p.id === id) ?? null;
     },
@@ -84,6 +87,14 @@ export function createStubPassageRepo(fixtures: Passage[]): PassageRepository {
       return [];
     },
   };
+}
+
+/** Deterministic daily pick for stubs: ids sorted, indexed by the date key. */
+export function dailyPick(fixtures: Passage[], dateKey: string): Passage | null {
+  if (fixtures.length === 0) return null;
+  const sorted = [...fixtures].sort((a, b) => a.id - b.id);
+  const seed = [...dateKey].reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+  return sorted[seed % sorted.length] ?? null;
 }
 
 export function createStubProfileRepo(existingIds: string[]): ProfileRepository & {

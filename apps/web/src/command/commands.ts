@@ -62,6 +62,13 @@ export function buildCommands(ctx: CommandContext): Command[] {
 
   commands.push(
     {
+      id: 'daily',
+      title: 'Daily passage',
+      hint: 'daily',
+      keywords: ['today', 'passage of the day', 'daily'],
+      run: () => ctx.navigate('/?daily'),
+    },
+    {
       id: 'go-library',
       title: 'Browse library',
       keywords: ['authors', 'themes', 'books'],

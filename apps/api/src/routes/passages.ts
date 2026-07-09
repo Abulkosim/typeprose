@@ -1,6 +1,7 @@
 import { bandSchema } from '@prosetype/schema';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
+import { utcDateKey } from '../passages/daily.ts';
 import type { PassageFilter, PassageRepository } from '../passages/repository.ts';
 import { sendBadRequest, sendNotFound } from './http.ts';
 
@@ -61,6 +62,14 @@ export async function passageRoutes(
     const passage = await repo.findRandom(filter);
     if (passage === null) {
       return sendNotFound(reply, `No passage matches the given filters (${describeFilter(filter)})`);
+    }
+    return passage;
+  });
+
+  app.get('/passages/daily', async (_request, reply) => {
+    const passage = await repo.findDaily(utcDateKey(new Date()));
+    if (passage === null) {
+      return sendNotFound(reply, 'No passages are available');
     }
     return passage;
   });

@@ -11,6 +11,9 @@ function catalogRepo(): PassageRepository {
     async findRandom() {
       return null;
     },
+    async findDaily() {
+      return null;
+    },
     async findById() {
       return null;
     },

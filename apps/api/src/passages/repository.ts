@@ -21,6 +21,11 @@ export interface PassageFilter {
 export interface PassageRepository {
   /** A random passage matching the filter, or null when none match. */
   findRandom(filter: PassageFilter): Promise<Passage | null>;
+  /**
+   * The deterministic "passage of the day" for a UTC date key (§10.3): stable
+   * for a given key, varies day to day. Null only when the corpus is empty.
+   */
+  findDaily(dateKey: string): Promise<Passage | null>;
   /** A passage by id with full attribution, or null when absent. */
   findById(id: number): Promise<Passage | null>;
   /** Authors that have at least one passage, with their passage counts (GET /authors). */

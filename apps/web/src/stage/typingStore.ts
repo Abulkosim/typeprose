@@ -7,7 +7,7 @@ import {
 import type { Passage } from '@prosetype/schema';
 import { create } from 'zustand';
 
-import { fetchNextPassage, submitResult, type PassageQuery } from '../lib/api';
+import { fetchDailyPassage, fetchNextPassage, submitResult, type PassageQuery } from '../lib/api';
 import { ensureProfileId } from '../lib/profile';
 import { pushRecent } from '../lib/recent';
 import type { CompletedRun } from '../result/ResultView';
@@ -50,6 +50,8 @@ interface TypingState {
    * current filter so the pick persists across Tab.
    */
   loadNext: (filter?: PassageQuery) => Promise<void>;
+  /** Load the deterministic passage of the day (§10.3). */
+  loadDaily: () => Promise<void>;
   /** Esc: restart the same passage from scratch. */
   restart: () => void;
   typeChar: (char: string, timestampMs: number) => void;
@@ -73,6 +75,48 @@ function clearHold(): void {
   if (holdTimer !== null) {
     clearTimeout(holdTimer);
     holdTimer = null;
+  }
+}
+
+/**
+ * Shared passage-load flow for loadNext/loadDaily: guard concurrent fetches,
+ * invalidate any in-flight submission, reset to a fresh idle engine on success
+ * or a quiet error phase on failure. `fetchPassage` decides which passage.
+ */
+async function loadInto(
+  set: (partial: Partial<TypingState>) => void,
+  get: () => TypingState,
+  nextFilter: PassageQuery,
+  fetchPassage: () => Promise<Passage>,
+): Promise<void> {
+  if (inFlight) return; // one fetch at a time (also guards StrictMode's double effect)
+  inFlight = true;
+  submitToken += 1; // invalidate any in-flight submission for the old run
+  clearHold();
+  set({
+    phase: 'loading',
+    engine: null,
+    snapshot: null,
+    completedRun: null,
+    errorMessage: null,
+    restarted: false,
+    saveStatus: 'idle',
+    filter: nextFilter,
+  });
+  try {
+    const passage = await fetchPassage();
+    const engine = createEngine(passage.text);
+    set({
+      phase: 'typing',
+      passage,
+      engine,
+      snapshot: engine.getSnapshot(),
+      recentIds: pushRecent(get().recentIds, passage.id),
+    });
+  } catch {
+    set({ phase: 'error', passage: null, errorMessage: 'could not load a passage' });
+  } finally {
+    inFlight = false;
   }
 }
 
@@ -118,36 +162,13 @@ export const useTypingStore = create<TypingState>()((set, get) => ({
   recentIds: [],
 
   loadNext: async (filter?: PassageQuery) => {
-    if (inFlight) return; // one fetch at a time (also guards StrictMode's double effect)
-    inFlight = true;
-    submitToken += 1; // invalidate any in-flight submission for the old run
-    clearHold();
     const nextFilter = filter ?? get().filter;
-    set({
-      phase: 'loading',
-      engine: null,
-      snapshot: null,
-      completedRun: null,
-      errorMessage: null,
-      restarted: false,
-      saveStatus: 'idle',
-      filter: nextFilter,
-    });
-    try {
-      const passage = await fetchNextPassage(get().recentIds, nextFilter);
-      const engine = createEngine(passage.text);
-      set({
-        phase: 'typing',
-        passage,
-        engine,
-        snapshot: engine.getSnapshot(),
-        recentIds: pushRecent(get().recentIds, passage.id),
-      });
-    } catch {
-      set({ phase: 'error', passage: null, errorMessage: 'could not load a passage' });
-    } finally {
-      inFlight = false;
-    }
+    await loadInto(set, get, nextFilter, () => fetchNextPassage(get().recentIds, nextFilter));
+  },
+
+  loadDaily: async () => {
+    // Clearing the filter so a later bare Tab loads a normal random passage.
+    await loadInto(set, get, {}, () => fetchDailyPassage());
   },
 
   restart: () => {

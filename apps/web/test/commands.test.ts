@@ -31,10 +31,11 @@ describe('buildCommands', () => {
     expect(ids).not.toContain('next');
   });
 
-  it('always offers library, stats, and the four difficulty bands', () => {
+  it('always offers daily, library, stats, and the four difficulty bands', () => {
     const ids = buildCommands(makeContext({ onStage: false })).map((c) => c.id);
     expect(ids).toEqual(
       expect.arrayContaining([
+        'daily',
         'go-library',
         'go-stats',
         'band-warmup',
@@ -43,6 +44,12 @@ describe('buildCommands', () => {
         'band-brutal',
       ]),
     );
+  });
+
+  it('routes the daily command to /?daily', () => {
+    const ctx = makeContext();
+    buildCommands(ctx).find((c) => c.id === 'daily')?.run();
+    expect(ctx.navigate).toHaveBeenCalledWith('/?daily');
   });
 
   it('names the theme command after its destination and wires the toggle', () => {

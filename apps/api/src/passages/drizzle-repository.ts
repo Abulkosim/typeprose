@@ -71,6 +71,16 @@ export function createDrizzlePassageRepository(db: Db): PassageRepository {
       return row === undefined ? null : passageSchema.parse(row);
     },
 
+    async findDaily(dateKey: string): Promise<Passage | null> {
+      // Deterministic per date: order every row by md5(dateKey || id) and take
+      // the first — a stable pseudo-random pick with no count query.
+      const rows = await baseQuery()
+        .orderBy(sql`md5(${dateKey} || '-' || ${passages.id}::text)`)
+        .limit(1);
+      const row = rows[0];
+      return row === undefined ? null : passageSchema.parse(row);
+    },
+
     async findById(id: number): Promise<Passage | null> {
       const rows = await baseQuery().where(eq(passages.id, id)).limit(1);
       const row = rows[0];

@@ -72,6 +72,12 @@ function createStubRepo(fixtures: Passage[]): PassageRepository & {
       );
       return match ?? null;
     },
+    async findDaily(dateKey: string): Promise<Passage | null> {
+      if (fixtures.length === 0) return null;
+      const sorted = [...fixtures].sort((a, b) => a.id - b.id);
+      const seed = [...dateKey].reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+      return sorted[seed % sorted.length] ?? null;
+    },
     async findById(id: number): Promise<Passage | null> {
       return fixtures.find((p) => p.id === id) ?? null;
     },
@@ -248,6 +254,22 @@ describe('passage routes', () => {
       const res = await app.inject({ method: 'GET', url: '/api/v1/passages/0' });
       expect(res.statusCode).toBe(400);
       expect(res.json()).toMatchObject({ error: 'BadRequest' });
+    });
+  });
+
+  describe('GET /api/v1/passages/daily', () => {
+    it('returns a passage as the shared Passage DTO (static route, not :id)', async () => {
+      const { app } = await setup();
+      const res = await app.inject({ method: 'GET', url: '/api/v1/passages/daily' });
+      expect(res.statusCode).toBe(200);
+      expect(() => passageSchema.parse(res.json())).not.toThrow();
+    });
+
+    it('returns 404 when the corpus is empty', async () => {
+      const { app } = await setup([]);
+      const res = await app.inject({ method: 'GET', url: '/api/v1/passages/daily' });
+      expect(res.statusCode).toBe(404);
+      expect(res.json()).toMatchObject({ error: 'NotFound' });
     });
   });
 });
