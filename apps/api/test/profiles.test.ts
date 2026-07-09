@@ -3,7 +3,8 @@ import type { FastifyInstance } from 'fastify';
 import { afterEach, describe, expect, it } from 'vitest';
 import { buildApp } from '../src/build.ts';
 import { loadConfig } from '../src/config.ts';
-import { createStubPassageRepo } from './support.ts';
+import { createStubPassageRepo, createStubProfileRepo, createStubResultRepo } from './support.ts';
+import type { Mailer } from '../src/mail/mailer.ts';
 import type { ProfileRepository } from '../src/profiles/repository.ts';
 import type {
   ProfileAggregates,
@@ -21,6 +22,12 @@ function fixedProfileRepo(ids: string[]): ProfileRepository {
     },
     async exists(id: string) {
       return ids.includes(id);
+    },
+    async createClaimToken() {
+      // no-op stub
+    },
+    async verifyClaim() {
+      return { status: 'invalid' as const };
     },
   };
 }
@@ -176,5 +183,100 @@ describe('profile routes', () => {
     });
     expect(res.statusCode).toBe(404);
     expect(res.json()).toMatchObject({ error: 'NotFound' });
+  });
+});
+
+describe('account claim (§10.3)', () => {
+  const CLAIM_ID = '44444444-4444-4444-8444-444444444444';
+  let app: FastifyInstance | null = null;
+
+  afterEach(async () => {
+    if (app !== null) {
+      await app.close();
+      app = null;
+    }
+  });
+
+  function sent(): { email: string; url: string }[] {
+    return links;
+  }
+  let links: { email: string; url: string }[] = [];
+
+  async function setup() {
+    links = [];
+    const mailer: Mailer = {
+      async sendClaimLink(input) {
+        links.push(input);
+      },
+    };
+    const profileRepo = createStubProfileRepo([CLAIM_ID]);
+    app = await buildApp(loadConfig(testEnv), {
+      passageRepo: createStubPassageRepo([shortPassage]),
+      profileRepo,
+      resultRepo: createStubResultRepo(),
+      mailer,
+    });
+    return { app, profileRepo };
+  }
+
+  it('issues a magic link for a valid email and returns 202', async () => {
+    const { app } = await setup();
+    const res = await app.inject({
+      method: 'POST',
+      url: `/api/v1/profiles/${CLAIM_ID}/claim`,
+      payload: { email: 'ada@example.com' },
+    });
+    expect(res.statusCode).toBe(202);
+    expect(res.json()).toEqual({ email: 'ada@example.com' });
+    expect(sent()).toHaveLength(1);
+    expect(sent()[0]?.url).toContain('/claim?token=');
+  });
+
+  it('rejects a malformed email with 400', async () => {
+    const { app } = await setup();
+    const res = await app.inject({
+      method: 'POST',
+      url: `/api/v1/profiles/${CLAIM_ID}/claim`,
+      payload: { email: 'not-an-email' },
+    });
+    expect(res.statusCode).toBe(400);
+  });
+
+  it('404s a claim for an unknown profile', async () => {
+    const { app } = await setup();
+    const res = await app.inject({
+      method: 'POST',
+      url: `/api/v1/profiles/55555555-5555-4555-8555-555555555555/claim`,
+      payload: { email: 'ada@example.com' },
+    });
+    expect(res.statusCode).toBe(404);
+  });
+
+  it('verifies the emailed token and returns the display name', async () => {
+    const { app } = await setup();
+    await app.inject({
+      method: 'POST',
+      url: `/api/v1/profiles/${CLAIM_ID}/claim`,
+      payload: { email: 'ada@example.com' },
+    });
+    const url = new URL(sent()[0]?.url ?? '');
+    const token = url.searchParams.get('token');
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/v1/claim/verify',
+      payload: { token },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({ profileId: CLAIM_ID, displayName: 'ada' });
+  });
+
+  it('rejects an unknown token with 400', async () => {
+    const { app } = await setup();
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/v1/claim/verify',
+      payload: { token: 'nope' },
+    });
+    expect(res.statusCode).toBe(400);
   });
 });

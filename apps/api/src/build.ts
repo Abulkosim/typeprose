@@ -3,6 +3,7 @@ import rateLimit from '@fastify/rate-limit';
 import Fastify, { type FastifyInstance } from 'fastify';
 import type { AppConfig } from './config.ts';
 import { createDbClient, type Db } from './db/client.ts';
+import { createConsoleMailer, type Mailer } from './mail/mailer.ts';
 import { createDrizzlePassageRepository } from './passages/drizzle-repository.ts';
 import type { PassageRepository } from './passages/repository.ts';
 import { createDrizzleProfileRepository } from './profiles/drizzle-repository.ts';
@@ -21,6 +22,8 @@ export interface AppDeps {
   passageRepo?: PassageRepository;
   profileRepo?: ProfileRepository;
   resultRepo?: ResultRepository;
+  /** Email transport for claim magic links; defaults to the console mailer. */
+  mailer?: Mailer;
 }
 
 /**
@@ -64,10 +67,14 @@ export async function buildApp(config: AppConfig, deps: AppDeps = {}): Promise<F
   app.get('/api/v1/healthz', async () => ({ ok: true as const }));
 
   await app.register(passageRoutes, { prefix: '/api/v1', repo: passageRepo });
+  const mailer = deps.mailer ?? createConsoleMailer((msg) => app.log.info(msg));
+
   await app.register(profileRoutes, {
     prefix: '/api/v1',
     profiles: profileRepo,
     results: resultRepo,
+    mailer,
+    webOrigin: config.CORS_ORIGIN,
   });
   await app.register(resultRoutes, {
     prefix: '/api/v1',

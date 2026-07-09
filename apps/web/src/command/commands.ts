@@ -86,6 +86,12 @@ export function buildCommands(ctx: CommandContext): Command[] {
       keywords: ['ranking', 'top', 'best', 'fastest'],
       run: () => ctx.navigate('/leaderboard'),
     },
+    {
+      id: 'go-claim',
+      title: 'Claim account (email)',
+      keywords: ['account', 'email', 'sign in', 'magic link', 'name', 'save'],
+      run: () => ctx.navigate('/claim'),
+    },
   );
 
   for (const [band, label] of BANDS) {

@@ -15,6 +15,20 @@ function readStored(): string | null {
 }
 
 /**
+ * Adopt a specific profile id (Phase 3, §10.3): after an account claim/merge
+ * the canonical id may differ from the anonymous one, so persist the new id and
+ * clear any memoized create so later reads use it.
+ */
+export function setProfileId(id: string): void {
+  pending = null;
+  try {
+    localStorage.setItem(PROFILE_STORAGE_KEY, id);
+  } catch {
+    // Private mode: the id still applies for the session.
+  }
+}
+
+/**
  * Resolve the anonymous profile id (plan §9.2): return the one in localStorage,
  * or create one via POST /profiles and persist it. The in-flight promise is
  * memoized so concurrent callers (submission + stats) share one create; a

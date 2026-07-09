@@ -1,7 +1,8 @@
 import { createEngine } from '@prosetype/engine';
 import type { CharEvents, Passage } from '@prosetype/schema';
+import { displayNameFromEmail } from '../src/profiles/claim.ts';
 import type { PassageFilter, PassageRepository } from '../src/passages/repository.ts';
-import type { ProfileRepository } from '../src/profiles/repository.ts';
+import type { ClaimTokenInput, ProfileRepository } from '../src/profiles/repository.ts';
 import type {
   NewResult,
   ProfileAggregates,
@@ -99,9 +100,12 @@ export function dailyPick(fixtures: Passage[], dateKey: string): Passage | null 
 
 export function createStubProfileRepo(existingIds: string[]): ProfileRepository & {
   created: number;
+  claimTokens: ClaimTokenInput[];
 } {
+  const tokens = new Map<string, ClaimTokenInput & { used: boolean }>();
   return {
     created: 0,
+    claimTokens: [],
     async create(): Promise<string> {
       this.created += 1;
       const id = `00000000-0000-4000-8000-00000000000${String(this.created)}`;
@@ -110,6 +114,19 @@ export function createStubProfileRepo(existingIds: string[]): ProfileRepository 
     },
     async exists(id: string): Promise<boolean> {
       return existingIds.includes(id);
+    },
+    async createClaimToken(input: ClaimTokenInput): Promise<void> {
+      tokens.set(input.token, { ...input, used: false });
+      this.claimTokens.push(input);
+    },
+    async verifyClaim(token: string, now: Date) {
+      // In-memory: no merge (the merge path is covered by the integration test).
+      const t = tokens.get(token);
+      if (t === undefined || t.used || t.expiresAt.getTime() <= now.getTime()) {
+        return { status: 'invalid' as const };
+      }
+      t.used = true;
+      return { status: 'ok' as const, profileId: t.profileId, displayName: displayNameFromEmail(t.email) };
     },
   };
 }

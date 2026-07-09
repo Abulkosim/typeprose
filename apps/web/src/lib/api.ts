@@ -1,5 +1,7 @@
 import {
   authorListSchema,
+  claimRequestResponseSchema,
+  claimVerifyResponseSchema,
   leaderboardSchema,
   passageSchema,
   postProfilesResponseSchema,
@@ -8,6 +10,8 @@ import {
   themeListSchema,
   type AuthorListItem,
   type CharEvents,
+  type ClaimRequestResponse,
+  type ClaimVerifyResponse,
   type Leaderboard,
   type Passage,
   type PostResultsResponse,
@@ -104,6 +108,29 @@ export async function fetchAuthors(): Promise<AuthorListItem[]> {
 export async function fetchThemes(): Promise<ThemeListItem[]> {
   const response = await fetch(`${BASE}/themes`);
   return parseJson(response, themeListSchema, 'GET /themes');
+}
+
+/** POST /profiles/:id/claim — request an email magic link to claim the profile (§10.3). */
+export async function requestClaim(
+  profileId: string,
+  email: string,
+): Promise<ClaimRequestResponse> {
+  const response = await fetch(`${BASE}/profiles/${profileId}/claim`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  return parseJson(response, claimRequestResponseSchema, 'POST /profiles/:id/claim');
+}
+
+/** POST /claim/verify — verify a magic-link token; returns the canonical profile (§10.3). */
+export async function verifyClaim(token: string): Promise<ClaimVerifyResponse> {
+  const response = await fetch(`${BASE}/claim/verify`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ token }),
+  });
+  return parseJson(response, claimVerifyResponseSchema, 'POST /claim/verify');
 }
 
 /** GET /leaderboard — each profile's best run, optionally scoped to a passage (§10.3). */

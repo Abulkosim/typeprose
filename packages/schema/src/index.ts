@@ -46,6 +46,17 @@ export {
 } from './leaderboard.ts';
 
 export {
+  claimRequestSchema,
+  claimRequestResponseSchema,
+  claimVerifyRequestSchema,
+  claimVerifyResponseSchema,
+  type ClaimRequest,
+  type ClaimRequestResponse,
+  type ClaimVerifyRequest,
+  type ClaimVerifyResponse,
+} from './claim.ts';
+
+export {
   resultSummarySchema,
   bestRunSchema,
   authorAggregateSchema,

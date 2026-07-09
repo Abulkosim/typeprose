@@ -67,6 +67,22 @@ export const passages = pgTable(
 export const profiles = pgTable('profiles', {
   id: uuid('id').primaryKey().defaultRandom(),
   displayName: text('display_name'),
+  // Account claim (Phase 3, §10.3): set once an email magic link is verified.
+  // Unique so an email maps to exactly one canonical profile (nulls stay distinct).
+  email: text('email').unique(),
+  emailVerifiedAt: timestamp('email_verified_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Pending email-claim magic links (Phase 3, §10.3). Short-lived, single-use. */
+export const claimTokens = pgTable('claim_tokens', {
+  token: text('token').primaryKey(),
+  profileId: uuid('profile_id')
+    .notNull()
+    .references(() => profiles.id),
+  email: text('email').notNull(),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  usedAt: timestamp('used_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
