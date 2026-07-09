@@ -2,6 +2,7 @@ import type { ProfileStats } from '@prosetype/schema';
 import { useEffect, useState, type ReactElement } from 'react';
 
 import { fetchProfileStats } from '../lib/api';
+import { usePageMeta } from '../lib/head';
 import { ensureProfileId } from '../lib/profile';
 
 type LoadState =
@@ -42,6 +43,11 @@ function Metric({ label, value }: { label: string; value: string }): ReactElemen
 
 /** `/stats` (§9.1, §8): a title card — history, aggregates, per-author table. */
 export function StatsPage(): ReactElement {
+  usePageMeta({
+    title: 'Your stats',
+    description: 'Your prosetype typing history, per-author aggregates, and personal bests.',
+    noindex: true,
+  });
   const [state, setState] = useState<LoadState>({ status: 'loading' });
 
   useEffect(() => {

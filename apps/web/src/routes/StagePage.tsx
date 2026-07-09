@@ -2,6 +2,7 @@ import { useEffect, type ReactElement } from 'react';
 import { useSearchParams } from 'react-router';
 
 import type { PassageQuery } from '../lib/api';
+import { usePageMeta } from '../lib/head';
 import { TypingStage } from '../stage/TypingStage';
 import { useTypingStore } from '../stage/typingStore';
 
@@ -13,6 +14,10 @@ import { useTypingStore } from '../stage/typingStore';
  * keeps an in-progress passage.
  */
 export function StagePage(): ReactElement {
+  usePageMeta({
+    description:
+      'Practice typing on curated public-domain literary prose. Live WPM, accuracy, and consistency, then a per-word hesitation heatmap of your run.',
+  });
   const [params] = useSearchParams();
   const band = params.get('band') ?? undefined;
   const theme = params.get('theme') ?? undefined;

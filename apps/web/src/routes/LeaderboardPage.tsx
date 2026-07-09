@@ -3,6 +3,7 @@ import { useEffect, useState, type ReactElement } from 'react';
 import { useSearchParams } from 'react-router';
 
 import { fetchLeaderboard } from '../lib/api';
+import { usePageMeta } from '../lib/head';
 
 type LoadState =
   | { status: 'loading' }
@@ -19,6 +20,11 @@ function formatWhen(iso: string): string {
  * it is global. Unclaimed profiles show as "anonymous".
  */
 export function LeaderboardPage(): ReactElement {
+  usePageMeta({
+    title: 'Leaderboard',
+    description:
+      'The fastest verified runs on prosetype — global, or scoped to a single passage for a fair same-text board.',
+  });
   const [params] = useSearchParams();
   const passageParam = params.get('passageId');
   const passageId = passageParam !== null ? Number(passageParam) : undefined;

@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent, type ReactElement } from 'react';
 import { useSearchParams } from 'react-router';
 
 import { requestClaim, verifyClaim } from '../lib/api';
+import { usePageMeta } from '../lib/head';
 import { ensureProfileId, setProfileId } from '../lib/profile';
 
 /**
@@ -18,6 +19,11 @@ type VerifyState =
   | { status: 'error' };
 
 export function ClaimPage(): ReactElement {
+  usePageMeta({
+    title: 'Claim your account',
+    description: 'Claim your prosetype profile with an email magic link to keep your history.',
+    noindex: true,
+  });
   const [params] = useSearchParams();
   const token = params.get('token');
 

@@ -3,6 +3,7 @@ import { useEffect, useState, type ReactElement } from 'react';
 import { useNavigate } from 'react-router';
 
 import { fetchAuthors, fetchThemes } from '../lib/api';
+import { usePageMeta } from '../lib/head';
 
 /** The four difficulty bands, warm-up first (§6.4). */
 const BANDS: Band[] = ['warmup', 'standard', 'hard', 'brutal'];
@@ -28,6 +29,11 @@ function count(n: number): string {
  * buttons that warm to bone on hover.
  */
 export function LibraryPage(): ReactElement {
+  usePageMeta({
+    title: 'Library',
+    description:
+      'Browse the prosetype library by author, theme, or difficulty band — Dostoevsky to Woolf — and start a typing test on any passage.',
+  });
   const navigate = useNavigate();
   const [state, setState] = useState<LoadState>({ status: 'loading' });
 
