@@ -60,9 +60,13 @@ export {
   resultSummarySchema,
   bestRunSchema,
   authorAggregateSchema,
+  keyStatSchema,
+  bigramStatSchema,
   profileStatsSchema,
   type ResultSummary,
   type BestRun,
   type AuthorAggregate,
+  type KeyStat,
+  type BigramStat,
   type ProfileStats,
 } from './stats.ts';

@@ -77,7 +77,7 @@ export function buildCommands(ctx: CommandContext): Command[] {
     {
       id: 'go-stats',
       title: 'View stats',
-      keywords: ['history', 'results', 'progress'],
+      keywords: ['history', 'results', 'progress', 'keys', 'bigram', 'errors', 'charts'],
       run: () => ctx.navigate('/stats'),
     },
     {

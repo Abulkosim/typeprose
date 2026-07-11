@@ -30,3 +30,12 @@ export {
 export { computePerSecondRawWpm, computeStats, kogasa, type RunStats } from './replay.ts';
 
 export { computeHeatmap, type CharHeat, type HeatmapData, type SlowWord } from './heatmap.ts';
+
+export {
+  aggregateKeyStats,
+  MIN_OCCURRENCES,
+  type BigramStat,
+  type KeyStat,
+  type KeyStatsData,
+  type KeyStatsRun,
+} from './keystats.ts';

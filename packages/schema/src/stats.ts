@@ -50,6 +50,33 @@ export const authorAggregateSchema = z.object({
 export type AuthorAggregate = z.infer<typeof authorAggregateSchema>;
 
 /**
+ * One expected character's aggregate typing behaviour over the recent window
+ * (deeper stats): how often it was typed, how error-prone it is, and how long
+ * it takes on average. `avgLatencyMs` is null when the char was never sampled
+ * for latency (e.g. only ever the run's first keystroke).
+ */
+export const keyStatSchema = z.object({
+  key: z.string().min(1),
+  occurrences: z.int().positive(),
+  errors: z.int().nonnegative(),
+  errorRate: z.number().nonnegative(),
+  avgLatencyMs: z.number().nonnegative().nullable(),
+});
+
+export type KeyStat = z.infer<typeof keyStatSchema>;
+
+/** Same shape as {@link keyStatSchema}, keyed by an ordered character pair. */
+export const bigramStatSchema = z.object({
+  bigram: z.string().min(2),
+  occurrences: z.int().positive(),
+  errors: z.int().nonnegative(),
+  errorRate: z.number().nonnegative(),
+  avgLatencyMs: z.number().nonnegative().nullable(),
+});
+
+export type BigramStat = z.infer<typeof bigramStatSchema>;
+
+/**
  * GET /profiles/:id/stats response (plan §8). Every aggregate is nullable so a
  * brand-new profile with zero results renders cleanly (nulls, empty arrays).
  */
@@ -70,6 +97,10 @@ export const profileStatsSchema = z.object({
   perAuthor: z.array(authorAggregateSchema),
   /** Most recent results, newest first (capped at 50, plan §8). */
   history: z.array(resultSummarySchema),
+  /** Worst problem keys over the recent window, worst first (deeper stats). */
+  keyStats: z.array(keyStatSchema),
+  /** Worst problem bigrams over the recent window, worst first. */
+  bigramStats: z.array(bigramStatSchema),
 });
 
 export type ProfileStats = z.infer<typeof profileStatsSchema>;

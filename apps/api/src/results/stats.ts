@@ -1,4 +1,4 @@
-import { computeHeatmap } from '@prosetype/engine';
+import { aggregateKeyStats, computeHeatmap } from '@prosetype/engine';
 import type { ProfileStats } from '@prosetype/schema';
 import type { ProfileAggregates, StoredResultRow } from './repository.ts';
 
@@ -50,6 +50,12 @@ export function buildProfileStats(
 ): ProfileStats {
   const last10Wpm = recent.slice(0, AVG_WPM_WINDOW).map((r) => r.wpm);
 
+  // Per-key / per-bigram analysis is replayed from the same recent window's
+  // stored logs (aggregateKeyStats skips any row that fails to replay).
+  const keyStats = aggregateKeyStats(
+    recent.map((r) => ({ passageText: r.passageText, log: r.charEvents })),
+  );
+
   return {
     totals: {
       tests: aggregates.tests,
@@ -89,5 +95,7 @@ export function buildProfileStats(
       authorName: r.authorName,
       authorSlug: r.authorSlug,
     })),
+    keyStats: keyStats.keys,
+    bigramStats: keyStats.bigrams,
   };
 }
