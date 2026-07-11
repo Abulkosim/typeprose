@@ -1,9 +1,13 @@
-import type { ProfileStats } from '@prosetype/schema';
+import type { BigramStat, KeyStat, ProfileStats } from '@prosetype/schema';
 import { useEffect, useState, type ReactElement } from 'react';
 
 import { fetchProfileStats } from '../lib/api';
+import { ProgressChart } from '../result/ProgressChart';
 import { usePageMeta } from '../lib/head';
 import { ensureProfileId } from '../lib/profile';
+
+/** How many problem keys / bigrams to list. */
+const PROBLEM_LIMIT = 8;
 
 type LoadState =
   | { status: 'loading' }
@@ -37,6 +41,51 @@ function Metric({ label, value }: { label: string; value: string }): ReactElemen
     <div>
       <p className="subtitle text-smoke">{label}</p>
       <p className="mt-2 text-bone">{value}</p>
+    </div>
+  );
+}
+
+function formatLatency(ms: number | null): string {
+  return ms === null ? '—' : `${String(ms)} ms`;
+}
+
+/** A ranked "problem keys" / "problem bigrams" table, worst first. */
+function ProblemTable({
+  caption,
+  unit,
+  rows,
+}: {
+  caption: string;
+  unit: string;
+  rows: readonly (KeyStat | BigramStat)[];
+}): ReactElement | null {
+  if (rows.length === 0) return null;
+  return (
+    <div>
+      <h3 className="subtitle text-smoke">{caption}</h3>
+      <table className="mt-4 w-full text-left tabular-nums">
+        <thead>
+          <tr className="subtitle text-smoke">
+            <th className="font-medium">{unit}</th>
+            <th className="font-medium">err</th>
+            <th className="font-medium">avg</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.slice(0, PROBLEM_LIMIT).map((r) => {
+            const label = 'key' in r ? r.key : r.bigram;
+            return (
+              <tr key={label} className="text-bone">
+                <td className="py-1 font-mono">{label === ' ' ? '␣' : label}</td>
+                <td className={`py-1 ${r.errorRate > 0 ? 'text-blood' : 'text-smoke'}`}>
+                  {r.errorRate}%
+                </td>
+                <td className="py-1 text-smoke">{formatLatency(r.avgLatencyMs)}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }
@@ -132,6 +181,28 @@ export function StatsPage(): ReactElement {
         />
         <Metric label="punctuation tax" value={formatTax(stats.punctuationTaxAvgPct)} />
       </div>
+
+      {stats.history.length >= 2 ? (
+        <div className="mt-12">
+          <h2 className="subtitle text-smoke">progress</h2>
+          <div className="mt-4">
+            <ProgressChart history={stats.history} />
+          </div>
+        </div>
+      ) : null}
+
+      {stats.keyStats.length > 0 || stats.bigramStats.length > 0 ? (
+        <div className="mt-12">
+          <h2 className="subtitle text-smoke">problem keys</h2>
+          <p className="mt-2 text-smoke">
+            Where your fingers stumble, across your recent runs.
+          </p>
+          <div className="mt-6 grid gap-x-10 gap-y-8 sm:grid-cols-2">
+            <ProblemTable caption="keys" unit="key" rows={stats.keyStats} />
+            <ProblemTable caption="bigrams" unit="pair" rows={stats.bigramStats} />
+          </div>
+        </div>
+      ) : null}
 
       {stats.perAuthor.length > 0 ? (
         <div className="mt-12">
