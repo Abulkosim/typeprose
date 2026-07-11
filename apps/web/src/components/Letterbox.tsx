@@ -2,6 +2,8 @@ import type { ReactElement, ReactNode } from 'react';
 import { NavLink } from 'react-router';
 
 import { CommandPalette } from '../command/CommandPalette';
+import { useCommandStore } from '../command/commandStore';
+import { useMusicStore } from '../settings/music';
 import { useTypingStore } from '../stage/typingStore';
 
 function BarLink({ to, label }: { to: string; label: string }): ReactElement {
@@ -23,7 +25,33 @@ function BarLink({ to, label }: { to: string; label: string }): ReactElement {
 function CapsLockTag(): ReactElement | null {
   const capsLock = useTypingStore((s) => s.capsLock);
   if (!capsLock) return null;
-  return <span className="subtitle justify-self-end text-tungsten">caps lock</span>;
+  return <span className="subtitle text-tungsten">caps lock</span>;
+}
+
+/**
+ * Quiet music tag in the bottom bar: a lone ♪ when off (the whole discovery
+ * affordance), ♪ plus the channel name while selected — dimmed until the
+ * first gesture resumes a persisted channel. Clicking opens the palette
+ * pre-filtered to the music commands; deliberately smoke, not tungsten
+ * (tungsten in this bar means the caps-lock alarm; music is ambience).
+ */
+function MusicTag(): ReactElement {
+  const channel = useMusicStore((s) => s.channel);
+  const pending = useMusicStore((s) => s.pending);
+  const label = channel === 'off' ? '♪' : `♪ ${channel === 'lofi' ? 'lo-fi' : channel}`;
+  const dim = channel === 'off' || pending;
+  return (
+    <button
+      type="button"
+      onClick={() => useCommandStore.getState().open('music')}
+      aria-label={`Music: ${channel === 'off' ? 'off' : channel} — open music commands`}
+      className={`subtitle cursor-pointer transition-colors duration-150 hover:text-bone ${
+        dim ? 'text-smoke/60' : 'text-smoke'
+      }`}
+    >
+      {label}
+    </button>
+  );
 }
 
 /**
@@ -33,7 +61,7 @@ function CapsLockTag(): ReactElement | null {
 function SaveStatusTag(): ReactElement | null {
   const saveStatus = useTypingStore((s) => s.saveStatus);
   if (saveStatus !== 'not-saved') return null;
-  return <span className="subtitle justify-self-start text-smoke">not saved</span>;
+  return <span className="subtitle col-start-1 justify-self-start text-smoke">not saved</span>;
 }
 
 /**
@@ -63,8 +91,15 @@ export function Letterbox({ children }: { children: ReactNode }): ReactElement {
 
       <footer className="grid h-10 shrink-0 grid-cols-3 items-center bg-bar px-6">
         <SaveStatusTag />
-        <p className="subtitle justify-self-center text-smoke">tab next &middot; esc commands</p>
-        <CapsLockTag />
+        {/* Explicit columns: the save tag is usually null, and auto-placement
+            would shift everything a column left. */}
+        <p className="subtitle col-start-2 justify-self-center text-smoke">
+          tab next &middot; esc commands
+        </p>
+        <div className="col-start-3 flex items-center gap-4 justify-self-end">
+          <CapsLockTag />
+          <MusicTag />
+        </div>
       </footer>
 
       <CommandPalette />
