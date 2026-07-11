@@ -3,4 +3,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://prosetype.example.com/sitemap.xml
+Sitemap: https://prosetype.app/sitemap.xml

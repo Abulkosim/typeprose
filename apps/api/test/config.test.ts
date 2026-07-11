@@ -52,4 +52,24 @@ describe('loadConfig', () => {
   it('rejects an unknown NODE_ENV', () => {
     expect(() => loadConfig({ ...validEnv, NODE_ENV: 'staging' })).toThrow();
   });
+
+  it('leaves email transport undefined when unset (console mailer default)', () => {
+    const config = loadConfig(validEnv);
+    expect(config.RESEND_API_KEY).toBeUndefined();
+    expect(config.EMAIL_FROM).toBeUndefined();
+  });
+
+  it('accepts a Resend key paired with a sender', () => {
+    const config = loadConfig({
+      ...validEnv,
+      RESEND_API_KEY: 're_test_123',
+      EMAIL_FROM: 'prosetype <no-reply@prosetype.app>',
+    });
+    expect(config.RESEND_API_KEY).toBe('re_test_123');
+    expect(config.EMAIL_FROM).toBe('prosetype <no-reply@prosetype.app>');
+  });
+
+  it('rejects a Resend key with no EMAIL_FROM', () => {
+    expect(() => loadConfig({ ...validEnv, RESEND_API_KEY: 're_test_123' })).toThrow(/EMAIL_FROM/);
+  });
 });

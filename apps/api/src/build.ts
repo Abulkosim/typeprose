@@ -3,7 +3,7 @@ import rateLimit from '@fastify/rate-limit';
 import Fastify, { type FastifyInstance } from 'fastify';
 import type { AppConfig } from './config.ts';
 import { createDbClient, type Db } from './db/client.ts';
-import { createConsoleMailer, type Mailer } from './mail/mailer.ts';
+import { createConsoleMailer, createResendMailer, type Mailer } from './mail/mailer.ts';
 import { createDrizzlePassageRepository } from './passages/drizzle-repository.ts';
 import type { PassageRepository } from './passages/repository.ts';
 import { createDrizzleProfileRepository } from './profiles/drizzle-repository.ts';
@@ -67,7 +67,13 @@ export async function buildApp(config: AppConfig, deps: AppDeps = {}): Promise<F
   app.get('/api/v1/healthz', async () => ({ ok: true as const }));
 
   await app.register(passageRoutes, { prefix: '/api/v1', repo: passageRepo });
-  const mailer = deps.mailer ?? createConsoleMailer((msg) => app.log.info(msg));
+  // Real transport when configured (RESEND_API_KEY + EMAIL_FROM, enforced by
+  // config), else the dev console mailer that logs the link.
+  const defaultMailer =
+    config.RESEND_API_KEY !== undefined && config.EMAIL_FROM !== undefined
+      ? createResendMailer({ apiKey: config.RESEND_API_KEY, from: config.EMAIL_FROM })
+      : createConsoleMailer((msg) => app.log.info(msg));
+  const mailer = deps.mailer ?? defaultMailer;
 
   await app.register(profileRoutes, {
     prefix: '/api/v1',
