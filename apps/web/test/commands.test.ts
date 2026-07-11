@@ -15,6 +15,10 @@ function makeContext(overrides: Partial<CommandContext> = {}): CommandContext {
     mode: 'prose',
     startWords: vi.fn(),
     startProse: vi.fn(),
+    musicChannel: 'off',
+    setMusicChannel: vi.fn(),
+    musicVolume: 0.5,
+    adjustMusicVolume: vi.fn(),
     ...overrides,
   };
 }
@@ -98,6 +102,31 @@ describe('buildCommands', () => {
     expect(commands.map((c) => c.id)).not.toContain('mode-words');
     commands.find((c) => c.id === 'mode-prose')?.run();
     expect(ctx.startProse).toHaveBeenCalledOnce();
+  });
+
+  it('offers every music channel but no stop/volume while off', () => {
+    const ids = buildCommands(makeContext({ musicChannel: 'off' })).map((c) => c.id);
+    expect(ids).toEqual(expect.arrayContaining(['music-lofi', 'music-classical', 'music-ambient']));
+    expect(ids).not.toContain('music-off');
+    expect(ids).not.toContain('music-quieter');
+    expect(ids).not.toContain('music-louder');
+  });
+
+  it('omits the active music channel and offers off/volume while playing', () => {
+    const ctx = makeContext({ musicChannel: 'lofi', musicVolume: 0.5 });
+    const commands = buildCommands(ctx);
+    const ids = commands.map((c) => c.id);
+    expect(ids).not.toContain('music-lofi');
+    expect(ids).toEqual(
+      expect.arrayContaining(['music-classical', 'music-ambient', 'music-off', 'music-quieter', 'music-louder']),
+    );
+    expect(commands.find((c) => c.id === 'music-louder')?.hint).toBe('50%');
+    commands.find((c) => c.id === 'music-classical')?.run();
+    expect(ctx.setMusicChannel).toHaveBeenCalledWith('classical');
+    commands.find((c) => c.id === 'music-off')?.run();
+    expect(ctx.setMusicChannel).toHaveBeenCalledWith('off');
+    commands.find((c) => c.id === 'music-quieter')?.run();
+    expect(ctx.adjustMusicVolume).toHaveBeenCalledWith(-0.1);
   });
 
   it('wires run() to the context callbacks', () => {

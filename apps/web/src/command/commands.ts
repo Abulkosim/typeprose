@@ -1,5 +1,6 @@
 import { WORD_COUNTS, type WordCount } from '../lib/words';
 import type { Mode } from '../settings/mode';
+import type { MusicChannel } from '../settings/music';
 
 /**
  * The command set for the Esc palette (Phase 3, plan §10.3). Pure and
@@ -36,6 +37,12 @@ export interface CommandContext {
   startWords: (count: WordCount) => void;
   /** Switch to prose mode and start a fresh random passage. */
   startProse: () => void;
+  /** Active music channel, so its commands can omit the current one. */
+  musicChannel: MusicChannel;
+  setMusicChannel: (channel: MusicChannel) => void;
+  /** Music volume in [0.1, 1], surfaced as the volume commands' hint. */
+  musicVolume: number;
+  adjustMusicVolume: (delta: number) => void;
 }
 
 /** The four difficulty bands (§6.4); picking one starts a filtered test. */
@@ -157,6 +164,50 @@ export function buildCommands(ctx: CommandContext): Command[] {
     keywords: ['sound', 'audio', 'thock', 'typewriter', 'mute', 'click'],
     run: ctx.toggleSound,
   });
+
+  // Music: offer every channel except the active one (same logic as the theme
+  // command naming only its destination), plus stop/volume while playing.
+  const musicChannels: readonly [Exclude<MusicChannel, 'off'>, string, readonly string[]][] = [
+    ['lofi', 'Music · lo-fi', ['music', 'background', 'focus', 'lofi', 'chill', 'beats']],
+    ['classical', 'Music · classical', ['music', 'background', 'focus', 'classical', 'piano']],
+    ['ambient', 'Music · ambient', ['music', 'background', 'focus', 'ambient', 'noise', 'rain']],
+  ];
+  for (const [channel, title, keywords] of musicChannels) {
+    if (channel === ctx.musicChannel) continue;
+    commands.push({
+      id: `music-${channel}`,
+      title,
+      hint: 'music',
+      keywords,
+      run: () => ctx.setMusicChannel(channel),
+    });
+  }
+  if (ctx.musicChannel !== 'off') {
+    const volumeHint = `${String(Math.round(ctx.musicVolume * 100))}%`;
+    commands.push(
+      {
+        id: 'music-off',
+        title: 'Music · off',
+        hint: 'music',
+        keywords: ['music', 'stop', 'mute', 'quiet', 'silence'],
+        run: () => ctx.setMusicChannel('off'),
+      },
+      {
+        id: 'music-quieter',
+        title: 'Music quieter',
+        hint: volumeHint,
+        keywords: ['volume', 'music', 'quieter', 'softer', 'down'],
+        run: () => ctx.adjustMusicVolume(-0.1),
+      },
+      {
+        id: 'music-louder',
+        title: 'Music louder',
+        hint: volumeHint,
+        keywords: ['volume', 'music', 'louder', 'up'],
+        run: () => ctx.adjustMusicVolume(0.1),
+      },
+    );
+  }
 
   return commands;
 }

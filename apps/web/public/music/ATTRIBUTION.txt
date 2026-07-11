@@ -1,0 +1,31 @@
+Background music bundled with prosetype. All tracks are used under
+Creative Commons Attribution licenses; they were loudness-matched and
+re-encoded to AAC for delivery. The same credits live in the track
+manifest in apps/web/src/settings/music.ts.
+
+lofi-1.m4a
+  "Tame The Beast" by Lofi Lion
+  Source:  https://archive.org/details/lofi-lion-tame-the-beast
+  License: Creative Commons: By Attribution 4.0
+           https://creativecommons.org/licenses/by/4.0/
+
+lofi-2.m4a
+  "cafe" from the album "Time for Tea" by Complex Routine
+  Source:  https://archive.org/details/time-for-tea
+  License: Creative Commons: By Attribution 4.0
+           https://creativecommons.org/licenses/by/4.0/
+
+classical-1.m4a
+  "Gymnopedie No 1" Kevin MacLeod (incompetech.com)
+  Composition: Erik Satie (public domain)
+  Licensed under Creative Commons: By Attribution 4.0
+  https://creativecommons.org/licenses/by/4.0/
+
+classical-2.m4a
+  "Prelude in C - BWV 846" Kevin MacLeod (incompetech.com)
+  Composition: J.S. Bach (public domain)
+  Licensed under Creative Commons: By Attribution 4.0
+  https://creativecommons.org/licenses/by/4.0/
+
+The "ambient" channel is synthesized in the browser (Web Audio API)
+and uses no recorded material.

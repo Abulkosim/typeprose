@@ -15,3 +15,5 @@ pnpm dev
 ```
 
 See `plan.md` and `DECISIONS.md` for design details, and `HANDOFF.md` for current project status.
+
+Bundled background-music credits are in `apps/web/public/music/ATTRIBUTION.txt`.

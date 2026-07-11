@@ -48,8 +48,12 @@ export const useSoundStore = create<SoundState>()((set, get) => ({
 let ctx: AudioContext | null = null;
 let noise: AudioBuffer | null = null;
 
-/** Lazily create (and resume) the shared AudioContext; null where unsupported. */
-function ensureCtx(): AudioContext | null {
+/**
+ * Lazily create (and resume) the shared AudioContext; null where unsupported.
+ * Shared with the music engine (music.ts): browsers cap live contexts, and one
+ * context means one resume path under the autoplay policy.
+ */
+export function ensureAudioContext(): AudioContext | null {
   if (typeof AudioContext === 'undefined') return null;
   ctx ??= new AudioContext();
   if (ctx.state === 'suspended') void ctx.resume();
@@ -57,7 +61,7 @@ function ensureCtx(): AudioContext | null {
 }
 
 async function warm(): Promise<void> {
-  const c = ensureCtx();
+  const c = ensureAudioContext();
   if (c !== null && c.state === 'suspended') await c.resume();
 }
 
@@ -80,7 +84,7 @@ function ensureNoise(c: AudioContext): AudioBuffer {
  */
 export function playThock(variant: ThockVariant = 'key'): void {
   if (!useSoundStore.getState().enabled) return;
-  const c = ensureCtx();
+  const c = ensureAudioContext();
   if (c === null) return;
 
   const now = c.currentTime;

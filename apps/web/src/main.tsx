@@ -8,9 +8,11 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
 
 import { App } from './App';
+import { initMusic } from './settings/music';
 import { initTheme } from './settings/theme';
 
 initTheme();
+initMusic();
 
 const rootElement = document.getElementById('root');
 if (rootElement === null) {

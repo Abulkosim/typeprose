@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactEle
 import { useLocation, useNavigate } from 'react-router';
 
 import { useModeStore } from '../settings/mode';
+import { useMusicStore } from '../settings/music';
 import { useSoundStore } from '../settings/sound';
 import { useThemeStore } from '../settings/theme';
 import { useTypingStore } from '../stage/typingStore';
@@ -23,6 +24,8 @@ export function CommandPalette(): ReactElement | null {
   const theme = useThemeStore((s) => s.theme);
   const soundEnabled = useSoundStore((s) => s.enabled);
   const mode = useModeStore((s) => s.mode);
+  const musicChannel = useMusicStore((s) => s.channel);
+  const musicVolume = useMusicStore((s) => s.volume);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState(0);
@@ -41,10 +44,12 @@ export function CommandPalette(): ReactElement | null {
     };
   }, []);
 
-  // Reset the query/selection and focus the search box on each open.
+  // Reset the query/selection and focus the search box on each open. The
+  // query is seeded from the opener (e.g. the footer music tag); Esc's toggle
+  // path leaves it empty.
   useEffect(() => {
     if (isOpen) {
-      setQuery('');
+      setQuery(useCommandStore.getState().initialQuery);
       setSelected(0);
       inputRef.current?.focus();
     }
@@ -76,8 +81,12 @@ export function CommandPalette(): ReactElement | null {
           if (location.pathname !== '/') navigate('/');
           void useTypingStore.getState().loadNext({});
         },
+        musicChannel,
+        setMusicChannel: (channel) => useMusicStore.getState().setChannel(channel),
+        musicVolume,
+        adjustMusicVolume: (delta) => useMusicStore.getState().adjustVolume(delta),
       }),
-    [location.pathname, navigate, theme, soundEnabled, mode],
+    [location.pathname, navigate, theme, soundEnabled, mode, musicChannel, musicVolume],
   );
   const results = useMemo(() => filterCommands(commands, query), [commands, query]);
 

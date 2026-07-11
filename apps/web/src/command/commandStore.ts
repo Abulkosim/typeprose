@@ -7,19 +7,22 @@ import { create } from 'zustand';
  */
 interface CommandPaletteState {
   isOpen: boolean;
-  open: () => void;
+  /** Seeds the palette's search box on open (e.g. the footer music tag). */
+  initialQuery: string;
+  open: (query?: string) => void;
   close: () => void;
   toggle: () => void;
 }
 
 export const useCommandStore = create<CommandPaletteState>()((set, get) => ({
   isOpen: false,
-  open: () => set({ isOpen: true }),
+  initialQuery: '',
+  open: (query = '') => set({ isOpen: true, initialQuery: query }),
   close: () => set({ isOpen: false }),
-  toggle: () => set({ isOpen: !get().isOpen }),
+  toggle: () => set({ isOpen: !get().isOpen, initialQuery: '' }),
 }));
 
 /** Reset store state. Test helper only. */
 export function resetCommandStore(): void {
-  useCommandStore.setState({ isOpen: false });
+  useCommandStore.setState({ isOpen: false, initialQuery: '' });
 }
