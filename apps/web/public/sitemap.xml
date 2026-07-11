@@ -7,17 +7,17 @@
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://prosetype.example.com/</loc>
+    <loc>https://prosetype.app/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://prosetype.example.com/library</loc>
+    <loc>https://prosetype.app/library</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://prosetype.example.com/leaderboard</loc>
+    <loc>https://prosetype.app/leaderboard</loc>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
