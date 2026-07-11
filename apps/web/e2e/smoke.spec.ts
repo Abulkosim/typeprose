@@ -52,3 +52,52 @@ test('type a passage, see the result, and find it in stats', async ({ page }) =>
   await expect(page.getByRole('heading', { name: 'history' })).toBeVisible({ timeout: 15_000 });
   await expect(page.locator('section[aria-label="Stats"] li').first()).toBeVisible();
 });
+
+/**
+ * Word mode (Monkeytype-style): switch via the command palette, type a
+ * generated 25-word set, see a result with no attribution epigraph, and find
+ * the run in stats tagged "words · 25". Guards the word-mode wiring end to end.
+ */
+test('switch to word mode via the palette, type, and see it in stats', async ({ page }) => {
+  await page.goto('/');
+  // Wait for the app to mount (a prose passage loads by default) so the
+  // palette's document key listener is attached before we press Esc.
+  const board = page.getByTestId('passage');
+  await expect(board).toBeVisible();
+
+  // Esc opens the command palette; filter to the 25-word preset and run it.
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog', { name: 'Command palette' })).toBeVisible();
+  const search = page.getByRole('textbox', { name: 'Search commands' });
+  await search.fill('25');
+  await page.keyboard.press('Enter');
+
+  // The board now holds a generated 25-word set.
+  await expect(async () => {
+    const text = ((await board.textContent()) ?? '').trim();
+    expect(text.split(/\s+/)).toHaveLength(25);
+  }).toPass({ timeout: 10_000 });
+  const text = ((await board.textContent()) ?? '').trim();
+
+  const submitted = page.waitForResponse(
+    (r) => r.url().includes('/api/v1/results') && r.request().method() === 'POST',
+    { timeout: 75_000 },
+  );
+
+  await page.locator('section[aria-label="Typing stage"]').click();
+  await page.keyboard.type(text, { delay: 55 });
+
+  const result = page.locator('section[aria-label="Result"]');
+  await expect(result).toBeVisible({ timeout: 15_000 });
+  // Word runs show a "words · 25" tag and no share (attribution) affordance.
+  await expect(result.getByText('words · 25')).toBeVisible();
+  await expect(result.getByText('share result')).toHaveCount(0);
+
+  const response = await submitted;
+  expect(response.ok()).toBeTruthy();
+
+  await page.reload();
+  await page.goto('/stats');
+  await expect(page.getByRole('heading', { name: 'history' })).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText('words · 25').first()).toBeVisible();
+});

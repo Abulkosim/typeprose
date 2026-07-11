@@ -1,4 +1,9 @@
-import { computeStats, MalformedLogError, type RunStats } from '@prosetype/engine';
+import {
+  computeStats,
+  InvalidPassageError,
+  MalformedLogError,
+  type RunStats,
+} from '@prosetype/engine';
 import { postResultsRequestSchema, type Leaderboard } from '@prosetype/schema';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
@@ -93,31 +98,51 @@ export async function resultRoutes(app: FastifyInstance, opts: ResultRoutesOptio
       if (!parsed.success) {
         return sendBadRequest(reply, parsed.error);
       }
-      const { profileId, passageId, clientStats, charEvents } = parsed.data;
+      const body = parsed.data;
 
-      if (!(await profiles.exists(profileId))) {
-        return sendNotFound(reply, `Profile ${profileId} not found`);
-      }
-      const passage = await passages.findById(passageId);
-      if (passage === null) {
-        return sendNotFound(reply, `Passage ${String(passageId)} not found`);
+      if (!(await profiles.exists(body.profileId))) {
+        return sendNotFound(reply, `Profile ${body.profileId} not found`);
       }
 
-      // Event count plausible for the passage length (plan §8 sanity check).
-      const maxEvents = passage.charCount * MAX_EVENTS_PER_CHAR + EVENT_COUNT_SLACK;
-      if (charEvents.events.length > maxEvents) {
+      // Resolve the run's text and the shape to persist from its mode: a prose
+      // run recomputes against the stored passage; a word run against the
+      // client-submitted text (there is no stored passage to key on).
+      let text: string;
+      let passageId: number | null;
+      let wordText: string | null;
+      if (body.mode === 'prose') {
+        const passage = await passages.findById(body.passageId);
+        if (passage === null) {
+          return sendNotFound(reply, `Passage ${String(body.passageId)} not found`);
+        }
+        text = passage.text;
+        passageId = body.passageId;
+        wordText = null;
+      } else {
+        text = body.text;
+        passageId = null;
+        wordText = body.text;
+      }
+
+      // Event count plausible for the text length (plan §8 sanity check).
+      const maxEvents = text.length * MAX_EVENTS_PER_CHAR + EVENT_COUNT_SLACK;
+      if (body.charEvents.events.length > maxEvents) {
         return sendBadRequestMessage(
           reply,
-          `charEvents length ${String(charEvents.events.length)} is implausible for a ${String(passage.charCount)}-char passage`,
+          `charEvents length ${String(body.charEvents.events.length)} is implausible for a ${String(text.length)}-char text`,
         );
       }
 
       // Recompute server-side from the log alone (the engine validates index
-      // ranges and other semantics the wire schema cannot).
+      // ranges and other semantics the wire schema cannot). InvalidPassageError
+      // means a non-canonical word-mode text; MalformedLogError, a bad log.
       let serverStats: RunStats;
       try {
-        serverStats = computeStats(passage.text, charEvents);
+        serverStats = computeStats(text, body.charEvents);
       } catch (err) {
+        if (err instanceof InvalidPassageError) {
+          return sendBadRequestMessage(reply, `submitted text is not canonical: ${err.message}`);
+        }
         if (err instanceof MalformedLogError) {
           return sendBadRequestMessage(reply, `charEvents did not replay: ${err.message}`);
         }
@@ -137,16 +162,18 @@ export async function resultRoutes(app: FastifyInstance, opts: ResultRoutesOptio
         );
       }
 
-      const clientMatch = statsMatch(serverStats, clientStats);
+      const clientMatch = statsMatch(serverStats, body.clientStats);
       const id = await results.insert({
-        profileId,
+        profileId: body.profileId,
+        mode: body.mode,
         passageId,
+        wordText,
         wpm: serverStats.wpm,
         rawWpm: serverStats.rawWpm,
         accuracy: serverStats.accuracy,
         consistency: serverStats.consistency,
         durationMs: serverStats.durationMs,
-        charEvents,
+        charEvents: body.charEvents,
         clientMatch,
       });
 

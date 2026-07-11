@@ -1,6 +1,7 @@
 import type { Passage } from '@prosetype/schema';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { useModeStore } from '../src/settings/mode';
 import { COMPLETION_HOLD_MS, resetTypingStore, useTypingStore } from '../src/stage/typingStore';
 
 function makePassage(id: number, text: string): Passage {
@@ -41,6 +42,9 @@ function installFetch(responses: (Passage | Error)[]): void {
 
 beforeEach(() => {
   resetTypingStore();
+  // Default to prose so the passage-fetch tests are unaffected by mode leakage.
+  useModeStore.getState().setMode('prose');
+  useModeStore.getState().setWordCount(200);
   fetchedUrls = [];
 });
 
@@ -55,7 +59,7 @@ describe('typingStore.loadNext', () => {
     await useTypingStore.getState().loadNext();
     const s = useTypingStore.getState();
     expect(s.phase).toBe('typing');
-    expect(s.passage?.id).toBe(1);
+    expect(s.test).toMatchObject({ kind: 'passage', passage: { id: 1 } });
     expect(s.snapshot?.status).toBe('idle');
     expect(s.snapshot?.words).toHaveLength(2);
     expect(s.recentIds).toEqual([1]);
@@ -88,6 +92,23 @@ describe('typingStore.loadNext', () => {
     expect(useTypingStore.getState().restarted).toBe(true);
     await useTypingStore.getState().loadNext();
     expect(useTypingStore.getState().restarted).toBe(false);
+  });
+
+  it('generates a local word set (no fetch) when the mode is words', async () => {
+    installFetch([makePassage(1, 'unused')]);
+    useModeStore.getState().setMode('words');
+    useModeStore.getState().setWordCount(25);
+    await useTypingStore.getState().loadNext();
+    const s = useTypingStore.getState();
+    expect(s.phase).toBe('typing');
+    expect(s.test).toMatchObject({ kind: 'words', count: 25 });
+    const test = s.test;
+    if (test?.kind === 'words') {
+      expect(test.text.split(' ')).toHaveLength(25);
+      expect(test.text).not.toMatch(/\s{2,}|^\s|\s$/); // canonical
+    }
+    expect(fetchedUrls).toHaveLength(0); // word mode never hits the API to load
+    expect(s.recentIds).toEqual([]); // word runs don't touch recentIds
   });
 });
 
@@ -147,7 +168,7 @@ describe('typingStore typing flow', () => {
     useTypingStore.getState().restart();
     const s = useTypingStore.getState();
     expect(s.phase).toBe('typing');
-    expect(s.passage?.id).toBe(1);
+    expect(s.test).toMatchObject({ kind: 'passage', passage: { id: 1 } });
     expect(s.snapshot?.status).toBe('idle');
     expect(s.snapshot?.words[0]?.typed).toBe('');
     expect(s.restarted).toBe(true);

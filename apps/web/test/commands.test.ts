@@ -12,6 +12,9 @@ function makeContext(overrides: Partial<CommandContext> = {}): CommandContext {
     toggleTheme: vi.fn(),
     soundEnabled: false,
     toggleSound: vi.fn(),
+    mode: 'prose',
+    startWords: vi.fn(),
+    startProse: vi.fn(),
     ...overrides,
   };
 }
@@ -71,6 +74,30 @@ describe('buildCommands', () => {
     expect(buildCommands(makeContext({ soundEnabled: true })).find((c) => c.id === 'sound')?.title).toBe(
       'Mute keystroke sound',
     );
+  });
+
+  it('offers "Type words" + length presets in prose mode, and switches on run', () => {
+    const ctx = makeContext({ mode: 'prose' });
+    const commands = buildCommands(ctx);
+    const ids = commands.map((c) => c.id);
+    expect(ids).toContain('mode-words');
+    expect(ids).not.toContain('mode-prose');
+    expect(ids).toEqual(
+      expect.arrayContaining(['words-25', 'words-50', 'words-100', 'words-200']),
+    );
+    commands.find((c) => c.id === 'mode-words')?.run();
+    expect(ctx.startWords).toHaveBeenCalledWith(200);
+    commands.find((c) => c.id === 'words-50')?.run();
+    expect(ctx.startWords).toHaveBeenCalledWith(50);
+  });
+
+  it('offers "Type prose" in word mode and wires startProse', () => {
+    const ctx = makeContext({ mode: 'words' });
+    const commands = buildCommands(ctx);
+    expect(commands.map((c) => c.id)).toContain('mode-prose');
+    expect(commands.map((c) => c.id)).not.toContain('mode-words');
+    commands.find((c) => c.id === 'mode-prose')?.run();
+    expect(ctx.startProse).toHaveBeenCalledOnce();
   });
 
   it('wires run() to the context callbacks', () => {

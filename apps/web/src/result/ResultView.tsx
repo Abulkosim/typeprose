@@ -1,9 +1,10 @@
 import { computeHeatmap, computePerSecondRawWpm, type RunStats } from '@prosetype/engine';
-import type { CharEvents, Passage } from '@prosetype/schema';
+import type { CharEvents } from '@prosetype/schema';
 import { useState, useMemo, type ReactElement } from 'react';
 
 import { Epigraph } from '../components/Epigraph';
 import { shareResultCard } from '../lib/shareCard';
+import type { ActiveTest } from '../stage/typingStore';
 import { HeatmapPassage } from './HeatmapPassage';
 import { WpmSparkline } from './WpmSparkline';
 
@@ -30,9 +31,9 @@ export interface CompletedRun {
  */
 export interface ResultViewProps {
   run: CompletedRun;
-  /** The passage that was typed (attribution epigraph, heatmap target text). */
-  passage: Passage;
-  /** Abandon this result and load a new random passage. */
+  /** The test that was typed (its text is the heatmap target; prose adds an epigraph). */
+  test: ActiveTest;
+  /** Abandon this result and load a new test. */
   onNext: () => void;
 }
 
@@ -67,17 +68,17 @@ const SHARE_LABEL: Record<ShareState, string> = {
   error: "couldn't share",
 };
 
-export function ResultView({ run, passage, onNext }: ResultViewProps): ReactElement {
+export function ResultView({ run, test, onNext }: ResultViewProps): ReactElement {
   const { stats } = run;
+  const text = test.kind === 'passage' ? test.passage.text : test.text;
   const [share, setShare] = useState<ShareState>('idle');
-  const heatmap = useMemo(() => computeHeatmap(passage.text, run.log), [passage.text, run.log]);
-  const buckets = useMemo(
-    () => computePerSecondRawWpm(passage.text, run.log),
-    [passage.text, run.log],
-  );
+  const heatmap = useMemo(() => computeHeatmap(text, run.log), [text, run.log]);
+  const buckets = useMemo(() => computePerSecondRawWpm(text, run.log), [text, run.log]);
 
+  // Sharing is a branded attribution artifact, so it is offered for prose only.
+  const passage = test.kind === 'passage' ? test.passage : null;
   const onShare = (): void => {
-    if (share === 'working') return;
+    if (share === 'working' || passage === null) return;
     setShare('working');
     shareResultCard(run, passage)
       .then((outcome) => setShare(outcome))
@@ -108,9 +109,13 @@ export function ResultView({ run, passage, onNext }: ResultViewProps): ReactElem
       </div>
 
       <div className="mt-10">
-        <HeatmapPassage text={passage.text} heatmap={heatmap} />
+        <HeatmapPassage text={text} heatmap={heatmap} />
         <div className="mt-6">
-          <Epigraph passage={passage} />
+          {test.kind === 'passage' ? (
+            <Epigraph passage={test.passage} />
+          ) : (
+            <p className="subtitle text-smoke">words &middot; {test.count}</p>
+          )}
         </div>
       </div>
 
@@ -145,14 +150,16 @@ export function ResultView({ run, passage, onNext }: ResultViewProps): ReactElem
         >
           tab &middot; next passage
         </button>
-        <button
-          type="button"
-          onClick={onShare}
-          disabled={share === 'working'}
-          className="subtitle text-smoke transition-opacity duration-150 hover:text-bone"
-        >
-          {SHARE_LABEL[share]}
-        </button>
+        {passage !== null ? (
+          <button
+            type="button"
+            onClick={onShare}
+            disabled={share === 'working'}
+            className="subtitle text-smoke transition-opacity duration-150 hover:text-bone"
+          >
+            {SHARE_LABEL[share]}
+          </button>
+        ) : null}
       </div>
     </section>
   );

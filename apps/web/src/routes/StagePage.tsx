@@ -8,10 +8,11 @@ import { useTypingStore } from '../stage/typingStore';
 
 /**
  * `/` — the test (§9.1). Reads any library filter from the query string
- * (`?band`/`?theme`/`?author`) and drives passage loading: a filter present in
- * the URL always (re)loads a matching passage (a library pick), while a bare
- * `/` only loads when there is no live run, so returning from another route
- * keeps an in-progress passage.
+ * (`?band`/`?theme`/`?author`) and drives loading: a filter present in the URL
+ * always (re)loads a matching passage (a library pick, forcing prose), while a
+ * bare `/` only loads when there is no live run — following the persisted mode
+ * (a word set in word mode, else a random passage) — so returning from another
+ * route keeps an in-progress test.
  */
 export function StagePage(): ReactElement {
   usePageMeta({
@@ -30,10 +31,15 @@ export function StagePage(): ReactElement {
       void state.loadDaily();
       return;
     }
-    const query: PassageQuery = { band, theme, author };
     const hasFilter = band !== undefined || theme !== undefined || author !== undefined;
-    if (hasFilter || state.passage === null) {
+    if (hasFilter) {
+      const query: PassageQuery = { band, theme, author };
       void state.loadNext(query);
+      return;
+    }
+    // Bare "/": follow the persisted mode, but only when nothing is in progress.
+    if (state.test === null) {
+      void state.loadNext();
     }
   }, [band, theme, author, daily]);
 

@@ -75,7 +75,7 @@ export async function postProfile(): Promise<string> {
   return parsed.id;
 }
 
-/** POST /results — submit a finished run for server-side recompute (§8). */
+/** POST /results (prose) — submit a finished passage run for recompute (§8). */
 export interface SubmitResultInput {
   profileId: string;
   passageId: number;
@@ -87,7 +87,29 @@ export async function submitResult(input: SubmitResultInput): Promise<PostResult
   const response = await fetch(`${BASE}/results`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(input),
+    body: JSON.stringify({ mode: 'prose', ...input }),
+  });
+  return parseJson(response, postResultsResponseSchema, 'POST /results');
+}
+
+/**
+ * POST /results (words) — submit a finished word-mode run. The generated text
+ * is sent so the server can recompute against it (there is no stored passage).
+ */
+export interface SubmitWordResultInput {
+  profileId: string;
+  text: string;
+  clientStats: RunStats;
+  charEvents: CharEvents;
+}
+
+export async function submitWordResult(
+  input: SubmitWordResultInput,
+): Promise<PostResultsResponse> {
+  const response = await fetch(`${BASE}/results`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ mode: 'words', ...input }),
   });
   return parseJson(response, postResultsResponseSchema, 'POST /results');
 }

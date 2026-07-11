@@ -15,6 +15,13 @@
       "when": 1783566857523,
       "tag": "0001_claim",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1783744734414,
+      "tag": "0002_dark_prima",
+      "breakpoints": true
     }
   ]
 }

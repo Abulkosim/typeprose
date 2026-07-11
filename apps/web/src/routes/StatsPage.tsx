@@ -1,4 +1,4 @@
-import type { BigramStat, KeyStat, ProfileStats } from '@prosetype/schema';
+import type { BigramStat, KeyStat, ProfileStats, ResultMode } from '@prosetype/schema';
 import { useEffect, useState, type ReactElement } from 'react';
 
 import { fetchProfileStats } from '../lib/api';
@@ -42,6 +42,29 @@ function Metric({ label, value }: { label: string; value: string }): ReactElemen
       <p className="subtitle text-smoke">{label}</p>
       <p className="mt-2 text-bone">{value}</p>
     </div>
+  );
+}
+
+/**
+ * A run's attribution: the serif work/author epigraph for prose, or a plain
+ * "words · N" tag for a word-mode run (which has no author/work).
+ */
+function Attribution({
+  item,
+}: {
+  item: { mode: ResultMode; wordCount: number | null; workTitle: string | null; authorName: string | null };
+}): ReactElement {
+  if (item.mode === 'words') {
+    return (
+      <span className="subtitle text-smoke">
+        words &middot; {item.wordCount ?? '—'}
+      </span>
+    );
+  }
+  return (
+    <span className="font-serif text-smoke italic">
+      {item.workTitle}, {item.authorName}
+    </span>
   );
 }
 
@@ -157,11 +180,7 @@ export function StatsPage(): ReactElement {
           </span>
           <span className="subtitle ml-3 text-smoke">best wpm</span>
         </p>
-        {stats.bestWpm !== null ? (
-          <p className="font-serif text-smoke italic">
-            {stats.bestWpm.workTitle}, {stats.bestWpm.authorName}
-          </p>
-        ) : null}
+        {stats.bestWpm !== null ? <Attribution item={stats.bestWpm} /> : null}
       </div>
 
       <div className="mt-10 grid grid-cols-2 gap-x-10 gap-y-6 sm:grid-cols-3">
@@ -236,9 +255,7 @@ export function StatsPage(): ReactElement {
               <span className="text-smoke tabular-nums">{formatWhen(r.createdAt)}</span>
               <span className="tabular-nums">{r.wpm} wpm</span>
               <span className="text-smoke tabular-nums">{r.accuracy}%</span>
-              <span className="font-serif text-smoke italic">
-                {r.workTitle}, {r.authorName}
-              </span>
+              <Attribution item={r} />
               {!r.clientMatch ? <span className="subtitle text-smoke">flagged</span> : null}
             </li>
           ))}

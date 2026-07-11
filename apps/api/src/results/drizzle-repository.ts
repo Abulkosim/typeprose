@@ -1,4 +1,4 @@
-import type { Band } from '@prosetype/schema';
+import type { Band, ResultMode } from '@prosetype/schema';
 import { desc, eq, sql } from 'drizzle-orm';
 import type { Db } from '../db/client.ts';
 import { authors, passages, profiles, results, works } from '../db/schema.ts';
@@ -23,7 +23,9 @@ export function createDrizzleResultRepository(db: Db): ResultRepository {
         .insert(results)
         .values({
           profileId: row.profileId,
+          mode: row.mode,
           passageId: row.passageId,
+          wordText: row.wordText,
           wpm: row.wpm,
           rawWpm: row.rawWpm,
           accuracy: row.accuracy,
@@ -40,9 +42,12 @@ export function createDrizzleResultRepository(db: Db): ResultRepository {
     },
 
     async recentForProfile(profileId: string, limit: number): Promise<StoredResultRow[]> {
+      // LEFT joins so word-mode runs (no passage) still appear in history; their
+      // attribution columns come back null and the text lives in word_text.
       const rows = await db
         .select({
           id: results.id,
+          mode: results.mode,
           passageId: results.passageId,
           wpm: results.wpm,
           rawWpm: results.rawWpm,
@@ -56,16 +61,17 @@ export function createDrizzleResultRepository(db: Db): ResultRepository {
           authorName: authors.name,
           authorSlug: authors.slug,
           passageText: passages.text,
+          wordText: results.wordText,
           charEvents: results.charEvents,
         })
         .from(results)
-        .innerJoin(passages, eq(results.passageId, passages.id))
-        .innerJoin(works, eq(passages.workId, works.id))
-        .innerJoin(authors, eq(works.authorId, authors.id))
+        .leftJoin(passages, eq(results.passageId, passages.id))
+        .leftJoin(works, eq(passages.workId, works.id))
+        .leftJoin(authors, eq(works.authorId, authors.id))
         .where(eq(results.profileId, profileId))
         .orderBy(desc(results.createdAt), desc(results.id))
         .limit(limit);
-      return rows.map((r) => ({ ...r, band: r.band as Band }));
+      return rows.map((r) => ({ ...r, mode: r.mode as ResultMode, band: r.band as Band | null }));
     },
 
     async topResults(opts: {
@@ -132,17 +138,20 @@ export function createDrizzleResultRepository(db: Db): ResultRepository {
         .from(results)
         .where(eq(results.profileId, profileId));
 
+      // LEFT joins so a word-mode run can be the best (its attribution is null).
       const [best] = await db
         .select({
           wpm: results.wpm,
+          mode: results.mode,
           passageId: results.passageId,
           workTitle: works.title,
           authorName: authors.name,
+          wordText: results.wordText,
         })
         .from(results)
-        .innerJoin(passages, eq(results.passageId, passages.id))
-        .innerJoin(works, eq(passages.workId, works.id))
-        .innerJoin(authors, eq(works.authorId, authors.id))
+        .leftJoin(passages, eq(results.passageId, passages.id))
+        .leftJoin(works, eq(passages.workId, works.id))
+        .leftJoin(authors, eq(works.authorId, authors.id))
         .where(eq(results.profileId, profileId))
         .orderBy(desc(results.wpm), desc(results.id))
         .limit(1);
@@ -169,7 +178,7 @@ export function createDrizzleResultRepository(db: Db): ResultRepository {
         timeTypedMs: Number(totals?.timeTypedMs ?? 0),
         avgAccuracy: toNumberOrNull(totals?.avgAccuracy ?? null),
         avgConsistency: toNumberOrNull(totals?.avgConsistency ?? null),
-        best: best === undefined ? null : best,
+        best: best === undefined ? null : { ...best, mode: best.mode as ResultMode },
         perAuthor: perAuthorRows.map((r) => ({
           authorSlug: r.authorSlug,
           authorName: r.authorName,

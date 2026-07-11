@@ -7,15 +7,37 @@ import {
 import type { Passage } from '@prosetype/schema';
 import { create } from 'zustand';
 
-import { fetchDailyPassage, fetchNextPassage, submitResult, type PassageQuery } from '../lib/api';
+import {
+  fetchDailyPassage,
+  fetchNextPassage,
+  submitResult,
+  submitWordResult,
+  type PassageQuery,
+} from '../lib/api';
 import { ensureProfileId } from '../lib/profile';
 import { pushRecent } from '../lib/recent';
+import { generateWordText } from '../lib/words';
+import { useModeStore } from '../settings/mode';
 import type { CompletedRun } from '../result/ResultView';
 
 /** §9.3 completion: hold the finished passage briefly, then cut to the result. */
 export const COMPLETION_HOLD_MS = 300;
 
 export type StagePhase = 'loading' | 'error' | 'typing' | 'complete';
+
+/**
+ * The active test: either a curated corpus passage ('prose', keyed on a server
+ * id for submission + attribution) or a generated random-word set ('words').
+ * Both expose the canonical `text` the engine consumes.
+ */
+export type ActiveTest =
+  | { kind: 'passage'; passage: Passage }
+  | { kind: 'words'; text: string; count: number };
+
+/** The engine input for a test, regardless of kind. */
+function testText(test: ActiveTest): string {
+  return test.kind === 'passage' ? test.passage.text : test.text;
+}
 
 /** Result-submission state (§9.5). Only 'not-saved' surfaces in the UI. */
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'not-saved';
@@ -28,7 +50,8 @@ export type SaveStatus = 'idle' | 'saving' | 'saved' | 'not-saved';
  */
 interface TypingState {
   phase: StagePhase;
-  passage: Passage | null;
+  /** The active test (prose passage or generated word set), or null before load. */
+  test: ActiveTest | null;
   /** The live engine — mutated in place; never render from it directly. */
   engine: TypingEngine | null;
   /** Derived render state; replaced after every applied input. */
@@ -45,12 +68,13 @@ interface TypingState {
   /** Up to the last 20 passage ids, excluded from the next fetch (plan §8). */
   recentIds: readonly number[];
   /**
-   * Tab: abandon the current run and fetch a new random passage. An optional
-   * filter replaces the active one (a library pick); omitting it reuses the
-   * current filter so the pick persists across Tab.
+   * Tab: abandon the current run and start a new one. With no filter it follows
+   * the persisted mode — a fresh word set in word mode, else a random passage
+   * reusing the current filter so a library pick persists across Tab. A filter
+   * argument (a library pick) always forces prose and replaces the active filter.
    */
   loadNext: (filter?: PassageQuery) => Promise<void>;
-  /** Load the deterministic passage of the day (§10.3). */
+  /** Load the deterministic passage of the day (§10.3); forces prose mode. */
   loadDaily: () => Promise<void>;
   /** Esc: restart the same passage from scratch. */
   restart: () => void;
@@ -79,17 +103,18 @@ function clearHold(): void {
 }
 
 /**
- * Shared passage-load flow for loadNext/loadDaily: guard concurrent fetches,
- * invalidate any in-flight submission, reset to a fresh idle engine on success
- * or a quiet error phase on failure. `fetchPassage` decides which passage.
+ * Shared load flow for loadNext/loadDaily: guard concurrent loads, invalidate
+ * any in-flight submission, reset to a fresh idle engine on success or a quiet
+ * error phase on failure. `resolveTest` decides which test (a fetched passage or
+ * a locally generated word set). Only passage runs update `recentIds`.
  */
 async function loadInto(
   set: (partial: Partial<TypingState>) => void,
   get: () => TypingState,
   nextFilter: PassageQuery,
-  fetchPassage: () => Promise<Passage>,
+  resolveTest: () => Promise<ActiveTest>,
 ): Promise<void> {
-  if (inFlight) return; // one fetch at a time (also guards StrictMode's double effect)
+  if (inFlight) return; // one load at a time (also guards StrictMode's double effect)
   inFlight = true;
   submitToken += 1; // invalidate any in-flight submission for the old run
   clearHold();
@@ -104,17 +129,18 @@ async function loadInto(
     filter: nextFilter,
   });
   try {
-    const passage = await fetchPassage();
-    const engine = createEngine(passage.text);
+    const test = await resolveTest();
+    const engine = createEngine(testText(test));
     set({
       phase: 'typing',
-      passage,
+      test,
       engine,
       snapshot: engine.getSnapshot(),
-      recentIds: pushRecent(get().recentIds, passage.id),
+      recentIds:
+        test.kind === 'passage' ? pushRecent(get().recentIds, test.passage.id) : get().recentIds,
     });
   } catch {
-    set({ phase: 'error', passage: null, errorMessage: 'could not load a passage' });
+    set({ phase: 'error', test: null, errorMessage: 'could not load a test' });
   } finally {
     inFlight = false;
   }
@@ -122,19 +148,26 @@ async function loadInto(
 
 /** Submit a finished run fire-and-forget with one retry (§9.5). */
 async function submitCompletedRun(
-  passageId: number,
+  test: ActiveTest,
   run: CompletedRun,
   token: number,
   set: (partial: Partial<TypingState>) => void,
 ): Promise<void> {
   const attempt = (): Promise<unknown> =>
     ensureProfileId().then((profileId) =>
-      submitResult({
-        profileId,
-        passageId,
-        clientStats: run.stats,
-        charEvents: run.log,
-      }),
+      test.kind === 'passage'
+        ? submitResult({
+            profileId,
+            passageId: test.passage.id,
+            clientStats: run.stats,
+            charEvents: run.log,
+          })
+        : submitWordResult({
+            profileId,
+            text: test.text,
+            clientStats: run.stats,
+            charEvents: run.log,
+          }),
     );
   try {
     try {
@@ -150,7 +183,7 @@ async function submitCompletedRun(
 
 export const useTypingStore = create<TypingState>()((set, get) => ({
   phase: 'loading',
-  passage: null,
+  test: null,
   engine: null,
   snapshot: null,
   completedRun: null,
@@ -162,21 +195,43 @@ export const useTypingStore = create<TypingState>()((set, get) => ({
   recentIds: [],
 
   loadNext: async (filter?: PassageQuery) => {
-    const nextFilter = filter ?? get().filter;
-    await loadInto(set, get, nextFilter, () => fetchNextPassage(get().recentIds, nextFilter));
+    // An explicit filter (a library/band pick) always forces prose and sticks.
+    if (filter !== undefined) {
+      useModeStore.getState().setMode('prose');
+      await loadInto(set, get, filter, async () => ({
+        kind: 'passage',
+        passage: await fetchNextPassage(get().recentIds, filter),
+      }));
+      return;
+    }
+    // No filter: follow the persisted mode.
+    const { mode, wordCount } = useModeStore.getState();
+    if (mode === 'words') {
+      await loadInto(set, get, {}, () =>
+        Promise.resolve({ kind: 'words', text: generateWordText(wordCount), count: wordCount }),
+      );
+      return;
+    }
+    const nextFilter = get().filter;
+    await loadInto(set, get, nextFilter, async () => ({
+      kind: 'passage',
+      passage: await fetchNextPassage(get().recentIds, nextFilter),
+    }));
   },
 
   loadDaily: async () => {
-    // Clearing the filter so a later bare Tab loads a normal random passage.
-    await loadInto(set, get, {}, () => fetchDailyPassage());
+    // The daily is a prose passage; switch to prose and clear the filter so a
+    // later bare Tab loads a normal random passage rather than a word set.
+    useModeStore.getState().setMode('prose');
+    await loadInto(set, get, {}, async () => ({ kind: 'passage', passage: await fetchDailyPassage() }));
   },
 
   restart: () => {
-    const { passage, snapshot } = get();
-    if (passage === null) return;
+    const { test, snapshot } = get();
+    if (test === null) return;
     submitToken += 1; // invalidate any in-flight submission for the abandoned run
     clearHold();
-    const engine = createEngine(passage.text);
+    const engine = createEngine(testText(test));
     set({
       phase: 'typing',
       engine,
@@ -203,12 +258,13 @@ export const useTypingStore = create<TypingState>()((set, get) => ({
         log: engine.getLog(),
         restarted: get().restarted,
       };
-      const passageId = get().passage?.id;
+      const test = get().test;
       // Submit as soon as the run finishes (§9.5, fire-and-forget), before the
       // result view even appears; the token guards against a stale resolution.
-      if (passageId !== undefined) {
+      // Prose runs submit against their passage id; word runs against their text.
+      if (test !== null) {
         set({ saveStatus: 'saving' });
-        void submitCompletedRun(passageId, completedRun, submitToken, set);
+        void submitCompletedRun(test, completedRun, submitToken, set);
       }
       holdTimer = setTimeout(() => {
         holdTimer = null;
@@ -245,7 +301,7 @@ export function resetTypingStore(): void {
   submitToken += 1;
   useTypingStore.setState({
     phase: 'loading',
-    passage: null,
+    test: null,
     engine: null,
     snapshot: null,
     completedRun: null,

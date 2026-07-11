@@ -17,7 +17,7 @@ import { useTypingStore } from './typingStore';
  */
 export function TypingStage(): ReactElement {
   const phase = useTypingStore((s) => s.phase);
-  const passage = useTypingStore((s) => s.passage);
+  const test = useTypingStore((s) => s.test);
   const snapshot = useTypingStore((s) => s.snapshot);
   const completedRun = useTypingStore((s) => s.completedRun);
   const paletteOpen = useCommandStore((s) => s.isOpen);
@@ -187,13 +187,17 @@ export function TypingStage(): ReactElement {
         </div>
       ) : null}
 
-      {phase === 'typing' && snapshot !== null && passage !== null ? (
+      {phase === 'typing' && snapshot !== null && test !== null ? (
         <div className="relative">
           <div className={`transition-opacity duration-150 ${unfocused ? 'opacity-30' : ''}`}>
             <Hud />
             <PassageBoard snapshot={snapshot} />
             <div className="mt-10">
-              <Epigraph passage={passage} />
+              {test.kind === 'passage' ? (
+                <Epigraph passage={test.passage} />
+              ) : (
+                <p className="subtitle text-smoke">words &middot; {test.count}</p>
+              )}
             </div>
           </div>
           {unfocused ? (
@@ -204,10 +208,10 @@ export function TypingStage(): ReactElement {
         </div>
       ) : null}
 
-      {phase === 'complete' && completedRun !== null && passage !== null ? (
+      {phase === 'complete' && completedRun !== null && test !== null ? (
         <ResultView
           run={completedRun}
-          passage={passage}
+          test={test}
           onNext={() => {
             void useTypingStore.getState().loadNext();
           }}

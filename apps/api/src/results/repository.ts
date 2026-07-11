@@ -1,9 +1,15 @@
-import type { Band, CharEvents } from '@prosetype/schema';
+import type { Band, CharEvents, ResultMode } from '@prosetype/schema';
 
-/** A result to persist — server-computed stats plus the raw log (plan §4, §8). */
+/**
+ * A result to persist — server-computed stats plus the raw log (plan §4, §8).
+ * A prose run sets `passageId` (and `wordText` is null); a word run sets
+ * `wordText` (and `passageId` is null). The DB CHECK enforces this shape.
+ */
 export interface NewResult {
   profileId: string;
-  passageId: number;
+  mode: ResultMode;
+  passageId: number | null;
+  wordText: string | null;
   wpm: number;
   rawWpm: number;
   accuracy: number;
@@ -15,12 +21,15 @@ export interface NewResult {
 
 /**
  * A stored result joined with its passage's attribution and text, for the
- * history list, the last-10 average, and the per-result punctuation-tax
- * recompute (which needs the passage text + charEvents).
+ * history list, the last-10 average, and the per-result recomputes (punctuation
+ * tax + per-key/bigram stats, which need the typed text + charEvents). For a
+ * word-mode run the passage attribution is null and the text lives in
+ * `wordText`; use `passageText ?? wordText` as the run's effective text.
  */
 export interface StoredResultRow {
   id: number;
-  passageId: number;
+  mode: ResultMode;
+  passageId: number | null;
   wpm: number;
   rawWpm: number;
   accuracy: number;
@@ -28,11 +37,12 @@ export interface StoredResultRow {
   durationMs: number;
   clientMatch: boolean;
   createdAt: Date;
-  band: Band;
-  workTitle: string;
-  authorName: string;
-  authorSlug: string;
-  passageText: string;
+  band: Band | null;
+  workTitle: string | null;
+  authorName: string | null;
+  authorSlug: string | null;
+  passageText: string | null;
+  wordText: string | null;
   charEvents: CharEvents;
 }
 
@@ -57,13 +67,24 @@ export interface LeaderboardRow {
   createdAt: Date;
 }
 
-/** All-time aggregates for a profile (spanning every result, not just recent). */
+/**
+ * All-time aggregates for a profile (spanning every result, not just recent).
+ * `best` is the top-wpm run across all modes; its passage attribution is null
+ * for a word-mode best, where `wordText` carries the typed text instead.
+ */
 export interface ProfileAggregates {
   tests: number;
   timeTypedMs: number;
   avgAccuracy: number | null;
   avgConsistency: number | null;
-  best: { wpm: number; passageId: number; workTitle: string; authorName: string } | null;
+  best: {
+    wpm: number;
+    mode: ResultMode;
+    passageId: number | null;
+    workTitle: string | null;
+    authorName: string | null;
+    wordText: string | null;
+  } | null;
   perAuthor: AuthorAggregateRow[];
 }
 

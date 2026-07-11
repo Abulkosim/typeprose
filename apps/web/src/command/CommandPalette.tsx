@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactElement } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
+import { useModeStore } from '../settings/mode';
 import { useSoundStore } from '../settings/sound';
 import { useThemeStore } from '../settings/theme';
 import { useTypingStore } from '../stage/typingStore';
@@ -21,6 +22,7 @@ export function CommandPalette(): ReactElement | null {
   const location = useLocation();
   const theme = useThemeStore((s) => s.theme);
   const soundEnabled = useSoundStore((s) => s.enabled);
+  const mode = useModeStore((s) => s.mode);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState(0);
@@ -59,8 +61,23 @@ export function CommandPalette(): ReactElement | null {
         toggleTheme: () => useThemeStore.getState().toggle(),
         soundEnabled,
         toggleSound: () => useSoundStore.getState().toggle(),
+        mode,
+        startWords: (count) => {
+          const m = useModeStore.getState();
+          m.setMode('words');
+          m.setWordCount(count);
+          // Load directly (a returning stage keeps its in-progress test, so a
+          // bare navigation wouldn't reload); navigate first if off-stage.
+          if (location.pathname !== '/') navigate('/');
+          void useTypingStore.getState().loadNext();
+        },
+        startProse: () => {
+          useModeStore.getState().setMode('prose');
+          if (location.pathname !== '/') navigate('/');
+          void useTypingStore.getState().loadNext({});
+        },
       }),
-    [location.pathname, navigate, theme, soundEnabled],
+    [location.pathname, navigate, theme, soundEnabled, mode],
   );
   const results = useMemo(() => filterCommands(commands, query), [commands, query]);
 

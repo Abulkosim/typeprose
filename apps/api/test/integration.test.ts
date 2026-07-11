@@ -107,7 +107,7 @@ suite('API integration (real Postgres)', () => {
     const res = await app.inject({
       method: 'POST',
       url: '/api/v1/results',
-      payload: { profileId, passageId, clientStats, charEvents },
+      payload: { mode: 'prose', profileId, passageId, clientStats, charEvents },
     });
     expect(res.statusCode).toBe(201);
     return res.json<PostResultsResponse>();
@@ -149,6 +149,41 @@ suite('API integration (real Postgres)', () => {
     expect(author?.tests).toBe(2);
     expect(author?.avgWpm).toBeGreaterThan(0);
     expect(stats.history).toHaveLength(2);
+  });
+
+  it('persists a word-mode run in history + aggregates, not per-author or leaderboard', async () => {
+    const before = (
+      await app.inject({ method: 'GET', url: `/api/v1/profiles/${profileId}/stats` })
+    ).json<ProfileStats>();
+    const wordText = 'the quick brown fox jumps over the lazy dog once more today please';
+    const charEvents = typeRun(wordText, 6000);
+    const clientStats = computeStats(wordText, charEvents);
+    const submitRes = await app.inject({
+      method: 'POST',
+      url: '/api/v1/results',
+      payload: { mode: 'words', profileId, text: wordText, clientStats, charEvents },
+    });
+    expect(submitRes.statusCode).toBe(201);
+    expect(submitRes.json<PostResultsResponse>().clientMatch).toBe(true);
+
+    const stats = (
+      await app.inject({ method: 'GET', url: `/api/v1/profiles/${profileId}/stats` })
+    ).json<ProfileStats>();
+    expect(stats.totals.tests).toBe(before.totals.tests + 1);
+    const wordRun = stats.history.find((h) => h.mode === 'words');
+    expect(wordRun).toBeDefined();
+    expect(wordRun?.passageId).toBeNull();
+    expect(wordRun?.authorName).toBeNull();
+    expect(wordRun?.wordCount).toBe(wordText.split(' ').length);
+    // per-author is prose-only: the two prose runs, none from the word run.
+    expect(stats.perAuthor.reduce((n, a) => n + a.tests, 0)).toBe(2);
+
+    // The passage-oriented leaderboard excludes word runs (every entry has a
+    // real passage id; a leaked word run would have none).
+    const board = (
+      await app.inject({ method: 'GET', url: '/api/v1/leaderboard' })
+    ).json<{ entries: { passageId: number }[] }>();
+    expect(board.entries.every((e) => typeof e.passageId === 'number')).toBe(true);
   });
 
   it('GET /authors and /themes include the seeded fixtures', async () => {

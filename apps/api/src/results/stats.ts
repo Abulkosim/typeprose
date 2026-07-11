@@ -16,17 +16,35 @@ function mean(values: readonly number[]): number {
 }
 
 /**
+ * A run's effective typed text: the passage text for a prose run, the generated
+ * word text for a word run. Both recompute paths (punctuation tax, per-key /
+ * bigram) replay charEvents against this.
+ */
+function effectiveText(row: StoredResultRow): string | null {
+  return row.passageText ?? row.wordText;
+}
+
+/** Word count of a canonical (single-spaced) text. */
+function wordCountOf(text: string): number {
+  return text.split(' ').length;
+}
+
+/**
  * Mean punctuation tax (§7.6) over the recent window. Each row's tax is
- * recomputed from its stored charEvents against the passage text; rows whose
+ * recomputed from its stored charEvents against its effective text; rows whose
  * run never sampled both punctuation and letters (tax null) are skipped, and a
  * row whose log fails to replay is skipped defensively (it passed recompute at
- * insert time, so this is belt-and-suspenders). Null when nothing sampled.
+ * insert time, so this is belt-and-suspenders). Word runs are lowercase with no
+ * punctuation, so their tax is null and they drop out naturally. Null when
+ * nothing sampled.
  */
 function punctuationTaxAvg(recent: readonly StoredResultRow[]): number | null {
   const samples: number[] = [];
   for (const row of recent) {
+    const text = effectiveText(row);
+    if (text === null) continue;
     try {
-      const heatmap = computeHeatmap(row.passageText, row.charEvents);
+      const heatmap = computeHeatmap(text, row.charEvents);
       if (heatmap.punctuationTaxPct !== null) {
         samples.push(heatmap.punctuationTaxPct);
       }
@@ -51,9 +69,12 @@ export function buildProfileStats(
   const last10Wpm = recent.slice(0, AVG_WPM_WINDOW).map((r) => r.wpm);
 
   // Per-key / per-bigram analysis is replayed from the same recent window's
-  // stored logs (aggregateKeyStats skips any row that fails to replay).
+  // stored logs against each run's effective text (aggregateKeyStats skips any
+  // row that fails to replay). Word runs contribute clean letter/bigram data.
   const keyStats = aggregateKeyStats(
-    recent.map((r) => ({ passageText: r.passageText, log: r.charEvents })),
+    recent
+      .map((r) => ({ passageText: effectiveText(r), log: r.charEvents }))
+      .filter((r): r is { passageText: string; log: typeof r.log } => r.passageText !== null),
   );
 
   return {
@@ -66,7 +87,10 @@ export function buildProfileStats(
         ? null
         : {
             wpm: roundTo2(aggregates.best.wpm),
+            mode: aggregates.best.mode,
             passageId: aggregates.best.passageId,
+            wordCount:
+              aggregates.best.wordText === null ? null : wordCountOf(aggregates.best.wordText),
             workTitle: aggregates.best.workTitle,
             authorName: aggregates.best.authorName,
           },
@@ -82,7 +106,9 @@ export function buildProfileStats(
     })),
     history: recent.map((r) => ({
       id: r.id,
+      mode: r.mode,
       passageId: r.passageId,
+      wordCount: r.wordText === null ? null : wordCountOf(r.wordText),
       wpm: r.wpm,
       rawWpm: r.rawWpm,
       accuracy: r.accuracy,

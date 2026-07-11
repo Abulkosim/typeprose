@@ -1,14 +1,20 @@
 import { z } from 'zod';
 import { bandSchema } from './passages.ts';
+import { resultModeSchema } from './results.ts';
 
 /**
  * One row of the profile's recent-history list (plan §8, "last 50 results").
- * Carries enough attribution to render a history row without extra requests:
- * the work title, author name/slug, and band alongside the stored stats.
+ * Carries enough attribution to render a history row without extra requests.
+ * Attribution (`passageId`, `band`, `workTitle`, `authorName`, `authorSlug`) is
+ * null for a word-mode run — it has no passage — where `wordCount` is set
+ * instead so the client can render "words · N". `mode` says which shape to read.
  */
 export const resultSummarySchema = z.object({
   id: z.int().positive(),
-  passageId: z.int().positive(),
+  mode: resultModeSchema,
+  passageId: z.int().positive().nullable(),
+  /** Number of words typed, for a word-mode run; null for prose. */
+  wordCount: z.int().positive().nullable(),
   wpm: z.number().nonnegative(),
   rawWpm: z.number().nonnegative(),
   accuracy: z.number().min(0).max(100),
@@ -18,20 +24,26 @@ export const resultSummarySchema = z.object({
   clientMatch: z.boolean(),
   /** ISO 8601 timestamp of when the result was stored. */
   createdAt: z.string().min(1),
-  band: bandSchema,
-  workTitle: z.string().min(1),
-  authorName: z.string().min(1),
-  authorSlug: z.string().min(1),
+  band: bandSchema.nullable(),
+  workTitle: z.string().min(1).nullable(),
+  authorName: z.string().min(1).nullable(),
+  authorSlug: z.string().min(1).nullable(),
 });
 
 export type ResultSummary = z.infer<typeof resultSummarySchema>;
 
-/** Best single run for the profile, with a reference to the passage typed. */
+/**
+ * Best single run for the profile. Attribution (`passageId`/`workTitle`/
+ * `authorName`) is null when the best run was a word-mode run, where
+ * `wordCount` is set instead. `mode` says which shape to read.
+ */
 export const bestRunSchema = z.object({
   wpm: z.number().nonnegative(),
-  passageId: z.int().positive(),
-  workTitle: z.string().min(1),
-  authorName: z.string().min(1),
+  mode: resultModeSchema,
+  passageId: z.int().positive().nullable(),
+  wordCount: z.int().positive().nullable(),
+  workTitle: z.string().min(1).nullable(),
+  authorName: z.string().min(1).nullable(),
 });
 
 export type BestRun = z.infer<typeof bestRunSchema>;

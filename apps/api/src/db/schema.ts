@@ -3,6 +3,7 @@ import { sql } from 'drizzle-orm';
 import {
   bigserial,
   boolean,
+  check,
   index,
   integer,
   jsonb,
@@ -93,9 +94,14 @@ export const results = pgTable(
     profileId: uuid('profile_id')
       .notNull()
       .references(() => profiles.id),
-    passageId: integer('passage_id')
-      .notNull()
-      .references(() => passages.id),
+    // Which kind of test this run was: a corpus passage ('prose') or a
+    // generated random-word set ('words', the Monkeytype-style mode).
+    mode: text('mode').notNull().default('prose'),
+    // Null for a word-mode run (no stored passage); required for prose.
+    passageId: integer('passage_id').references(() => passages.id),
+    // The generated text for a word-mode run, so stats can recompute/replay
+    // (server verify, heatmap, per-key/bigram); null for prose.
+    wordText: text('word_text'),
     // Server-computed values are stored (plan §8).
     wpm: numeric('wpm', { precision: 6, scale: 2, mode: 'number' }).notNull(),
     rawWpm: numeric('raw_wpm', { precision: 6, scale: 2, mode: 'number' }).notNull(),
@@ -109,5 +115,12 @@ export const results = pgTable(
   (table) => [
     index('results_profile_id_created_at_idx').on(table.profileId, table.createdAt.desc()),
     index('results_passage_id_idx').on(table.passageId),
+    // A run is exactly one shape: prose keys on a passage with no word text;
+    // words carries its text with no passage.
+    check(
+      'results_mode_shape',
+      sql`(${table.mode} = 'prose' AND ${table.passageId} IS NOT NULL AND ${table.wordText} IS NULL)
+        OR (${table.mode} = 'words' AND ${table.passageId} IS NULL AND ${table.wordText} IS NOT NULL)`,
+    ),
   ],
 );

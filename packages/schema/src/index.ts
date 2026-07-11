@@ -29,9 +29,12 @@ export {
 
 export {
   runStatsSchema,
+  resultModeSchema,
+  MAX_WORD_TEXT_LEN,
   postResultsRequestSchema,
   postResultsResponseSchema,
   type RunStats,
+  type ResultMode,
   type PostResultsRequest,
   type PostResultsResponse,
 } from './results.ts';

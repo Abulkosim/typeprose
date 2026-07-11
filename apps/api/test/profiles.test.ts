@@ -104,6 +104,7 @@ describe('profile routes', () => {
   it('GET /profiles/:id/stats assembles totals, best, per-author, and history', async () => {
     const row: StoredResultRow = {
       id: 7,
+      mode: 'prose',
       passageId: shortPassage.id,
       wpm: 57,
       rawWpm: 60,
@@ -117,6 +118,7 @@ describe('profile routes', () => {
       authorName: 'Anon',
       authorSlug: 'anon',
       passageText: shortPassage.text,
+      wordText: null,
       charEvents: typeRun(shortPassage.text, 5000),
     };
     app = await build(
@@ -127,7 +129,14 @@ describe('profile routes', () => {
           timeTypedMs: 5000,
           avgAccuracy: 95,
           avgConsistency: 88,
-          best: { wpm: 57, passageId: shortPassage.id, workTitle: 'A Work', authorName: 'Anon' },
+          best: {
+            wpm: 57,
+            mode: 'prose',
+            passageId: shortPassage.id,
+            workTitle: 'A Work',
+            authorName: 'Anon',
+            wordText: null,
+          },
           perAuthor: [{ authorSlug: 'anon', authorName: 'Anon', tests: 1, avgWpm: 57 }],
         },
         [row],
@@ -139,7 +148,9 @@ describe('profile routes', () => {
     expect(stats.totals).toEqual({ tests: 1, timeTypedMs: 5000 });
     expect(stats.bestWpm).toEqual({
       wpm: 57,
+      mode: 'prose',
       passageId: shortPassage.id,
+      wordCount: null,
       workTitle: 'A Work',
       authorName: 'Anon',
     });

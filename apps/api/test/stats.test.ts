@@ -27,6 +27,7 @@ const cleanAABB: CharEvents = {
 function row(overrides: Partial<StoredResultRow> = {}): StoredResultRow {
   return {
     id: 1,
+    mode: 'prose',
     passageId: 1,
     wpm: 60,
     rawWpm: 62,
@@ -40,9 +41,25 @@ function row(overrides: Partial<StoredResultRow> = {}): StoredResultRow {
     authorName: 'Test Author',
     authorSlug: 'test-author',
     passageText: 'aa bb',
+    wordText: null,
     charEvents: cleanAABB,
     ...overrides,
   };
+}
+
+/** A word-mode row: no passage attribution; its text lives in wordText. */
+function wordRow(overrides: Partial<StoredResultRow> = {}): StoredResultRow {
+  return row({
+    mode: 'words',
+    passageId: null,
+    band: null,
+    workTitle: null,
+    authorName: null,
+    authorSlug: null,
+    passageText: null,
+    wordText: 'aa bb',
+    ...overrides,
+  });
 }
 
 describe('buildProfileStats — deeper stats fields', () => {
@@ -61,5 +78,38 @@ describe('buildProfileStats — deeper stats fields', () => {
     const stats = buildProfileStats(EMPTY_AGGREGATES, []);
     expect(stats.keyStats).toEqual([]);
     expect(stats.bigramStats).toEqual([]);
+  });
+
+  it('folds word-mode runs into keyStats and surfaces them in history', () => {
+    // Word runs replay against wordText, so they feed per-key/bigram just like
+    // prose. 5 word rows → each letter reaches 10 occurrences.
+    const recent = Array.from({ length: 5 }, (_, i) => wordRow({ id: i + 1 }));
+    const stats = buildProfileStats(EMPTY_AGGREGATES, recent);
+
+    expect(stats.keyStats.find((k) => k.key === 'a')).toMatchObject({ occurrences: 10 });
+    const first = stats.history[0];
+    expect(first?.mode).toBe('words');
+    expect(first?.wordCount).toBe(2);
+    expect(first?.passageId).toBeNull();
+    expect(first?.workTitle).toBeNull();
+  });
+
+  it('carries a word-mode best run through as mode-aware, no attribution', () => {
+    const stats = buildProfileStats(
+      {
+        ...EMPTY_AGGREGATES,
+        tests: 1,
+        best: {
+          wpm: 88,
+          mode: 'words',
+          passageId: null,
+          workTitle: null,
+          authorName: null,
+          wordText: 'aa bb cc',
+        },
+      },
+      [wordRow()],
+    );
+    expect(stats.bestWpm).toMatchObject({ wpm: 88, mode: 'words', wordCount: 3, passageId: null });
   });
 });

@@ -1,3 +1,6 @@
+import { WORD_COUNTS, type WordCount } from '../lib/words';
+import type { Mode } from '../settings/mode';
+
 /**
  * The command set for the Esc palette (Phase 3, plan §10.3). Pure and
  * DOM-free so it can be unit-tested without a renderer: the component supplies
@@ -27,6 +30,12 @@ export interface CommandContext {
   /** Whether keystroke sound is on, so its command can name the action. */
   soundEnabled: boolean;
   toggleSound: () => void;
+  /** Active test mode, so the mode commands can name their destination. */
+  mode: Mode;
+  /** Switch to word mode at the given length and start a fresh word set. */
+  startWords: (count: WordCount) => void;
+  /** Switch to prose mode and start a fresh random passage. */
+  startProse: () => void;
 }
 
 /** The four difficulty bands (§6.4); picking one starts a filtered test. */
@@ -57,6 +66,35 @@ export function buildCommands(ctx: CommandContext): Command[] {
       title: 'Type',
       keywords: ['test', 'home', 'stage'],
       run: () => ctx.navigate('/'),
+    });
+  }
+
+  // Mode toggle: word mode is a departure from the default prose. Offer the
+  // opposite mode plus the word-length presets (each also switches to words).
+  if (ctx.mode === 'words') {
+    commands.push({
+      id: 'mode-prose',
+      title: 'Type prose',
+      hint: 'mode',
+      keywords: ['prose', 'passage', 'literary', 'quote', 'corpus'],
+      run: ctx.startProse,
+    });
+  } else {
+    commands.push({
+      id: 'mode-words',
+      title: 'Type words',
+      hint: 'mode',
+      keywords: ['words', 'word list', 'monkeytype', 'random', 'practice'],
+      run: () => ctx.startWords(200),
+    });
+  }
+  for (const count of WORD_COUNTS) {
+    commands.push({
+      id: `words-${String(count)}`,
+      title: `Words · ${String(count)}`,
+      hint: 'words',
+      keywords: ['words', 'word list', 'length', String(count)],
+      run: () => ctx.startWords(count),
     });
   }
 

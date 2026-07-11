@@ -43,8 +43,25 @@ describe('POST /api/v1/results', () => {
     const charEvents = typeRun(shortPassage.text, 5000);
     const clientStats = computeStats(shortPassage.text, charEvents);
     return {
+      mode: 'prose',
       profileId: PROFILE_ID,
       passageId: shortPassage.id,
+      clientStats,
+      charEvents,
+      ...overrides,
+    };
+  }
+
+  /** A canonical word-mode text and a clean run over it. */
+  const WORD_TEXT = 'the quick brown fox jumps over the lazy dog again';
+
+  function wordBody(overrides: Record<string, unknown> = {}) {
+    const charEvents = typeRun(WORD_TEXT, 5000);
+    const clientStats = computeStats(WORD_TEXT, charEvents);
+    return {
+      mode: 'words',
+      profileId: PROFILE_ID,
+      text: WORD_TEXT,
       clientStats,
       charEvents,
       ...overrides,
@@ -84,7 +101,7 @@ describe('POST /api/v1/results', () => {
     const res = await app.inject({
       method: 'POST',
       url: '/api/v1/results',
-      payload: { profileId: PROFILE_ID, passageId: shortPassage.id, clientStats, charEvents },
+      payload: { mode: 'prose', profileId: PROFILE_ID, passageId: shortPassage.id, clientStats, charEvents },
     });
     expect(res.statusCode).toBe(400);
     expect(res.json()).toMatchObject({ error: 'BadRequest' });
@@ -100,7 +117,7 @@ describe('POST /api/v1/results', () => {
     const res = await app.inject({
       method: 'POST',
       url: '/api/v1/results',
-      payload: { profileId: PROFILE_ID, passageId: fastPassage.id, clientStats, charEvents },
+      payload: { mode: 'prose', profileId: PROFILE_ID, passageId: fastPassage.id, clientStats, charEvents },
     });
     expect(res.statusCode).toBe(400);
   });
@@ -113,7 +130,7 @@ describe('POST /api/v1/results', () => {
     const res = await app.inject({
       method: 'POST',
       url: '/api/v1/results',
-      payload: { profileId: PROFILE_ID, passageId: shortPassage.id, clientStats, charEvents },
+      payload: { mode: 'prose', profileId: PROFILE_ID, passageId: shortPassage.id, clientStats, charEvents },
     });
     expect(res.statusCode).toBe(400);
     expect(res.json()).toMatchObject({ error: 'BadRequest' });
@@ -150,6 +167,43 @@ describe('POST /api/v1/results', () => {
     });
     expect(res.statusCode).toBe(404);
     expect(res.json()).toMatchObject({ error: 'NotFound' });
+  });
+
+  it('stores a word-mode run recomputed against the submitted text', async () => {
+    const { app, resultRepo } = await setup();
+    const res = await app.inject({ method: 'POST', url: '/api/v1/results', payload: wordBody() });
+    expect(res.statusCode).toBe(201);
+    const parsed = res.json<PostResultsResponse>();
+    expect(parsed.clientMatch).toBe(true);
+    const stored = resultRepo.inserted[0];
+    expect(stored).toBeDefined();
+    expect(stored?.mode).toBe('words');
+    expect(stored?.passageId).toBeNull();
+    expect(stored?.wordText).toBe(WORD_TEXT);
+    expect(stored?.wpm).toBe(parsed.serverStats.wpm);
+  });
+
+  it('rejects a word-mode run with non-canonical text (400, not stored)', async () => {
+    const { app, resultRepo } = await setup();
+    // Double space is non-canonical → the engine's parsePassage throws.
+    const text = 'the  quick brown fox jumps over lazy dogs today please';
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/v1/results',
+      payload: { mode: 'words', profileId: PROFILE_ID, text, clientStats: computeStats(shortPassage.text, typeRun(shortPassage.text, 5000)), charEvents: typeRun(shortPassage.text, 5000) },
+    });
+    expect(res.statusCode).toBe(400);
+    expect(resultRepo.inserted).toHaveLength(0);
+  });
+
+  it('rejects a word-mode run with no text (schema 400)', async () => {
+    const { app } = await setup();
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/v1/results',
+      payload: { mode: 'words', profileId: PROFILE_ID, clientStats: wordBody().clientStats, charEvents: wordBody().charEvents },
+    });
+    expect(res.statusCode).toBe(400);
   });
 });
 
