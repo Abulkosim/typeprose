@@ -3,7 +3,7 @@ import { create } from 'zustand';
 /**
  * Open/closed state for the Esc command palette (Phase 3, plan §10.3). Kept in
  * its own tiny store so the typing stage can read it (and bail on its own key
- * handling) without prop plumbing — the same pattern as the caps-lock flag.
+ * handling) without prop plumbing - the same pattern as the caps-lock flag.
  */
 interface CommandPaletteState {
   isOpen: boolean;

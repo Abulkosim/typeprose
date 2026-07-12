@@ -27,13 +27,13 @@ function passage(overrides: Partial<Passage['work'] & Passage['author']> = {}): 
 describe('formatAttribution', () => {
   it('includes the translator when present', () => {
     expect(formatAttribution(passage())).toBe(
-      '— Fyodor Dostoevsky, Crime and Punishment, trans. Constance Garnett',
+      '- Fyodor Dostoevsky, Crime and Punishment, trans. Constance Garnett',
     );
   });
 
   it('omits the translator clause when null', () => {
     expect(formatAttribution(passage({ translator: null }))).toBe(
-      '— Fyodor Dostoevsky, Crime and Punishment',
+      '- Fyodor Dostoevsky, Crime and Punishment',
     );
   });
 });

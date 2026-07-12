@@ -4,7 +4,7 @@ import { bandForScore, computeDifficulty, resolveBand } from '../lib/difficulty.
 
 describe('computeDifficulty', () => {
   it('computes the frozen-weight formula on a hand-worked example', () => {
-    // "It was a dark night." — 20 chars, words [2,3,1,4,5] letters, 1 punct, 1 sentence.
+    // "It was a dark night." - 20 chars, words [2,3,1,4,5] letters, 1 punct, 1 sentence.
     // raw = 1.5*3 + 3.0*(1/20*100) + 0.5*0 + 0.9*5 = 4.5 + 15 + 0 + 4.5 = 24
     const b = computeDifficulty('It was a dark night.');
     expect(b.avgWordLength).toBeCloseTo(3, 10);

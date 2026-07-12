@@ -31,7 +31,7 @@ function formatWhen(iso: string): string {
 }
 
 function formatTax(pct: number | null): string {
-  if (pct === null) return '—';
+  if (pct === null) return '-';
   const rounded = Math.round(pct);
   return `${rounded >= 0 ? '+' : ''}${String(rounded)}%`;
 }
@@ -57,7 +57,7 @@ function Attribution({
   if (item.mode === 'words') {
     return (
       <span className="subtitle text-smoke">
-        words &middot; {item.wordCount ?? '—'}
+        words &middot; {item.wordCount ?? '-'}
       </span>
     );
   }
@@ -69,7 +69,7 @@ function Attribution({
 }
 
 function formatLatency(ms: number | null): string {
-  return ms === null ? '—' : `${String(ms)} ms`;
+  return ms === null ? '-' : `${String(ms)} ms`;
 }
 
 /** A ranked "problem keys" / "problem bigrams" table, worst first. */
@@ -113,7 +113,7 @@ function ProblemTable({
   );
 }
 
-/** `/stats` (§9.1, §8): a title card — history, aggregates, per-author table. */
+/** `/stats` (§9.1, §8): a title card - history, aggregates, per-author table. */
 export function StatsPage(): ReactElement {
   usePageMeta({
     title: 'Your stats',
@@ -176,7 +176,7 @@ export function StatsPage(): ReactElement {
       <div className="mt-8 flex flex-wrap items-baseline gap-x-10 gap-y-4">
         <p>
           <span className="text-[3.6rem] leading-none text-tungsten">
-            {stats.bestWpm?.wpm ?? '—'}
+            {stats.bestWpm?.wpm ?? '-'}
           </span>
           <span className="subtitle ml-3 text-smoke">best wpm</span>
         </p>
@@ -188,15 +188,15 @@ export function StatsPage(): ReactElement {
         <Metric label="time typed" value={formatDuration(stats.totals.timeTypedMs)} />
         <Metric
           label="avg wpm (last 10)"
-          value={stats.avgWpmLast10 === null ? '—' : String(stats.avgWpmLast10)}
+          value={stats.avgWpmLast10 === null ? '-' : String(stats.avgWpmLast10)}
         />
         <Metric
           label="avg accuracy"
-          value={stats.avgAccuracy === null ? '—' : `${String(stats.avgAccuracy)}%`}
+          value={stats.avgAccuracy === null ? '-' : `${String(stats.avgAccuracy)}%`}
         />
         <Metric
           label="avg consistency"
-          value={stats.avgConsistency === null ? '—' : `${String(stats.avgConsistency)}%`}
+          value={stats.avgConsistency === null ? '-' : `${String(stats.avgConsistency)}%`}
         />
         <Metric label="punctuation tax" value={formatTax(stats.punctuationTaxAvgPct)} />
       </div>

@@ -10,8 +10,8 @@ import { WpmSparkline } from './WpmSparkline';
 
 /**
  * A finished run as handed from the typing stage to the result view
- * (plan §9.3 completion). Everything the full result view needs — heatmap,
- * sparkline, and later submission — derives from `log` via the pure engine
+ * (plan §9.3 completion). Everything the full result view needs - heatmap,
+ * sparkline, and later submission - derives from `log` via the pure engine
  * replay functions (`computeStats`, `computePerSecondRawWpm`, `computeHeatmap`).
  */
 export interface CompletedRun {
@@ -37,9 +37,9 @@ export interface ResultViewProps {
   onNext: () => void;
 }
 
-/** "punctuation tax +38%" — whole percent, explicit sign, em-dash when unsampled. */
+/** "punctuation tax +38%" - whole percent, explicit sign, em-dash when unsampled. */
 function formatTax(pct: number | null): string {
-  if (pct === null) return '—';
+  if (pct === null) return '-';
   const rounded = Math.round(pct);
   return `${rounded >= 0 ? '+' : ''}${String(rounded)}%`;
 }
@@ -48,7 +48,7 @@ function formatTax(pct: number | null): string {
  * Result view (§9.3/§9.4): a title card. Big stats (wpm large; raw, accuracy,
  * consistency smaller), the hand-rolled wpm-over-time sparkline, the passage
  * re-rendered as the §7.6 hesitation heatmap under its attribution epigraph,
- * then the reader stats — three slowest words and the punctuation tax. All
+ * then the reader stats - three slowest words and the punctuation tax. All
  * derived data comes from the engine's pure replay functions; nothing is
  * recomputed here. Motion is a single 180ms fade-cut in (`animate-fade-in`).
  *
@@ -124,7 +124,7 @@ export function ResultView({ run, test, onNext }: ResultViewProps): ReactElement
           <p className="subtitle text-smoke">slowest words</p>
           <p className="mt-3">
             {heatmap.slowestWords.length === 0 ? (
-              <span className="text-smoke">—</span>
+              <span className="text-smoke">-</span>
             ) : (
               heatmap.slowestWords.map((slow, i) => (
                 <span key={slow.wordIndex}>

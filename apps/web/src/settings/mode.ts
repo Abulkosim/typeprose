@@ -4,7 +4,7 @@ import { asWordCount, DEFAULT_WORD_COUNT, type WordCount } from '../lib/words';
 
 /**
  * The test mode (word mode, a deliberate departure from the spec's single quote
- * mode). 'prose' is the default — the curated literary corpus; 'words' is the
+ * mode). 'prose' is the default - the curated literary corpus; 'words' is the
  * Monkeytype-style random-word set, opted into via the command palette. The
  * choice and the word-count preset persist, mirroring the theme/sound settings
  * (hand-rolled localStorage rather than a persist middleware).

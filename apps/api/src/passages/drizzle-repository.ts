@@ -62,7 +62,7 @@ export function createDrizzlePassageRepository(db: Db): PassageRepository {
         conditions.push(notInArray(passages.id, filter.excludeIds));
       }
       // ORDER BY random() scans every matching row; fine at the ~30-row seed
-      // corpus scale (plan §8 sizing) — revisit if the corpus grows large.
+      // corpus scale (plan §8 sizing) - revisit if the corpus grows large.
       const rows = await baseQuery()
         .where(and(...conditions))
         .orderBy(sql`random()`)
@@ -73,7 +73,7 @@ export function createDrizzlePassageRepository(db: Db): PassageRepository {
 
     async findDaily(dateKey: string): Promise<Passage | null> {
       // Deterministic per date: order every row by md5(dateKey || id) and take
-      // the first — a stable pseudo-random pick with no count query.
+      // the first - a stable pseudo-random pick with no count query.
       const rows = await baseQuery()
         .orderBy(sql`md5(${dateKey} || '-' || ${passages.id}::text)`)
         .limit(1);

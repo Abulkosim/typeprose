@@ -1,4 +1,4 @@
-# DRAFT — pending curator review (Gate 0)
+# DRAFT - pending curator review (Gate 0)
 #
 # 30 passages drafted verbatim from Project Gutenberg plain-text editions
 # (fetched 2026-07-07). Text is NOT pre-normalized: curly quotes, em dashes,
@@ -6,11 +6,11 @@
 # per plan §6.3 and its curation report flags every fold for human veto.
 #
 # Substitutions vs the plan §5 seed list (noted per instructions):
-#   - Faulkner, "As I Lay Dying" (PD 2026): not yet on Project Gutenberg —
+#   - Faulkner, "As I Lay Dying" (PD 2026): not yet on Project Gutenberg -
 #     substituted extra Fitzgerald/Woolf passages in the modernist group.
-#   - Kafka, "The Castle" (Muir, 1930): not on Project Gutenberg —
+#   - Kafka, "The Castle" (Muir, 1930): not on Project Gutenberg -
 #     substituted within the modernist group as above.
-#   - Hammett, "Red Harvest" (PD 2025): not on Project Gutenberg —
+#   - Hammett, "Red Harvest" (PD 2025): not on Project Gutenberg -
 #     substituted a second Maltese Falcon (gutenberg:77600) passage.
 #   - Tolstoy "Anna Karenina" on PG (#1399) is the Constance Garnett
 #     translation, not Maude as the plan guessed; recorded as fetched.

@@ -62,7 +62,7 @@ function wordRow(overrides: Partial<StoredResultRow> = {}): StoredResultRow {
   });
 }
 
-describe('buildProfileStats — deeper stats fields', () => {
+describe('buildProfileStats - deeper stats fields', () => {
   it('populates keyStats / bigramStats from the recent window logs', () => {
     // 5 identical clean 'aa bb' rows → each letter reaches 10 occurrences.
     const recent = Array.from({ length: 5 }, (_, i) => row({ id: i + 1 }));

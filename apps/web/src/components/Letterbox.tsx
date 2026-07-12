@@ -30,7 +30,7 @@ function CapsLockTag(): ReactElement | null {
 
 /**
  * Quiet music tag in the bottom bar: a lone ♪ when off (the whole discovery
- * affordance), ♪ plus the channel name while selected — dimmed until the
+ * affordance), ♪ plus the channel name while selected - dimmed until the
  * first gesture resumes a persisted channel. Clicking opens the palette
  * pre-filtered to the music commands; deliberately smoke, not tungsten
  * (tungsten in this bar means the caps-lock alarm; music is ambience).
@@ -44,7 +44,7 @@ function MusicTag(): ReactElement {
     <button
       type="button"
       onClick={() => useCommandStore.getState().open('music')}
-      aria-label={`Music: ${channel === 'off' ? 'off' : channel} — open music commands`}
+      aria-label={`Music: ${channel === 'off' ? 'off' : channel} - open music commands`}
       className={`subtitle cursor-pointer transition-colors duration-150 hover:text-bone ${
         dim ? 'text-smoke/60' : 'text-smoke'
       }`}

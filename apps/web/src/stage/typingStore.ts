@@ -52,7 +52,7 @@ interface TypingState {
   phase: StagePhase;
   /** The active test (prose passage or generated word set), or null before load. */
   test: ActiveTest | null;
-  /** The live engine — mutated in place; never render from it directly. */
+  /** The live engine - mutated in place; never render from it directly. */
   engine: TypingEngine | null;
   /** Derived render state; replaced after every applied input. */
   snapshot: EngineSnapshot | null;
@@ -69,7 +69,7 @@ interface TypingState {
   recentIds: readonly number[];
   /**
    * Tab: abandon the current run and start a new one. With no filter it follows
-   * the persisted mode — a fresh word set in word mode, else a random passage
+   * the persisted mode - a fresh word set in word mode, else a random passage
    * reusing the current filter so a library pick persists across Tab. A filter
    * argument (a library pick) always forces prose and replaces the active filter.
    */
@@ -82,7 +82,7 @@ interface TypingState {
   commitSpace: (timestampMs: number) => void;
   backspace: (timestampMs: number, wholeWord: boolean) => void;
   setCapsLock: (on: boolean) => void;
-  /** Live §7.3 stats for the HUD (display only — never used for stat math). */
+  /** Live §7.3 stats for the HUD (display only - never used for stat math). */
   getLiveStats: () => RunStats | null;
 }
 

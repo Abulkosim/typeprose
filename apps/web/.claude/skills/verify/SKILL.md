@@ -13,7 +13,7 @@ cd apps/web && pnpm exec vite --port 5199   # any free port; don't fight 5173
 
 The stage loads passages from the API (`/api` proxied to :3001). Without the
 API running, the stage shows its error state, but the chrome (header/footer),
-command palette (Esc), settings, and music all work — enough for most UI
+command palette (Esc), settings, and music all work - enough for most UI
 verification. For passage flows, start Postgres (`docker compose up -d`) and
 the API (`pnpm --filter api dev`) first.
 
@@ -34,14 +34,14 @@ Useful handles:
   Playwright clicks/Enter count as user gestures (autoplay-safe).
 - Music tag: `footer button[aria-label^="Music"]`.
 - Audio playback evidence: the `Audio` element is module-scoped (not in the
-  DOM) — assert via network instead:
+  DOM) - assert via network instead:
   `performance.getEntriesByType('resource')` filtered to `/music/`.
 - Settings persist in localStorage under `prosetype.*` keys.
 
 ## Gotchas
 
 - The footer is a `grid-cols-3` whose side tags render `null` most of the
-  time — check positions with boundingBox, not visual squint (auto-placement
+  time - check positions with boundingBox, not visual squint (auto-placement
   bugs hide here; columns are now explicit `col-start-*`).
 - Theme toggle: run the `matinee`/`noir` command in the palette, then
   screenshot to check token re-pointing.

@@ -12,7 +12,7 @@ export const configSchema = z
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
     // Email transport for account-claim magic links (§10.3). Both optional: when
     // RESEND_API_KEY is unset the app falls back to the console mailer (dev). When
-    // it is set, EMAIL_FROM is required — a bare key with no sender is a misconfig.
+    // it is set, EMAIL_FROM is required - a bare key with no sender is a misconfig.
     RESEND_API_KEY: z.string().min(1).optional(),
     EMAIL_FROM: z.string().min(1).optional(),
   })

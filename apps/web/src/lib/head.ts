@@ -4,12 +4,12 @@ import { useEffect } from 'react';
  * Per-route document metadata for this SPA (SEO). Social scrapers don't run
  * JS, so the crawlable Open Graph/Twitter tags live in index.html; this hook
  * keeps the live document title, meta description, and robots directive in
- * sync as the user navigates — the bits browsers, history, and logged-in users
+ * sync as the user navigates - the bits browsers, history, and logged-in users
  * actually see. Dependency-free (no react-helmet).
  */
 
 const SITE_NAME = 'prosetype';
-const DEFAULT_TITLE = 'prosetype — type the classics';
+const DEFAULT_TITLE = 'prosetype - type the classics';
 
 interface PageMeta {
   /** Page title; suffixed with " · prosetype". Omit on the home route for the full default. */

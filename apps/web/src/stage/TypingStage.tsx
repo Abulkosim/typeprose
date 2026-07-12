@@ -30,7 +30,7 @@ export function TypingStage(): ReactElement {
   // Passage loading is driven by StagePage (which reads the library filter
   // from the URL); the stage only owns input, focus, and rendering.
 
-  // Regain focus whenever a fresh run becomes typeable — but not while the
+  // Regain focus whenever a fresh run becomes typeable - but not while the
   // command palette owns focus; refocus the textarea when it closes.
   useEffect(() => {
     if (phase === 'typing' && !paletteOpen) textareaRef.current?.focus();
@@ -49,7 +49,7 @@ export function TypingStage(): ReactElement {
         return;
       }
       // Ignore everything between compositionstart and compositionend
-      // (composition beforeinput is not reliably cancelable — don't try).
+      // (composition beforeinput is not reliably cancelable - don't try).
       if (composingRef.current || e.isComposing || e.inputType === 'insertCompositionText') {
         return;
       }
@@ -69,7 +69,7 @@ export function TypingStage(): ReactElement {
 
     const onInput = (): void => {
       // Anything that slipped past preventDefault (e.g. composition) is
-      // discarded — the engine, not the textarea, holds the typed state.
+      // discarded - the engine, not the textarea, holds the typed state.
       if (!composingRef.current) textarea.value = '';
     };
 
@@ -117,7 +117,7 @@ export function TypingStage(): ReactElement {
 
   // Document-level keys while the stage is up: Tab = next passage (also from
   // the result and error views, and never moves focus), and printable keys
-  // never reach browser chrome (Firefox quick-find on ' " /) — if focus
+  // never reach browser chrome (Firefox quick-find on ' " /) - if focus
   // escaped the textarea, swallow the key and refocus. Esc is owned by the
   // command palette (its capture handler toggles it); while the palette is
   // open we bail entirely so keystrokes reach its search box, not here.

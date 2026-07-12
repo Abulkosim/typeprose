@@ -20,7 +20,7 @@ import {
   type ThemeListItem,
 } from '@prosetype/schema';
 
-/** Minimal structural view of a zod schema — avoids a direct zod dep in web. */
+/** Minimal structural view of a zod schema - avoids a direct zod dep in web. */
 interface Parser<T> {
   parse: (data: unknown) => T;
 }
@@ -62,20 +62,20 @@ export async function fetchNextPassage(
   return parseJson(response, passageSchema, 'GET /passages/next');
 }
 
-/** GET /passages/daily — the deterministic passage of the day (§10.3). */
+/** GET /passages/daily - the deterministic passage of the day (§10.3). */
 export async function fetchDailyPassage(): Promise<Passage> {
   const response = await fetch(`${BASE}/passages/daily`);
   return parseJson(response, passageSchema, 'GET /passages/daily');
 }
 
-/** POST /profiles — create an anonymous profile, returns its uuid (§8, §9.2). */
+/** POST /profiles - create an anonymous profile, returns its uuid (§8, §9.2). */
 export async function postProfile(): Promise<string> {
   const response = await fetch(`${BASE}/profiles`, { method: 'POST' });
   const parsed = await parseJson(response, postProfilesResponseSchema, 'POST /profiles');
   return parsed.id;
 }
 
-/** POST /results (prose) — submit a finished passage run for recompute (§8). */
+/** POST /results (prose) - submit a finished passage run for recompute (§8). */
 export interface SubmitResultInput {
   profileId: string;
   passageId: number;
@@ -93,7 +93,7 @@ export async function submitResult(input: SubmitResultInput): Promise<PostResult
 }
 
 /**
- * POST /results (words) — submit a finished word-mode run. The generated text
+ * POST /results (words) - submit a finished word-mode run. The generated text
  * is sent so the server can recompute against it (there is no stored passage).
  */
 export interface SubmitWordResultInput {
@@ -114,25 +114,25 @@ export async function submitWordResult(
   return parseJson(response, postResultsResponseSchema, 'POST /results');
 }
 
-/** GET /profiles/:id/stats — aggregates + history for the stats page (§8). */
+/** GET /profiles/:id/stats - aggregates + history for the stats page (§8). */
 export async function fetchProfileStats(profileId: string): Promise<ProfileStats> {
   const response = await fetch(`${BASE}/profiles/${profileId}/stats`);
   return parseJson(response, profileStatsSchema, 'GET /profiles/:id/stats');
 }
 
-/** GET /authors — for the library page (§8). */
+/** GET /authors - for the library page (§8). */
 export async function fetchAuthors(): Promise<AuthorListItem[]> {
   const response = await fetch(`${BASE}/authors`);
   return parseJson(response, authorListSchema, 'GET /authors');
 }
 
-/** GET /themes — for the library page (§8). */
+/** GET /themes - for the library page (§8). */
 export async function fetchThemes(): Promise<ThemeListItem[]> {
   const response = await fetch(`${BASE}/themes`);
   return parseJson(response, themeListSchema, 'GET /themes');
 }
 
-/** POST /profiles/:id/claim — request an email magic link to claim the profile (§10.3). */
+/** POST /profiles/:id/claim - request an email magic link to claim the profile (§10.3). */
 export async function requestClaim(
   profileId: string,
   email: string,
@@ -145,7 +145,7 @@ export async function requestClaim(
   return parseJson(response, claimRequestResponseSchema, 'POST /profiles/:id/claim');
 }
 
-/** POST /claim/verify — verify a magic-link token; returns the canonical profile (§10.3). */
+/** POST /claim/verify - verify a magic-link token; returns the canonical profile (§10.3). */
 export async function verifyClaim(token: string): Promise<ClaimVerifyResponse> {
   const response = await fetch(`${BASE}/claim/verify`, {
     method: 'POST',
@@ -155,7 +155,7 @@ export async function verifyClaim(token: string): Promise<ClaimVerifyResponse> {
   return parseJson(response, claimVerifyResponseSchema, 'POST /claim/verify');
 }
 
-/** GET /leaderboard — each profile's best run, optionally scoped to a passage (§10.3). */
+/** GET /leaderboard - each profile's best run, optionally scoped to a passage (§10.3). */
 export async function fetchLeaderboard(passageId?: number): Promise<Leaderboard> {
   const qs = passageId === undefined ? '' : `?passageId=${String(passageId)}`;
   const response = await fetch(`${BASE}/leaderboard${qs}`);

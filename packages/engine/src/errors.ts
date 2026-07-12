@@ -3,14 +3,14 @@
  *
  * Hierarchy:
  *   EngineError
- *   ├─ InvalidPassageError      — passage text is not canonical (§6.2 shape)
- *   ├─ InvalidInputError        — programmer error driving the live engine API
- *   └─ MalformedLogError        — a charEvents log cannot be replayed
+ *   ├─ InvalidPassageError      - passage text is not canonical (§6.2 shape)
+ *   ├─ InvalidInputError        - programmer error driving the live engine API
+ *   └─ MalformedLogError        - a charEvents log cannot be replayed
  *      ├─ NonMonotonicTimestampError
  *      ├─ IndexOutOfRangeError
  *      ├─ EventAfterCompletionError
  *      ├─ UnknownEventCodeError
- *      └─ InvalidEventError     — event is inconsistent with the replayed state
+ *      └─ InvalidEventError     - event is inconsistent with the replayed state
  */
 export class EngineError extends Error {
   override name = 'EngineError';

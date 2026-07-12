@@ -35,7 +35,7 @@ async function canConnect(url: string): Promise<boolean> {
 
 const dbAvailable = await canConnect(DB_URL);
 if (!dbAvailable) {
-  console.warn(`[integration] skipping — no Postgres reachable at ${DB_URL}`);
+  console.warn(`[integration] skipping - no Postgres reachable at ${DB_URL}`);
 }
 const suite = dbAvailable ? describe : describe.skip;
 

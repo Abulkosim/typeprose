@@ -1,6 +1,6 @@
 # Fastify API image (Phase 3 deployment hardening, plan §12).
-# Node 24 runs the TypeScript sources directly via native type-stripping — the
-# same no-build-step model as dev — so there is no compile stage.
+# Node 24 runs the TypeScript sources directly via native type-stripping - the
+# same no-build-step model as dev - so there is no compile stage.
 FROM node:24-alpine
 
 WORKDIR /app

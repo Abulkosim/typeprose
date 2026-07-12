@@ -1,7 +1,7 @@
 import type { Band, CharEvents, ResultMode } from '@prosetype/schema';
 
 /**
- * A result to persist — server-computed stats plus the raw log (plan §4, §8).
+ * A result to persist - server-computed stats plus the raw log (plan §4, §8).
  * A prose run sets `passageId` (and `wordText` is null); a word run sets
  * `wordText` (and `passageId` is null). The DB CHECK enforces this shape.
  */

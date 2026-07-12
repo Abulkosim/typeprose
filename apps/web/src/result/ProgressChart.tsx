@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 
-/** ViewBox geometry — rendered at 100% width, aspect preserved. */
+/** ViewBox geometry - rendered at 100% width, aspect preserved. */
 const W = 600;
 const H = 150;
 const TOP = 16; // y of the peak gridline
@@ -26,7 +26,7 @@ export interface ProgressPoint {
  * The primary series is wpm as a tungsten line + dots, y-anchored at 0 so a bad
  * session reads as an honest dip. Accuracy rides along as a faint dashed smoke
  * line on its own auto-scaled axis (it lives in a narrow 90–100% band, so a
- * shared 0-anchored scale would flatten it to a straight line) — clearly a
+ * shared 0-anchored scale would flatten it to a straight line) - clearly a
  * secondary reference, labelled with its own range.
  */
 export function ProgressChart({ history }: { history: readonly ProgressPoint[] }): ReactElement | null {

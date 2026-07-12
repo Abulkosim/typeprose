@@ -12,7 +12,7 @@ import { useCommandStore } from './commandStore';
 /**
  * The Esc command palette (Phase 3, plan §10.3). A global overlay: Esc toggles
  * it from any route; it searches over the current context's commands (§9.1
- * navigation, the band filters, and — on the stage — restart/next). Motion is
+ * navigation, the band filters, and - on the stage - restart/next). Motion is
  * a film-cut fade (§9.4). The stage's document key handler bails while this is
  * open, so keystrokes reach the search box instead of the hidden textarea.
  */

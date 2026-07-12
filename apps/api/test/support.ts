@@ -29,7 +29,7 @@ export const shortPassage: Passage = {
   author: { slug: 'anon', name: 'Anon', era: 'modernist' },
 };
 
-/** A single 90-char word — typed correctly over 3s it exceeds the 350 wpm ceiling. */
+/** A single 90-char word - typed correctly over 3s it exceeds the 350 wpm ceiling. */
 export const fastPassage: Passage = {
   id: 2,
   text: 'a'.repeat(90),

@@ -42,7 +42,7 @@ interface PreparedPassage {
 }
 
 function label(entry: PassageEntry, ordinal: number): string {
-  return `#${ordinal} ${entry.author_name} — ${entry.title}`;
+  return `#${ordinal} ${entry.author_name} - ${entry.title}`;
 }
 
 function sha256(text: string): string {
@@ -172,7 +172,7 @@ function printReport(
   duplicates: { passage: PreparedPassage; firstSeen: PreparedPassage }[],
 ): void {
   console.log('');
-  console.log('PROSETYPE ingest — curation report');
+  console.log('PROSETYPE ingest - curation report');
   console.log('==================================');
   for (const p of prepared) {
     const bandNote = p.bandOverridden ? `${p.band} (override)` : p.band;
@@ -226,7 +226,7 @@ async function main(): Promise<void> {
   const { prepared, duplicates, errors } = prepare(entries);
 
   if (errors.length > 0) {
-    console.error('Ingestion failed — fix these passages and re-run:');
+    console.error('Ingestion failed - fix these passages and re-run:');
     for (const message of errors) console.error(`  ${message}`);
     process.exitCode = 1;
     return;

@@ -7,11 +7,11 @@ import { TypingStage } from '../stage/TypingStage';
 import { useTypingStore } from '../stage/typingStore';
 
 /**
- * `/` — the test (§9.1). Reads any library filter from the query string
+ * `/` - the test (§9.1). Reads any library filter from the query string
  * (`?band`/`?theme`/`?author`) and drives loading: a filter present in the URL
  * always (re)loads a matching passage (a library pick, forcing prose), while a
- * bare `/` only loads when there is no live run — following the persisted mode
- * (a word set in word mode, else a random passage) — so returning from another
+ * bare `/` only loads when there is no live run - following the persisted mode
+ * (a word set in word mode, else a random passage) - so returning from another
  * route keeps an in-progress test.
  */
 export function StagePage(): ReactElement {

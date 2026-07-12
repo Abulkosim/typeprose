@@ -1,7 +1,7 @@
 /**
  * Outbound email (Phase 3, plan §10.3, account claim). Behind an interface so
  * the transport is swappable. The default dev transport logs the magic link
- * instead of sending it — no credentials in dev scope. Production wires the
+ * instead of sending it - no credentials in dev scope. Production wires the
  * Resend transport below via build.ts when RESEND_API_KEY is set.
  */
 export interface Mailer {
@@ -34,7 +34,7 @@ function claimBodies(url: string): { text: string; html: string } {
 }
 
 /**
- * Resend transport (https://resend.com). Uses the native fetch — no SDK. `from`
+ * Resend transport (https://resend.com). Uses the native fetch - no SDK. `from`
  * is the verified sender, e.g. `prosetype <no-reply@prosetype.app>`. Throws on a
  * non-2xx response so the route surfaces the failure rather than silently
  * dropping the link.

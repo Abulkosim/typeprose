@@ -25,14 +25,14 @@ function count(n: number): string {
 /**
  * `/library` (§9.1): browse by band, author, or theme. Each pick navigates to
  * `/` with the corresponding filter, which the stage loads (and keeps across
- * Tab). Rendered as a title card — labels in letterspaced caps, picks as quiet
+ * Tab). Rendered as a title card - labels in letterspaced caps, picks as quiet
  * buttons that warm to bone on hover.
  */
 export function LibraryPage(): ReactElement {
   usePageMeta({
     title: 'Library',
     description:
-      'Browse the prosetype library by author, theme, or difficulty band — Dostoevsky to Woolf — and start a typing test on any passage.',
+      'Browse the prosetype library by author, theme, or difficulty band - Dostoevsky to Woolf - and start a typing test on any passage.',
   });
   const navigate = useNavigate();
   const [state, setState] = useState<LoadState>({ status: 'loading' });

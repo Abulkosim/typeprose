@@ -4,15 +4,15 @@ import type { Passage } from '@prosetype/schema';
 import type { CompletedRun } from '../result/ResultView';
 
 /**
- * Shareable result card (Phase 3, plan §10.3). Rendered on a canvas — not
- * SVG→img — so the loaded web fonts (Plex Mono, EB Garamond) draw reliably
+ * Shareable result card (Phase 3, plan §10.3). Rendered on a canvas - not
+ * SVG→img - so the loaded web fonts (Plex Mono, EB Garamond) draw reliably
  * without font embedding. The card is always the noir look regardless of the
  * active UI theme: it is a brand artifact, not a screenshot of the current view.
  */
 
-/** "— Fyodor Dostoevsky, Crime and Punishment, trans. Garnett" (shared with the epigraph). */
+/** "- Fyodor Dostoevsky, Crime and Punishment, trans. Garnett" (shared with the epigraph). */
 export function formatAttribution(passage: Passage): string {
-  const base = `— ${passage.author.name}, ${passage.work.title}`;
+  const base = `- ${passage.author.name}, ${passage.work.title}`;
   return passage.work.translator !== null ? `${base}, trans. ${passage.work.translator}` : base;
 }
 
@@ -149,7 +149,7 @@ export async function shareResultCard(run: CompletedRun, passage: Passage): Prom
       return 'copied';
     }
   } catch {
-    // Clipboard denied/unavailable — fall back to a download.
+    // Clipboard denied/unavailable - fall back to a download.
   }
   download(blob, cardFilename(passage, run.stats));
   return 'downloaded';

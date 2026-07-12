@@ -2,7 +2,7 @@
  * Word mode (Monkeytype-style): a bundled common-English word list and a
  * generator that samples it into a canonical space-joined string the engine can
  * consume directly. Unlike the curated prose corpus, this is an inexhaustible
- * source of tests — the point of the mode.
+ * source of tests - the point of the mode.
  *
  * The list is lowercase, alphabetic, no punctuation, so any join with single
  * spaces is already canonical (§6.2): no leading/trailing/double spaces, no

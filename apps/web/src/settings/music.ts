@@ -3,9 +3,9 @@ import { create } from 'zustand';
 import { ensureAudioContext } from './sound';
 
 /**
- * Optional background music: two file channels (lo-fi, classical — bundled
+ * Optional background music: two file channels (lo-fi, classical - bundled
  * CC-BY AAC files under /music/, loudness-matched, progressive download via a
- * single HTMLAudioElement) and one synthesized channel (ambient — filtered
+ * single HTMLAudioElement) and one synthesized channel (ambient - filtered
  * noise through the shared AudioContext, no assets). Off by default. The
  * selection persists; playback always (re)starts inside a user gesture, so
  * the autoplay policy is satisfied without special cases.
@@ -54,7 +54,7 @@ const TRACKS: Record<FileChannel, readonly Track[]> = {
     },
     {
       src: '/music/classical-2.m4a',
-      title: 'Prelude in C — BWV 846 (Bach)',
+      title: 'Prelude in C - BWV 846 (Bach)',
       artist: 'Kevin MacLeod',
       source: 'https://incompetech.com/music/royalty-free/',
       license: 'CC BY 4.0',
@@ -173,7 +173,7 @@ function advance(step: number): void {
 function startFileChannel(channel: FileChannel, volume: number): void {
   activeFileChannel = channel;
   failedTracks = 0;
-  // Random starting track per selection, sequential after — reloads and
+  // Random starting track per selection, sequential after - reloads and
   // re-picks don't always open on the same piece.
   trackIndex = Math.floor(Math.random() * TRACKS[channel].length);
   ensureElement().volume = volume;
@@ -219,7 +219,7 @@ function ensureAmbientNoise(c: AudioContext): AudioBuffer {
 
 /**
  * Ambient room tone: a low-passed noise bed (~220Hz) whose cutoff slowly
- * breathes under a 0.07Hz LFO, plus a faint band-passed "air" layer — texture
+ * breathes under a 0.07Hz LFO, plus a faint band-passed "air" layer - texture
  * without melody or pulse, so there is nothing to follow while typing.
  */
 function startAmbient(volume: number): void {

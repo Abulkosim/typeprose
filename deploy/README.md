@@ -1,11 +1,11 @@
 # Deployment
 
-Phase 3 deployment hardening (plan §12): a single-host Docker Compose stack —
+Phase 3 deployment hardening (plan §12): a single-host Docker Compose stack -
 Postgres (named volume), one-shot migrations, the Fastify API, the static web
 app behind Caddy (automatic HTTPS), and a nightly `pg_dump` backup.
 
 This is the intended production shape from the plan's appendix; it is config,
-not a running claim — provision a host with Docker before relying on it.
+not a running claim - provision a host with Docker before relying on it.
 
 ## First deploy
 
@@ -44,7 +44,7 @@ gunzip -c /path/to/prosetype-YYYYMMDD-HHMMSS.sql.gz \
 ```
 
 Copy backups off-host (e.g. a periodic `rsync` of the volume) for real
-durability — an on-host dump does not survive host loss.
+durability - an on-host dump does not survive host loss.
 
 ## Updating
 

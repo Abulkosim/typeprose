@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { bandSchema } from './passages.ts';
 
 /**
- * Leaderboard DTOs (Phase 3, plan §10.3). One entry per profile's best run —
+ * Leaderboard DTOs (Phase 3, plan §10.3). One entry per profile's best run -
  * either globally or scoped to a single passage. `displayName` is null for an
  * unclaimed anonymous profile (the client renders it as "anonymous").
  */

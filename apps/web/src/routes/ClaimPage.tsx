@@ -120,7 +120,7 @@ export function ClaimPage(): ReactElement {
             {reqState === 'sending' ? 'sending…' : 'send link'}
           </button>
           {reqState === 'error' ? (
-            <span className="subtitle text-blood">couldn&rsquo;t send — try again</span>
+            <span className="subtitle text-blood">couldn&rsquo;t send - try again</span>
           ) : null}
         </form>
       )}

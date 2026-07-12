@@ -6,7 +6,7 @@ import { resultModeSchema } from './results.ts';
  * One row of the profile's recent-history list (plan §8, "last 50 results").
  * Carries enough attribution to render a history row without extra requests.
  * Attribution (`passageId`, `band`, `workTitle`, `authorName`, `authorSlug`) is
- * null for a word-mode run — it has no passage — where `wordCount` is set
+ * null for a word-mode run - it has no passage - where `wordCount` is set
  * instead so the client can render "words · N". `mode` says which shape to read.
  */
 export const resultSummarySchema = z.object({

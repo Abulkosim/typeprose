@@ -17,7 +17,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  // @ts-expect-error — tearing down the test-only global.
+  // @ts-expect-error - tearing down the test-only global.
   delete globalThis.localStorage;
 });
 

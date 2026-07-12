@@ -24,7 +24,7 @@ const STATE_CLASS: Record<CharState, string> = {
 
 /**
  * One passage word. Memoized on the engine's WordSnapshot, which keeps
- * reference identity while a word is untouched — so per keystroke only the
+ * reference identity while a word is untouched - so per keystroke only the
  * active (and, on commit/uncommit, the neighboring) word re-renders.
  * Incorrect slots keep showing the target character (in blood); what was
  * actually typed lives in the engine state for the log.
