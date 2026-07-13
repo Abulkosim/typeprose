@@ -468,3 +468,1034 @@
     warning, had claimed for it a certain ethical efficacy in the formation of
     character, had praised it as something that taught us what to follow and
     showed us what to avoid. But there was no motive power in experience.
+
+# --- Batch 2 (2026-07-13): 71 passages curated via `pnpm propose` from 10
+# additional public-domain Project Gutenberg works, targeting 100+ total and
+# specifically the thin warmup band (was 5/30). Text is the propose tool's
+# already-normalized output (§6.3), copied verbatim; only re-wrapped for this
+# file. Sources: Baum "The Wonderful Wizard of Oz" (PG 55), Twain "The
+# Adventures of Tom Sawyer" (PG 74), Stevenson "Treasure Island" (PG 120),
+# London "The Call of the Wild" (PG 215), Dickens "A Tale of Two Cities"
+# (PG 98), Austen "Pride and Prejudice" (PG 1342), Stoker "Dracula" (PG 345),
+# Wells "The War of the Worlds" (PG 36), Aesop's Fables trans. Vernon Jones
+# (PG 11339), Melville "Moby-Dick" (PG 2701).
+
+- author: wells
+  author_name: H. G. Wells
+  era: scientific-romance
+  work: the-war-of-the-worlds
+  title: 'The War of the Worlds'
+  pub_year: 1898
+  source: 'gutenberg:36'
+  themes: [speculative, invasion]
+  text: >
+    And then he perceived that, very slowly, the circular top of the
+    cylinder was rotating on its body. It was such a gradual movement that
+    he discovered it only through noticing that a black mark that had been
+    near him five minutes ago was now at the other side of the
+    circumference.
+
+- author: wells
+  author_name: H. G. Wells
+  era: scientific-romance
+  work: the-war-of-the-worlds
+  title: 'The War of the Worlds'
+  pub_year: 1898
+  source: 'gutenberg:36'
+  themes: [speculative, invasion]
+  text: >
+    A large portion of the cylinder had been uncovered, though its lower end
+    was still embedded. As soon as Ogilvy saw me among the staring crowd on
+    the edge of the pit he called to me to come down, and asked me if I
+    would mind going over to see Lord Hilton, the lord of the manor.
+
+- author: wells
+  author_name: H. G. Wells
+  era: scientific-romance
+  work: the-war-of-the-worlds
+  title: 'The War of the Worlds'
+  pub_year: 1898
+  source: 'gutenberg:36'
+  themes: [speculative, invasion]
+  text: >
+    Seen nearer, the Thing was incredibly strange, for it was no mere
+    insensate machine driving on its way. Machine it was, with a ringing
+    metallic pace, and long, flexible, glittering tentacles (one of which
+    gripped a young pine tree) swinging and rattling about its strange body.
+
+- author: wells
+  author_name: H. G. Wells
+  era: scientific-romance
+  work: the-war-of-the-worlds
+  title: 'The War of the Worlds'
+  pub_year: 1898
+  source: 'gutenberg:36'
+  themes: [speculative, invasion]
+  text: >
+    These canisters smashed on striking the ground - they did not explode -
+    and incontinently disengaged an enormous volume of heavy, inky vapour,
+    coiling and pouring upward in a huge and ebony cumulus cloud, a gaseous
+    hill that sank and spread itself slowly over the surrounding country.
+
+- author: wells
+  author_name: H. G. Wells
+  era: scientific-romance
+  work: the-war-of-the-worlds
+  title: 'The War of the Worlds'
+  pub_year: 1898
+  source: 'gutenberg:36'
+  themes: [speculative, invasion]
+  text: >
+    Keeping his footing on the heaving deck by clutching the bulwarks, my
+    brother looked past this charging leviathan at the Martians again, and
+    he saw the three of them now close together, and standing so far out to
+    sea that their tripod supports were almost entirely submerged.
+
+- author: wells
+  author_name: H. G. Wells
+  era: scientific-romance
+  work: the-war-of-the-worlds
+  title: 'The War of the Worlds'
+  pub_year: 1898
+  source: 'gutenberg:36'
+  themes: [speculative, invasion]
+  text: >
+    The Martians wore no clothing. Their conceptions of ornament and decorum
+    were necessarily different from ours; and not only were they evidently
+    much less sensible of changes of temperature than we are, but changes of
+    pressure do not seem to have affected their health at all seriously.
+
+- author: wells
+  author_name: H. G. Wells
+  era: scientific-romance
+  work: the-war-of-the-worlds
+  title: 'The War of the Worlds'
+  pub_year: 1898
+  source: 'gutenberg:36'
+  themes: [speculative, invasion]
+  text: >
+    I felt intolerably lonely. My mind ran on old friends that I had
+    forgotten for years. I thought of the poisons in the chemists' shops, of
+    the liquors the wine merchants stored; I recalled the two sodden
+    creatures of despair, who so far as I knew, shared the city with myself.
+
+- author: dickens
+  author_name: Charles Dickens
+  era: victorian
+  work: a-tale-of-two-cities
+  title: 'A Tale of Two Cities'
+  pub_year: 1859
+  source: 'gutenberg:98'
+  themes: [victorian, revolution]
+  text: >
+    The rough, irregular stones of the street, pointing every way, and
+    designed, one might have thought, expressly to lame all living creatures
+    that approached them, had dammed it into little pools; these were
+    surrounded, each by its own jostling group or crowd, according to its
+    size.
+
+- author: dickens
+  author_name: Charles Dickens
+  era: victorian
+  work: a-tale-of-two-cities
+  title: 'A Tale of Two Cities'
+  pub_year: 1859
+  source: 'gutenberg:98'
+  themes: [victorian, revolution]
+  text: >
+    So sunken and suppressed it was, that it was like a voice underground.
+    So expressive it was, of a hopeless and lost creature, that a famished
+    traveller, wearied out by lonely wandering in a wilderness, would have
+    remembered home and friends in such a tone before lying down to die.
+
+- author: dickens
+  author_name: Charles Dickens
+  era: victorian
+  work: a-tale-of-two-cities
+  title: 'A Tale of Two Cities'
+  pub_year: 1859
+  source: 'gutenberg:98'
+  themes: [victorian, revolution]
+  text: >
+    The officiating undertakers made some protest against these changes in
+    the ceremonies; but, the river being alarmingly near, and several voices
+    remarking on the efficacy of cold immersion in bringing refractory
+    members of the profession to reason, the protest was faint and brief.
+
+- author: dickens
+  author_name: Charles Dickens
+  era: victorian
+  work: a-tale-of-two-cities
+  title: 'A Tale of Two Cities'
+  pub_year: 1859
+  source: 'gutenberg:98'
+  themes: [victorian, revolution]
+  text: >
+    The night was hot, and the shop, close shut and surrounded by so foul a
+    neighbourhood, was ill-smelling. Monsieur Defarge's olfactory sense was
+    by no means delicate, but the stock of wine smelt much stronger than it
+    ever tasted, and so did the stock of rum and brandy and aniseed.
+
+- author: dickens
+  author_name: Charles Dickens
+  era: victorian
+  work: a-tale-of-two-cities
+  title: 'A Tale of Two Cities'
+  pub_year: 1859
+  source: 'gutenberg:98'
+  themes: [victorian, revolution]
+  text: >
+    From such household occupations as their bare poverty yielded, from
+    their children, from their aged and their sick crouching on the bare
+    ground famished and naked, they ran out with streaming hair, urging one
+    another, and themselves, to madness with the wildest cries and actions.
+
+- author: dickens
+  author_name: Charles Dickens
+  era: victorian
+  work: a-tale-of-two-cities
+  title: 'A Tale of Two Cities'
+  pub_year: 1859
+  source: 'gutenberg:98'
+  themes: [victorian, revolution]
+  text: >
+    The very children scarcely noticed him. A few passers turned their
+    heads, and a few shook their fingers at him as an aristocrat; otherwise,
+    that a man in good clothes should be going to prison, was no more
+    remarkable than that a labourer in working clothes should be going to
+    work.
+
+- author: dickens
+  author_name: Charles Dickens
+  era: victorian
+  work: a-tale-of-two-cities
+  title: 'A Tale of Two Cities'
+  pub_year: 1859
+  source: 'gutenberg:98'
+  themes: [victorian, revolution]
+  text: >
+    The horsemen abreast of that cart, frequently point out one man in it
+    with their swords. The leading curiosity is, to know which is he; he
+    stands at the back of the tumbril with his head bent down, to converse
+    with a mere girl who sits on the side of the cart, and holds his hand.
+
+- author: twain
+  author_name: Mark Twain
+  era: americana
+  work: the-adventures-of-tom-sawyer
+  title: 'The Adventures of Tom Sawyer'
+  pub_year: 1876
+  source: 'gutenberg:74'
+  themes: [americana, coming-of-age]
+  text: >
+    Tom did play hookey, and he had a very good time. He got back home barely
+    in season to help Jim, the small colored boy, saw next-day's wood and
+    split the kindlings before supper - at least he was there in time to tell
+    his adventures to Jim while Jim did three-fourths of the work.
+
+- author: twain
+  author_name: Mark Twain
+  era: americana
+  work: the-adventures-of-tom-sawyer
+  title: 'The Adventures of Tom Sawyer'
+  pub_year: 1876
+  source: 'gutenberg:74'
+  themes: [americana, coming-of-age]
+  text: >
+    Tom gave up the brush with reluctance in his face, but alacrity in his
+    heart. And while the late steamer Big Missouri worked and sweated in the
+    sun, the retired artist sat on a barrel in the shade close by, dangled his
+    legs, munched his apple, and planned the slaughter of more innocents.
+
+- author: twain
+  author_name: Mark Twain
+  era: americana
+  work: the-adventures-of-tom-sawyer
+  title: 'The Adventures of Tom Sawyer'
+  pub_year: 1876
+  source: 'gutenberg:74'
+  themes: [americana, coming-of-age]
+  text: >
+    He was fully as uncomfortable as he looked; for there was a restraint
+    about whole clothes and cleanliness that galled him. He hoped that Mary
+    would forget his shoes, but the hope was blighted; she coated them
+    thoroughly with tallow, as was the custom, and brought them out.
+
+- author: twain
+  author_name: Mark Twain
+  era: americana
+  work: the-adventures-of-tom-sawyer
+  title: 'The Adventures of Tom Sawyer'
+  pub_year: 1876
+  source: 'gutenberg:74'
+  themes: [americana, coming-of-age]
+  text: >
+    He released the tick and put him on the long flat desk. The creature
+    probably glowed with a gratitude that amounted to prayer, too, at this
+    moment, but it was premature: for when he started thankfully to travel
+    off, Tom turned him aside with a pin and made him take a new direction.
+
+- author: twain
+  author_name: Mark Twain
+  era: americana
+  work: the-adventures-of-tom-sawyer
+  title: 'The Adventures of Tom Sawyer'
+  pub_year: 1876
+  source: 'gutenberg:74'
+  themes: [americana, coming-of-age]
+  text: >
+    For some time there was no noise but the grating sound of the spades
+    discharging their freight of mould and gravel. It was very monotonous.
+    Finally a spade struck upon the coffin with a dull woody accent, and
+    within another minute or two the men had hoisted it out on the ground.
+
+- author: twain
+  author_name: Mark Twain
+  era: americana
+  work: the-adventures-of-tom-sawyer
+  title: 'The Adventures of Tom Sawyer'
+  pub_year: 1876
+  source: 'gutenberg:74'
+  themes: [americana, coming-of-age]
+  text: >
+    About midnight Joe awoke, and called the boys. There was a brooding
+    oppressiveness in the air that seemed to bode something. The boys huddled
+    themselves together and sought the friendly companionship of the fire,
+    though the dull dead heat of the breathless atmosphere was stifling.
+
+- author: twain
+  author_name: Mark Twain
+  era: americana
+  work: the-adventures-of-tom-sawyer
+  title: 'The Adventures of Tom Sawyer'
+  pub_year: 1876
+  source: 'gutenberg:74'
+  themes: [americana, coming-of-age]
+  text: >
+    Injun Joe was believed to have killed five citizens of the village, but
+    what of that? If he had been Satan himself there would have been plenty of
+    weaklings ready to scribble their names to a pardon-petition, and drip a
+    tear on it from their permanently impaired and leaky water-works.
+
+- author: london
+  author_name: Jack London
+  era: naturalism
+  work: the-call-of-the-wild
+  title: 'The Call of the Wild'
+  pub_year: 1903
+  source: 'gutenberg:215'
+  themes: [adventure, wilderness]
+  text: >
+    And this was the manner of dog Buck was in the fall of 1897, when the
+    Klondike strike dragged men from all the world into the frozen North.
+    But Buck did not read the newspapers, and he did not know that Manuel,
+    one of the gardener's helpers, was an undesirable acquaintance.
+
+- author: london
+  author_name: Jack London
+  era: naturalism
+  work: the-call-of-the-wild
+  title: 'The Call of the Wild'
+  pub_year: 1903
+  source: 'gutenberg:215'
+  themes: [adventure, wilderness]
+  text: >
+    It marked his adaptability, his capacity to adjust himself to changing
+    conditions, the lack of which would have meant swift and terrible death.
+    It marked, further, the decay or going to pieces of his moral nature, a
+    vain thing and a handicap in the ruthless struggle for existence.
+
+- author: london
+  author_name: Jack London
+  era: naturalism
+  work: the-call-of-the-wild
+  title: 'The Call of the Wild'
+  pub_year: 1903
+  source: 'gutenberg:215'
+  themes: [adventure, wilderness]
+  text: >
+    And terrible they were, for every foot of them was accomplished at the
+    risk of life to dog and man. A dozen times, Perrault, nosing the way
+    broke through the ice bridges, being saved by the long pole he carried,
+    which he so held that it fell each time across the hole made by his
+    body.
+
+- author: london
+  author_name: Jack London
+  era: naturalism
+  work: the-call-of-the-wild
+  title: 'The Call of the Wild'
+  pub_year: 1903
+  source: 'gutenberg:215'
+  themes: [adventure, wilderness]
+  text: >
+    They threw clubs at him. He dodged. They cursed him, and his fathers and
+    mothers before him, and all his seed to come after him down to the
+    remotest generation, and every hair on his body and drop of blood in his
+    veins; and he answered curse with snarl and kept out of their reach.
+
+- author: london
+  author_name: Jack London
+  era: naturalism
+  work: the-call-of-the-wild
+  title: 'The Call of the Wild'
+  pub_year: 1903
+  source: 'gutenberg:215'
+  themes: [adventure, wilderness]
+  text: >
+    It had been all used, the last least bit of it. Every muscle, every
+    fibre, every cell, was tired, dead tired. And there was reason for it.
+    In less than five months they had travelled twenty-five hundred miles,
+    during the last eighteen hundred of which they had had but five days'
+    rest.
+
+- author: london
+  author_name: Jack London
+  era: naturalism
+  work: the-call-of-the-wild
+  title: 'The Call of the Wild'
+  pub_year: 1903
+  source: 'gutenberg:215'
+  themes: [adventure, wilderness]
+  text: >
+    Faithfulness and devotion, things born of fire and roof, were his; yet
+    he retained his wildness and wiliness. He was a thing of the wild, come
+    in from the wild to sit by John Thornton's fire, rather than a dog of
+    the soft Southland stamped with the marks of generations of
+    civilization.
+
+- author: london
+  author_name: Jack London
+  era: naturalism
+  work: the-call-of-the-wild
+  title: 'The Call of the Wild'
+  pub_year: 1903
+  source: 'gutenberg:215'
+  themes: [adventure, wilderness]
+  text: >
+    It caused him to feel a vague, sweet gladness, and he was aware of wild
+    yearnings and stirrings for he knew not what. Sometimes he pursued the
+    call into the forest, looking for it as though it were a tangible thing,
+    barking softly or defiantly, as the mood might dictate.
+
+- author: stoker
+  author_name: Bram Stoker
+  era: gothic
+  work: dracula
+  title: 'Dracula'
+  pub_year: 1897
+  source: 'gutenberg:345'
+  themes: [gothic, horror]
+  text: >
+    Then a dog began to howl somewhere in a farmhouse far down the road--a
+    long, agonised wailing, as if from fear. The sound was taken up by
+    another dog, and then another and another, till, borne on the wind
+    which now sighed softly through the Pass, a wild howling began, which
+    seemed to come from all over the country, as far as the imagination
+    could grasp it through the gloom of the night.
+
+- author: stoker
+  author_name: Bram Stoker
+  era: gothic
+  work: dracula
+  title: 'Dracula'
+  pub_year: 1897
+  source: 'gutenberg:345'
+  themes: [gothic, horror]
+  text: >
+    His hand actually seemed like a steel vice that could have crushed
+    mine if he had chosen. Then he took out my traps, and placed them on
+    the ground beside me as I stood close to a great door, old and
+    studded with large iron nails, and set in a projecting doorway of
+    massive stone.
+
+- author: stoker
+  author_name: Bram Stoker
+  era: gothic
+  work: dracula
+  title: 'Dracula'
+  pub_year: 1897
+  source: 'gutenberg:345'
+  themes: [gothic, horror]
+  text: >
+    There was a deliberate voluptuousness which was both thrilling and
+    repulsive, and as she arched her neck she actually licked her lips
+    like an animal, till I could see in the moonlight the moisture
+    shining on the scarlet lips and on the red tongue as it lapped the
+    white sharp teeth.
+
+- author: stoker
+  author_name: Bram Stoker
+  era: gothic
+  work: dracula
+  title: 'Dracula'
+  pub_year: 1897
+  source: 'gutenberg:345'
+  themes: [gothic, horror]
+  text: >
+    The very thought drove me mad. A terrible desire came upon me to rid
+    the world of such a monster. There was no lethal weapon at hand, but
+    I seized a shovel which the workmen had been using to fill the cases,
+    and lifting it high, struck, with the edge downward, at the hateful
+    face.
+
+- author: stoker
+  author_name: Bram Stoker
+  era: gothic
+  work: dracula
+  title: 'Dracula'
+  pub_year: 1897
+  source: 'gutenberg:345'
+  themes: [gothic, horror]
+  text: >
+    He had, I knew, been very genuinely and devotedly attached to his
+    father; and to lose him, and at such a time, was a bitter blow to
+    him. With me he was warm as ever, and to Van Helsing he was sweetly
+    courteous; but I could not help seeing that there was some constraint
+    with him.
+
+- author: stoker
+  author_name: Bram Stoker
+  era: gothic
+  work: dracula
+  title: 'Dracula'
+  pub_year: 1897
+  source: 'gutenberg:345'
+  themes: [gothic, horror]
+  text: >
+    When they become such, there comes with the change the curse of
+    immortality; they cannot die, but must go on age after age adding new
+    victims and multiplying the evils of the world; for all that die from
+    the preying of the Un-Dead becomes themselves Un-Dead, and prey on
+    their kind.
+
+- author: stoker
+  author_name: Bram Stoker
+  era: gothic
+  work: dracula
+  title: 'Dracula'
+  pub_year: 1897
+  source: 'gutenberg:345'
+  themes: [gothic, horror]
+  text: >
+    But even in the minute that had elapsed the number of the rats had
+    vastly increased. They seemed to swarm over the place all at once,
+    till the lamplight, shining on their moving dark bodies and
+    glittering, baleful eyes, made the place look like a bank of earth
+    set with fireflies.
+
+- author: baum
+  author_name: L. Frank Baum
+  era: american-fantasy
+  work: the-wonderful-wizard-of-oz
+  title: 'The Wonderful Wizard of Oz'
+  pub_year: 1900
+  source: 'gutenberg:55'
+  themes: [adventure, fable]
+  text: >
+    She was awakened by a shock, so sudden and severe that if Dorothy had not
+    been lying on the soft bed she might have been hurt. As it was, the jar
+    made her catch her breath and wonder what had happened; and Toto put his
+    cold little nose into her face and whined dismally.
+
+- author: baum
+  author_name: L. Frank Baum
+  era: american-fantasy
+  work: the-wonderful-wizard-of-oz
+  title: 'The Wonderful Wizard of Oz'
+  pub_year: 1900
+  source: 'gutenberg:55'
+  themes: [adventure, fable]
+  text: >
+    When Dorothy was left alone she began to feel hungry. So she went to the
+    cupboard and cut herself some bread, which she spread with butter. She
+    gave some to Toto, and taking a pail from the shelf she carried it down
+    to the little brook and filled it with clear, sparkling water.
+
+- author: baum
+  author_name: L. Frank Baum
+  era: american-fantasy
+  work: the-wonderful-wizard-of-oz
+  title: 'The Wonderful Wizard of Oz'
+  pub_year: 1900
+  source: 'gutenberg:55'
+  themes: [adventure, fable]
+  text: >
+    Just as he spoke there came from the forest a terrible roar, and the
+    next moment a great Lion bounded into the road. With one blow of his paw
+    he sent the Scarecrow spinning over and over to the edge of the road,
+    and then he struck at the Tin Woodman with his sharp claws.
+
+- author: baum
+  author_name: L. Frank Baum
+  era: american-fantasy
+  work: the-wonderful-wizard-of-oz
+  title: 'The Wonderful Wizard of Oz'
+  pub_year: 1900
+  source: 'gutenberg:55'
+  themes: [adventure, fable]
+  text: >
+    Then the Guardian of the Gates put on his own glasses and told them he
+    was ready to show them to the Palace. Taking a big golden key from a peg
+    on the wall, he opened another gate, and they all followed him through
+    the portal into the streets of the Emerald City.
+
+- author: baum
+  author_name: L. Frank Baum
+  era: american-fantasy
+  work: the-wonderful-wizard-of-oz
+  title: 'The Wonderful Wizard of Oz'
+  pub_year: 1900
+  source: 'gutenberg:55'
+  themes: [adventure, fable]
+  text: >
+    The Winkies were not a brave people, but they had to do as they were
+    told. So they marched away until they came near to Dorothy. Then the
+    Lion gave a great roar and sprang towards them, and the poor Winkies
+    were so frightened that they ran back as fast as they could.
+
+- author: baum
+  author_name: L. Frank Baum
+  era: american-fantasy
+  work: the-wonderful-wizard-of-oz
+  title: 'The Wonderful Wizard of Oz'
+  pub_year: 1900
+  source: 'gutenberg:55'
+  themes: [adventure, fable]
+  text: >
+    Afterward they passed on through the gate into the Emerald City. When
+    the people heard from the Guardian of the Gates that Dorothy had melted
+    the Wicked Witch of the West, they all gathered around the travelers and
+    followed them in a great crowd to the Palace of Oz.
+
+- author: baum
+  author_name: L. Frank Baum
+  era: american-fantasy
+  work: the-wonderful-wizard-of-oz
+  title: 'The Wonderful Wizard of Oz'
+  pub_year: 1900
+  source: 'gutenberg:55'
+  themes: [adventure, fable]
+  text: >
+    Then she kissed the Tin Woodman, who was weeping in a way most dangerous
+    to his joints. But she hugged the soft, stuffed body of the Scarecrow in
+    her arms instead of kissing his painted face, and found she was crying
+    herself at this sorrowful parting from her loving comrades.
+
+- author: melville
+  author_name: Herman Melville
+  era: american-romanticism
+  work: moby-dick
+  title: 'Moby-Dick; or, The Whale'
+  pub_year: 1851
+  source: 'gutenberg:2701'
+  themes: [epic, seafaring]
+  text: >
+    His deep chest heaved as with a ground-swell; his tossed arms seemed the
+    warring elements at work; and the thunders that rolled away from off his
+    swarthy brow, and the light leaping from his eye, made all his simple
+    hearers look on him with a quick fear that was strange to them.
+
+- author: melville
+  author_name: Herman Melville
+  era: american-romanticism
+  work: moby-dick
+  title: 'Moby-Dick; or, The Whale'
+  pub_year: 1851
+  source: 'gutenberg:2701'
+  themes: [epic, seafaring]
+  text: >
+    Third among the harpooneers was Daggoo, a gigantic, coal-black
+    negro-savage, with a lion-like tread - an Ahasuerus to behold. Suspended
+    from his ears were two golden hoops, so large that the sailors called
+    them ring-bolts, and would talk of securing the top-sail halyards to
+    them.
+
+- author: melville
+  author_name: Herman Melville
+  era: american-romanticism
+  work: moby-dick
+  title: 'Moby-Dick; or, The Whale'
+  pub_year: 1851
+  source: 'gutenberg:2701'
+  themes: [epic, seafaring]
+  text: >
+    If, then, you properly put these statements together, and reason upon
+    them a bit, you will clearly perceive that, according to all human
+    reasoning, Procopius's sea-monster, that for half a century stove the
+    ships of a Roman Emperor, must in all probability have been a sperm
+    whale.
+
+- author: melville
+  author_name: Herman Melville
+  era: american-romanticism
+  work: moby-dick
+  title: 'Moby-Dick; or, The Whale'
+  pub_year: 1851
+  source: 'gutenberg:2701'
+  themes: [epic, seafaring]
+  text: >
+    Now, one of the peculiar characteristics of the savage in his domestic
+    hours, is his wonderful patience of industry. An ancient Hawaiian
+    war-club or spear-paddle, in its full multiplicity and elaboration of
+    carving, is as great a trophy of human perseverance as a Latin lexicon.
+
+- author: melville
+  author_name: Herman Melville
+  era: american-romanticism
+  work: moby-dick
+  title: 'Moby-Dick; or, The Whale'
+  pub_year: 1851
+  source: 'gutenberg:2701'
+  themes: [epic, seafaring]
+  text: >
+    Besides all the other phenomena which the exterior of the Sperm Whale
+    presents, he not seldom displays the back, and more especially his
+    flanks, effaced in great part of the regular linear appearance, by
+    reason of numerous rude scratches, altogether of an irregular, random
+    aspect.
+
+- author: melville
+  author_name: Herman Melville
+  era: american-romanticism
+  work: moby-dick
+  title: 'Moby-Dick; or, The Whale'
+  pub_year: 1851
+  source: 'gutenberg:2701'
+  themes: [epic, seafaring]
+  text: >
+    But why was it, think ye, that the Samuel Enderby, and some other
+    English whalers I know of - not all though - were such famous,
+    hospitable ships; that passed round the beef, and the bread, and the
+    can, and the joke; and were not soon weary of eating, and drinking, and
+    laughing?
+
+- author: melville
+  author_name: Herman Melville
+  era: american-romanticism
+  work: moby-dick
+  title: 'Moby-Dick; or, The Whale'
+  pub_year: 1851
+  source: 'gutenberg:2701'
+  themes: [epic, seafaring]
+  text: >
+    Ere knocking at his state-room, he involuntarily paused before it a
+    moment. The cabin lamp - taking long swings this way and that - was
+    burning fitfully, and casting fitful shadows upon the old man's bolted
+    door, - a thin one, with fixed blinds inserted, in place of upper
+    panels.
+
+- author: stevenson
+  author_name: Robert Louis Stevenson
+  era: victorian-adventure
+  work: treasure-island
+  title: 'Treasure Island'
+  pub_year: 1883
+  source: 'gutenberg:120'
+  themes: [adventure, seafaring]
+  text: >
+    I felt in his pockets, one after another. A few small coins, a thimble,
+    and some thread and big needles, a piece of pigtail tobacco bitten away
+    at the end, his gully with the crooked handle, a pocket compass, and a
+    tinder box were all that they contained, and I began to despair.
+
+- author: stevenson
+  author_name: Robert Louis Stevenson
+  era: victorian-adventure
+  work: treasure-island
+  title: 'Treasure Island'
+  pub_year: 1883
+  source: 'gutenberg:120'
+  themes: [adventure, seafaring]
+  text: >
+    I got her through my old friend, Blandly, who has proved himself
+    throughout the most surprising trump. The admirable fellow literally
+    slaved in my interest, and so, I may say, did everyone in Bristol, as
+    soon as they got wind of the port we sailed for--treasure, I mean.
+
+- author: stevenson
+  author_name: Robert Louis Stevenson
+  era: victorian-adventure
+  work: treasure-island
+  title: 'Treasure Island'
+  pub_year: 1883
+  source: 'gutenberg:120'
+  themes: [adventure, seafaring]
+  text: >
+    He was very tall and strong, with a face as big as a ham--plain and
+    pale, but intelligent and smiling. Indeed, he seemed in the most
+    cheerful spirits, whistling as he moved about among the tables, with a
+    merry word or a slap on the shoulder for the more favoured of his
+    guests.
+
+- author: stevenson
+  author_name: Robert Louis Stevenson
+  era: victorian-adventure
+  work: treasure-island
+  title: 'Treasure Island'
+  pub_year: 1883
+  source: 'gutenberg:120'
+  themes: [adventure, seafaring]
+  text: >
+    Grey-coloured woods covered a large part of the surface. This even tint
+    was indeed broken up by streaks of yellow sand-break in the lower lands,
+    and by many tall trees of the pine family, out-topping the others--some
+    singly, some in clumps; but the general colouring was uniform and sad.
+
+- author: stevenson
+  author_name: Robert Louis Stevenson
+  era: victorian-adventure
+  work: treasure-island
+  title: 'Treasure Island'
+  pub_year: 1883
+  source: 'gutenberg:120'
+  themes: [adventure, seafaring]
+  text: >
+    Suddenly, with a loud huzza, a little cloud of pirates leaped from the
+    woods on the north side and ran straight on the stockade. At the same
+    moment, the fire was once more opened from the woods, and a rifle ball
+    sang through the doorway and knocked the doctor's musket into bits.
+
+- author: stevenson
+  author_name: Robert Louis Stevenson
+  era: victorian-adventure
+  work: treasure-island
+  title: 'Treasure Island'
+  pub_year: 1883
+  source: 'gutenberg:120'
+  themes: [adventure, seafaring]
+  text: >
+    On shore, I could see the glow of the great camp-fire burning warmly
+    through the shore-side trees. Someone was singing, a dull, old, droning
+    sailor's song, with a droop and a quaver at the end of every verse, and
+    seemingly no end to it at all but the patience of the singer.
+
+- author: stevenson
+  author_name: Robert Louis Stevenson
+  era: victorian-adventure
+  work: treasure-island
+  title: 'Treasure Island'
+  pub_year: 1883
+  source: 'gutenberg:120'
+  themes: [adventure, seafaring]
+  text: >
+    It was fine open walking here, upon the summit; our way lay a little
+    downhill, for, as I have said, the plateau tilted towards the west. The
+    pines, great and small, grew wide apart; and even between the clumps of
+    nutmeg and azalea, wide open spaces baked in the hot sunshine.
+
+- author: austen
+  author_name: Jane Austen
+  era: regency
+  work: pride-and-prejudice
+  title: 'Pride and Prejudice'
+  pub_year: 1813
+  source: 'gutenberg:1342'
+  themes: [romance, manners]
+  text: >
+    Hurst, merely looked the gentleman; but his friend Mr. Darcy soon drew
+    the attention of the room by his fine, tall person, handsome features,
+    noble mien, and the report, which was in general circulation within
+    five minutes after his entrance, of his having ten thousand a year.
+
+- author: austen
+  author_name: Jane Austen
+  era: regency
+  work: pride-and-prejudice
+  title: 'Pride and Prejudice'
+  pub_year: 1813
+  source: 'gutenberg:1342'
+  themes: [romance, manners]
+  text: >
+    Within a short walk of Longbourn lived a family with whom the Bennets
+    were particularly intimate. Sir William Lucas had been formerly in
+    trade in Meryton, where he had made a tolerable fortune, and risen to
+    the honour of knighthood by an address to the king during his
+    mayoralty.
+
+- author: austen
+  author_name: Jane Austen
+  era: regency
+  work: pride-and-prejudice
+  title: 'Pride and Prejudice'
+  pub_year: 1813
+  source: 'gutenberg:1342'
+  themes: [romance, manners]
+  text: >
+    Their brother, indeed, was the only one of the party whom she could
+    regard with any complacency. His anxiety for Jane was evident, and his
+    attentions to herself most pleasing; and they prevented her feeling
+    herself so much an intruder as she believed she was considered by the
+    others.
+
+- author: austen
+  author_name: Jane Austen
+  era: regency
+  work: pride-and-prejudice
+  title: 'Pride and Prejudice'
+  pub_year: 1813
+  source: 'gutenberg:1342'
+  themes: [romance, manners]
+  text: >
+    Gardiner was a sensible, gentlemanlike man, greatly superior to his
+    sister, as well by nature as education. The Netherfield ladies would
+    have had difficulty in believing that a man who lived by trade, and
+    within view of his own warehouses, could have been so well-bred and
+    agreeable.
+
+- author: austen
+  author_name: Jane Austen
+  era: regency
+  work: pride-and-prejudice
+  title: 'Pride and Prejudice'
+  pub_year: 1813
+  source: 'gutenberg:1342'
+  themes: [romance, manners]
+  text: >
+    This he considered sufficient encouragement, and the avowal of all
+    that he felt and had long felt for her immediately followed. He spoke
+    well; but there were feelings besides those of the heart to be
+    detailed, and he was not more eloquent on the subject of tenderness
+    than of pride.
+
+- author: austen
+  author_name: Jane Austen
+  era: regency
+  work: pride-and-prejudice
+  title: 'Pride and Prejudice'
+  pub_year: 1813
+  source: 'gutenberg:1342'
+  themes: [romance, manners]
+  text: >
+    Oh! why did she come? or, why did he thus come a day before he was
+    expected? Had they been only ten minutes sooner, they should have been
+    beyond the reach of his discrimination; for it was plain that he was
+    that moment arrived, that moment alighted from his horse or his
+    carriage.
+
+- author: austen
+  author_name: Jane Austen
+  era: regency
+  work: pride-and-prejudice
+  title: 'Pride and Prejudice'
+  pub_year: 1813
+  source: 'gutenberg:1342'
+  themes: [romance, manners]
+  text: >
+    In society so superior to what she had generally known, her
+    improvement was great. She was not of so ungovernable a temper as
+    Lydia; and, removed from the influence of Lydia's example, she became,
+    by proper attention and management, less irritable, less ignorant, and
+    less insipid.
+
+- author: aesop
+  author_name: Aesop
+  era: classical
+  work: aesops-fables
+  title: "Aesop's Fables"
+  translator: V. S. Vernon Jones
+  pub_year: 1912
+  source: 'gutenberg:11339'
+  themes: [fable, morality]
+  text: >
+    A Lion asleep in his lair was waked up by a Mouse running over his face.
+    Losing his temper he seized it with his paw and was about to kill it.
+
+- author: aesop
+  author_name: Aesop
+  era: classical
+  work: aesops-fables
+  title: "Aesop's Fables"
+  translator: V. S. Vernon Jones
+  pub_year: 1912
+  source: 'gutenberg:11339'
+  themes: [fable, morality]
+  text: >
+    The shaft struck him full in the breast and pierced him through and
+    through. As he lay in the agonies of death, he turned his eyes upon the
+    Arrow.
+
+- author: aesop
+  author_name: Aesop
+  era: classical
+  work: aesops-fables
+  title: "Aesop's Fables"
+  translator: V. S. Vernon Jones
+  pub_year: 1912
+  source: 'gutenberg:11339'
+  themes: [fable, morality]
+  text: >
+    A Fox fell into a well and was unable to get out again. By and by a
+    thirsty Goat came by, and seeing the Fox in the well asked him if the
+    water was good.
+
+- author: aesop
+  author_name: Aesop
+  era: classical
+  work: aesops-fables
+  title: "Aesop's Fables"
+  translator: V. S. Vernon Jones
+  pub_year: 1912
+  source: 'gutenberg:11339'
+  themes: [fable, morality]
+  text: >
+    There was once a man who had an Ass and a Lap-dog. The Ass was housed in
+    the stable with plenty of oats and hay to eat and was as well off as an
+    ass could be.
+
+- author: aesop
+  author_name: Aesop
+  era: classical
+  work: aesops-fables
+  title: "Aesop's Fables"
+  translator: V. S. Vernon Jones
+  pub_year: 1912
+  source: 'gutenberg:11339'
+  themes: [fable, morality]
+  text: >
+    One hot and thirsty day in the height of summer a Lion and a Boar came
+    down to a little spring at the same moment to drink. In a trice they
+    were quarrelling as to who should drink first.
+
+- author: aesop
+  author_name: Aesop
+  era: classical
+  work: aesops-fables
+  title: "Aesop's Fables"
+  translator: V. S. Vernon Jones
+  pub_year: 1912
+  source: 'gutenberg:11339'
+  themes: [fable, morality]
+  text: >
+    But an Eagle espied him from high up in the sky, and swooped down and
+    carried him off. Forthwith the other Cock came out of his corner and
+    ruled the roost without a rival.
+
+- author: aesop
+  author_name: Aesop
+  era: classical
+  work: aesops-fables
+  title: "Aesop's Fables"
+  translator: V. S. Vernon Jones
+  pub_year: 1912
+  source: 'gutenberg:11339'
+  themes: [fable, morality]
+  text: >
+    Thus it is the same with Grief as it is with the other gods. The more
+    devoutly men render to him his due, the more lavish is he of that which
+    he has to bestow.
+
+- author: aesop
+  author_name: Aesop
+  era: classical
+  work: aesops-fables
+  title: "Aesop's Fables"
+  translator: V. S. Vernon Jones
+  pub_year: 1912
+  source: 'gutenberg:11339'
+  themes: [fable, morality]
+  text: >
+    An Old Man cut himself a bundle of faggots in a wood and started to
+    carry them home. He had a long way to go, and was tired out before he
+    had got much more than half-way.
+
