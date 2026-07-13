@@ -1,15 +1,26 @@
 import {
   authorListItemSchema,
   passageSchema,
+  passageSummaryItemSchema,
   themeListItemSchema,
   type AuthorListItem,
   type Passage,
+  type PassageSummaryItem,
   type ThemeListItem,
 } from '@prosetype/schema';
 import { and, arrayContains, asc, eq, notInArray, sql, type SQL } from 'drizzle-orm';
 import type { Db } from '../db/client.ts';
 import { authors, passages, works } from '../db/schema.ts';
-import type { PassageFilter, PassageRepository } from './repository.ts';
+import type { PassageFilter, PassageListFilter, PassageRepository } from './repository.ts';
+
+/** First ~60 chars of `text`, trimmed to the last full word, plus an ellipsis if cut. */
+const OPENING_LEN = 60;
+function openingOf(text: string): string {
+  if (text.length <= OPENING_LEN) return text;
+  const cut = text.slice(0, OPENING_LEN);
+  const lastSpace = cut.lastIndexOf(' ');
+  return `${(lastSpace > 0 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`;
+}
 
 /** Selection shaped exactly like the shared Passage DTO (nested attribution). */
 const passageSelection = {
@@ -112,6 +123,42 @@ export function createDrizzlePassageRepository(db: Db): PassageRepository {
             order by theme`,
       )) as unknown as Array<{ theme: string; count: number }>;
       return rows.map((r) => themeListItemSchema.parse({ theme: r.theme, passageCount: r.count }));
+    },
+
+    async list(filter: PassageListFilter): Promise<PassageSummaryItem[]> {
+      const conditions: SQL[] = [];
+      if (filter.band !== undefined) {
+        conditions.push(eq(passages.band, filter.band));
+      }
+      if (filter.theme !== undefined) {
+        conditions.push(arrayContains(passages.themes, [filter.theme]));
+      }
+      if (filter.author !== undefined) {
+        conditions.push(eq(authors.slug, filter.author));
+      }
+      const rows = await db
+        .select({
+          id: passages.id,
+          text: passages.text,
+          band: passages.band,
+          workTitle: works.title,
+          authorSlug: authors.slug,
+          authorName: authors.name,
+        })
+        .from(passages)
+        .innerJoin(works, eq(passages.workId, works.id))
+        .innerJoin(authors, eq(works.authorId, authors.id))
+        .where(and(...conditions))
+        .orderBy(asc(authors.name), asc(works.title), asc(passages.id));
+      return rows.map((r) =>
+        passageSummaryItemSchema.parse({
+          id: r.id,
+          band: r.band,
+          opening: openingOf(r.text),
+          work: { title: r.workTitle },
+          author: { slug: r.authorSlug, name: r.authorName },
+        }),
+      );
     },
   };
 }

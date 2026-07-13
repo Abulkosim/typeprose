@@ -112,6 +112,33 @@ describe('typingStore.loadNext', () => {
   });
 });
 
+describe('typingStore.loadById', () => {
+  it('loads the requested passage by id', async () => {
+    installFetch([makePassage(7, 'so it goes')]);
+    await useTypingStore.getState().loadById(7);
+    const s = useTypingStore.getState();
+    expect(s.phase).toBe('typing');
+    expect(s.test).toMatchObject({ kind: 'passage', passage: { id: 7 } });
+    expect(s.snapshot?.status).toBe('idle');
+    expect(fetchedUrls[0]).toBe('/api/v1/passages/7');
+  });
+
+  it('switches to prose mode', async () => {
+    installFetch([makePassage(7, 'so it goes')]);
+    useModeStore.getState().setMode('words');
+    await useTypingStore.getState().loadById(7);
+    expect(useModeStore.getState().mode).toBe('prose');
+  });
+
+  it('enters a quiet error phase when the fetch fails', async () => {
+    installFetch([new Error('network down')]);
+    await useTypingStore.getState().loadById(999);
+    const s = useTypingStore.getState();
+    expect(s.phase).toBe('error');
+    expect(s.errorMessage).not.toBeNull();
+  });
+});
+
 describe('typingStore typing flow', () => {
   it('applies keystrokes synchronously and derives the snapshot', async () => {
     installFetch([makePassage(1, 'it is')]);

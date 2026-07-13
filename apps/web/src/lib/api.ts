@@ -4,6 +4,7 @@ import {
   claimVerifyResponseSchema,
   leaderboardSchema,
   passageSchema,
+  passageSummaryListSchema,
   postProfilesResponseSchema,
   postResultsResponseSchema,
   profileStatsSchema,
@@ -14,6 +15,7 @@ import {
   type ClaimVerifyResponse,
   type Leaderboard,
   type Passage,
+  type PassageSummaryItem,
   type PostResultsResponse,
   type ProfileStats,
   type RunStats,
@@ -66,6 +68,12 @@ export async function fetchNextPassage(
 export async function fetchDailyPassage(): Promise<Passage> {
   const response = await fetch(`${BASE}/passages/daily`);
   return parseJson(response, passageSchema, 'GET /passages/daily');
+}
+
+/** GET /passages/:id - load one specific passage, e.g. a library pick or a `?passage=` link. */
+export async function fetchPassageById(id: number): Promise<Passage> {
+  const response = await fetch(`${BASE}/passages/${String(id)}`);
+  return parseJson(response, passageSchema, 'GET /passages/:id');
 }
 
 /** POST /profiles - create an anonymous profile, returns its uuid (§8, §9.2). */
@@ -130,6 +138,17 @@ export async function fetchAuthors(): Promise<AuthorListItem[]> {
 export async function fetchThemes(): Promise<ThemeListItem[]> {
   const response = await fetch(`${BASE}/themes`);
   return parseJson(response, themeListSchema, 'GET /themes');
+}
+
+/** GET /passages - individual passages under an author/theme/band for the library page (batch B). */
+export async function fetchPassages(query: PassageQuery = {}): Promise<PassageSummaryItem[]> {
+  const params = new URLSearchParams();
+  if (query.band !== undefined) params.set('band', query.band);
+  if (query.theme !== undefined) params.set('theme', query.theme);
+  if (query.author !== undefined) params.set('author', query.author);
+  const qs = params.toString();
+  const response = await fetch(`${BASE}/passages${qs === '' ? '' : `?${qs}`}`);
+  return parseJson(response, passageSummaryListSchema, 'GET /passages');
 }
 
 /** POST /profiles/:id/claim - request an email magic link to claim the profile (§10.3). */

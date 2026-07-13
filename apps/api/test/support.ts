@@ -87,6 +87,9 @@ export function createStubPassageRepo(fixtures: Passage[]): PassageRepository {
     async listThemes() {
       return [];
     },
+    async list() {
+      return [];
+    },
   };
 }
 

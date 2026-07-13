@@ -63,3 +63,21 @@ export type ThemeListItem = z.infer<typeof themeListItemSchema>;
 
 /** GET /themes response body. */
 export const themeListSchema = z.array(themeListItemSchema);
+
+/**
+ * One row of GET /passages (library listing, plan §9.1 batch B): enough to
+ * link a specific passage from the library without shipping its full text.
+ */
+export const passageSummaryItemSchema = z.object({
+  id: z.int().positive(),
+  band: bandSchema,
+  /** First ~60 chars of the passage text, word-boundary trimmed. */
+  opening: z.string().min(1),
+  work: z.object({ title: z.string().min(1) }),
+  author: z.object({ slug: z.string().min(1), name: z.string().min(1) }),
+});
+
+export type PassageSummaryItem = z.infer<typeof passageSummaryItemSchema>;
+
+/** GET /passages response body. */
+export const passageSummaryListSchema = z.array(passageSummaryItemSchema);

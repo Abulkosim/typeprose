@@ -223,6 +223,15 @@ export function ResultView({ run, test, onNext }: ResultViewProps): ReactElement
           </button>
         ) : null}
         {passage !== null ? (
+          <button
+            type="button"
+            onClick={() => useTypingStore.getState().restart()}
+            className="subtitle text-smoke transition-opacity duration-150 hover:text-bone"
+          >
+            retype this passage
+          </button>
+        ) : null}
+        {passage !== null ? (
           <Link
             to={`/leaderboard?passageId=${String(passage.id)}`}
             className="subtitle text-smoke transition-opacity duration-150 hover:text-bone"

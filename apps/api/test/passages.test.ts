@@ -1,9 +1,9 @@
-import { passageSchema, type Passage } from '@prosetype/schema';
+import { passageSchema, passageSummaryItemSchema, type Passage } from '@prosetype/schema';
 import type { FastifyInstance } from 'fastify';
 import { afterEach, describe, expect, it } from 'vitest';
 import { buildApp } from '../src/build.ts';
 import { loadConfig } from '../src/config.ts';
-import type { PassageFilter, PassageRepository } from '../src/passages/repository.ts';
+import type { PassageFilter, PassageListFilter, PassageRepository } from '../src/passages/repository.ts';
 
 const testEnv = {
   DATABASE_URL: 'postgres://prosetype:prosetype@localhost:5432/prosetype',
@@ -58,9 +58,11 @@ const hammettPassage: Passage = {
 /** In-memory PassageRepository stub that records the filters it was called with. */
 function createStubRepo(fixtures: Passage[]): PassageRepository & {
   lastFilter: PassageFilter | null;
+  lastListFilter: PassageListFilter | null;
 } {
   return {
     lastFilter: null,
+    lastListFilter: null,
     async findRandom(filter: PassageFilter): Promise<Passage | null> {
       this.lastFilter = filter;
       const match = fixtures.find(
@@ -108,6 +110,23 @@ function createStubRepo(fixtures: Passage[]): PassageRepository & {
       return [...counts.entries()]
         .map(([theme, passageCount]) => ({ theme, passageCount }))
         .sort((a, b) => a.theme.localeCompare(b.theme));
+    },
+    async list(filter: PassageListFilter) {
+      this.lastListFilter = filter;
+      return fixtures
+        .filter(
+          (p) =>
+            (filter.band === undefined || p.band === filter.band) &&
+            (filter.theme === undefined || p.themes.includes(filter.theme)) &&
+            (filter.author === undefined || p.author.slug === filter.author),
+        )
+        .map((p) => ({
+          id: p.id,
+          band: p.band,
+          opening: p.text.slice(0, 60),
+          work: { title: p.work.title },
+          author: { slug: p.author.slug, name: p.author.name },
+        }));
     },
   };
 }
@@ -270,6 +289,43 @@ describe('passage routes', () => {
       const res = await app.inject({ method: 'GET', url: '/api/v1/passages/daily' });
       expect(res.statusCode).toBe(404);
       expect(res.json()).toMatchObject({ error: 'NotFound' });
+    });
+  });
+
+  describe('GET /api/v1/passages', () => {
+    it('returns every passage as summary items when no filter is given', async () => {
+      const { app } = await setup();
+      const res = await app.inject({ method: 'GET', url: '/api/v1/passages' });
+      expect(res.statusCode).toBe(200);
+      const body = res.json() as unknown[];
+      expect(body).toHaveLength(2);
+      for (const item of body) expect(() => passageSummaryItemSchema.parse(item)).not.toThrow();
+    });
+
+    it('passes band, theme, and author filters to the repository', async () => {
+      const { app, repo } = await setup();
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/passages?band=warmup&theme=hardboiled&author=hammett',
+      });
+      expect(res.statusCode).toBe(200);
+      expect(repo.lastListFilter).toEqual({ band: 'warmup', theme: 'hardboiled', author: 'hammett' });
+      const body = res.json() as { id: number }[];
+      expect(body).toEqual([expect.objectContaining({ id: 2 })]);
+    });
+
+    it('rejects an unknown band with 400', async () => {
+      const { app } = await setup();
+      const res = await app.inject({ method: 'GET', url: '/api/v1/passages?band=impossible' });
+      expect(res.statusCode).toBe(400);
+      expect(res.json()).toMatchObject({ error: 'BadRequest' });
+    });
+
+    it('returns an empty array when nothing matches', async () => {
+      const { app } = await setup();
+      const res = await app.inject({ method: 'GET', url: '/api/v1/passages?author=nobody' });
+      expect(res.statusCode).toBe(200);
+      expect(res.json()).toEqual([]);
     });
   });
 });

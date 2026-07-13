@@ -1,8 +1,8 @@
-import type { AuthorListItem, Band, ThemeListItem } from '@prosetype/schema';
+import type { AuthorListItem, Band, PassageSummaryItem, ThemeListItem } from '@prosetype/schema';
 import { useEffect, useState, type ReactElement } from 'react';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
-import { fetchAuthors, fetchThemes } from '../lib/api';
+import { fetchAuthors, fetchPassages, fetchThemes, type PassageQuery } from '../lib/api';
 import { usePageMeta } from '../lib/head';
 
 /** The four difficulty bands, warm-up first (§6.4). */
@@ -23,10 +23,79 @@ function count(n: number): string {
 }
 
 /**
- * `/library` (§9.1): browse by band, author, or theme. Each pick navigates to
- * `/` with the corresponding filter, which the stage loads (and keeps across
- * Tab). Rendered as a title card - labels in letterspaced caps, picks as quiet
- * buttons that warm to bone on hover.
+ * The individual passages under one author/theme (batch B item 1.5): closed
+ * until toggled, fetched once on first open and cached for the row's
+ * lifetime. Each passage links straight to `/?passage=<id>` - the stage picks
+ * that exact passage up via `StagePage`/`loadById` rather than a random one
+ * matching the filter.
+ */
+type DisclosureState =
+  | { status: 'closed' }
+  | { status: 'loading' }
+  | { status: 'error' }
+  | { status: 'open'; items: PassageSummaryItem[] };
+
+function PassageDisclosure({ query }: { query: PassageQuery }): ReactElement {
+  const [state, setState] = useState<DisclosureState>({ status: 'closed' });
+
+  const toggle = (): void => {
+    if (state.status === 'open' || state.status === 'loading') {
+      setState({ status: 'closed' });
+      return;
+    }
+    setState({ status: 'loading' });
+    fetchPassages(query)
+      .then((items) => setState({ status: 'open', items }))
+      .catch(() => setState({ status: 'error' }));
+  };
+
+  return (
+    <div className="mt-1">
+      <button
+        type="button"
+        onClick={toggle}
+        aria-expanded={state.status === 'open'}
+        className="subtitle text-smoke transition-opacity duration-150 hover:text-bone"
+      >
+        {state.status === 'open' ? 'hide passages' : 'show passages'}
+      </button>
+
+      {state.status === 'error' ? (
+        <p className="mt-2 text-smoke">could not load passages</p>
+      ) : null}
+
+      {state.status === 'open' ? (
+        <ul className="mt-2 space-y-2 border-l border-smoke/20 pl-4">
+          {state.items.length === 0 ? (
+            <li className="text-smoke">no passages</li>
+          ) : (
+            state.items.map((p) => (
+              <li key={p.id}>
+                <Link
+                  to={`/?passage=${String(p.id)}`}
+                  className="flex items-baseline justify-between gap-4 text-bone transition-opacity duration-150 hover:text-tungsten"
+                >
+                  <span>
+                    {p.work.title} <span className="text-smoke">&middot; {p.opening}</span>
+                  </span>
+                  <span className="text-smoke">{p.band}</span>
+                </Link>
+              </li>
+            ))
+          )}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * `/library` (§9.1): browse by band, author, or theme. The author/theme name
+ * navigates to `/` with the corresponding filter (a random matching passage,
+ * kept across Tab); "show passages" instead lists the actual excerpts under
+ * that author/theme (batch B item 1.5) for a specific pick. Rendered as a
+ * title card - labels in letterspaced caps, picks as quiet buttons that warm
+ * to bone on hover.
  */
 export function LibraryPage(): ReactElement {
   usePageMeta({
@@ -90,7 +159,7 @@ export function LibraryPage(): ReactElement {
 
           <div>
             <h2 className="subtitle text-smoke">by author</h2>
-            <ul className="mt-4 grid grid-cols-1 gap-x-10 gap-y-2 sm:grid-cols-2">
+            <ul className="mt-4 grid grid-cols-1 gap-x-10 gap-y-4 sm:grid-cols-2">
               {state.authors.map((author) => (
                 <li key={author.slug}>
                   <button
@@ -103,6 +172,7 @@ export function LibraryPage(): ReactElement {
                     <span>{author.name}</span>
                     <span className="text-smoke">{count(author.passageCount)}</span>
                   </button>
+                  <PassageDisclosure query={{ author: author.slug }} />
                 </li>
               ))}
             </ul>
@@ -110,21 +180,23 @@ export function LibraryPage(): ReactElement {
 
           <div>
             <h2 className="subtitle text-smoke">by theme</h2>
-            <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3">
+            <ul className="mt-4 grid grid-cols-1 gap-x-10 gap-y-4 sm:grid-cols-2">
               {state.themes.map((theme) => (
-                <button
-                  key={theme.theme}
-                  type="button"
-                  onClick={() => {
-                    start({ theme: theme.theme });
-                  }}
-                  className="text-bone transition-opacity duration-150 hover:text-tungsten"
-                >
-                  {prettify(theme.theme)}
-                  <span className="ml-2 text-smoke">{theme.passageCount}</span>
-                </button>
+                <li key={theme.theme}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      start({ theme: theme.theme });
+                    }}
+                    className="flex w-full items-baseline justify-between gap-4 text-left text-bone transition-opacity duration-150 hover:text-tungsten"
+                  >
+                    <span>{prettify(theme.theme)}</span>
+                    <span className="text-smoke">{count(theme.passageCount)}</span>
+                  </button>
+                  <PassageDisclosure query={{ theme: theme.theme }} />
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </div>
       ) : null}

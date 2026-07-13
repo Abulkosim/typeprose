@@ -29,6 +29,9 @@ function catalogRepo(): PassageRepository {
         { theme: 'russian-soul', passageCount: 4 },
       ];
     },
+    async list() {
+      return [];
+    },
   };
 }
 

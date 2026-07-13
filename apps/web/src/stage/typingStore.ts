@@ -10,6 +10,7 @@ import { create } from 'zustand';
 import {
   fetchDailyPassage,
   fetchNextPassage,
+  fetchPassageById,
   submitResult,
   submitWordResult,
   type PassageQuery,
@@ -92,6 +93,8 @@ interface TypingState {
   loadNext: (filter?: PassageQuery) => Promise<void>;
   /** Load the deterministic passage of the day (§10.3); forces prose mode. */
   loadDaily: () => Promise<void>;
+  /** Load one specific passage by id (a library pick or `?passage=` link, batch B); forces prose mode. */
+  loadById: (id: number) => Promise<void>;
   /** Esc: restart the same passage from scratch. */
   restart: () => void;
   typeChar: (char: string, timestampMs: number) => void;
@@ -253,6 +256,13 @@ export const useTypingStore = create<TypingState>()((set, get) => ({
     // later bare Tab loads a normal random passage rather than a word set.
     useModeStore.getState().setMode('prose');
     await loadInto(set, get, {}, async () => ({ kind: 'passage', passage: await fetchDailyPassage() }));
+  },
+
+  loadById: async (id: number) => {
+    // Same convention as loadDaily: a specific pick forces prose and clears
+    // the filter so a later bare Tab returns to a normal random passage.
+    useModeStore.getState().setMode('prose');
+    await loadInto(set, get, {}, async () => ({ kind: 'passage', passage: await fetchPassageById(id) }));
   },
 
   restart: () => {

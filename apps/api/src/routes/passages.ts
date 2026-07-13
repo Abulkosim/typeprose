@@ -2,7 +2,7 @@ import { bandSchema } from '@prosetype/schema';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { utcDateKey } from '../passages/daily.ts';
-import type { PassageFilter, PassageRepository } from '../passages/repository.ts';
+import type { PassageFilter, PassageListFilter, PassageRepository } from '../passages/repository.ts';
 import { sendBadRequest, sendNotFound } from './http.ts';
 
 /** Max recent passage ids accepted in `exclude` (plan §8: "cap 20"). */
@@ -28,6 +28,12 @@ const idParamsSchema = z.object({
   id: z.coerce.number().int().positive(),
 });
 
+const listQuerySchema = z.object({
+  band: bandSchema.optional(),
+  theme: z.string().min(1).optional(),
+  author: z.string().min(1).optional(),
+});
+
 function describeFilter(filter: PassageFilter): string {
   const parts = [
     filter.band !== undefined ? `band=${filter.band}` : null,
@@ -43,8 +49,8 @@ export interface PassageRoutesOptions {
 }
 
 /**
- * GET /passages/next and GET /passages/:id (plan §8, Phase 1 slice).
- * Registered under the /api/v1 prefix by buildApp.
+ * GET /passages/next, GET /passages/:id, and GET /passages (plan §8, Phase 1
+ * slice + batch B item 1.5). Registered under the /api/v1 prefix by buildApp.
  */
 export async function passageRoutes(
   app: FastifyInstance,
@@ -91,4 +97,15 @@ export async function passageRoutes(
   app.get('/authors', async () => repo.listAuthors());
 
   app.get('/themes', async () => repo.listThemes());
+
+  // GET /passages - per-passage listing for the library (batch B item 1.5),
+  // filtered by band/theme/author so the client only asks for one group at a time.
+  app.get('/passages', async (request, reply) => {
+    const parsed = listQuerySchema.safeParse(request.query);
+    if (!parsed.success) {
+      return sendBadRequest(reply, parsed.error);
+    }
+    const filter: PassageListFilter = parsed.data;
+    return repo.list(filter);
+  });
 }

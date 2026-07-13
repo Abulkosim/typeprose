@@ -79,16 +79,25 @@ only stats · library).~~ Shipped.
 
 
 
-### 1.5 Replay a specific passage
+### ~~1.5 Replay a specific passage~~ ✅ shipped 2026-07-13
 
 Library picks load a *random* match; there is no way to retype the
 passage you just finished or one you liked.
 
-- "Retype this passage" command/action on the result view (the id is
-already in the store).
-- Library: list actual passages (title + opening words + band) under each
+- ~~"Retype this passage" command/action on the result view (the id is
+already in the store).~~ Shipped: a button next to "leaderboard for this
+passage" in `ResultView.tsx` calls the existing `restart()` store action
+(no refetch — the result view's `test` is already that passage).
+- ~~Library: list actual passages (title + opening words + band) under each
 author/theme, each linking to `/?passage=<id>` — needs a
-`GET /passages/:id` load path in the store (route already exists).
+`GET /passages/:id` load path in the store (route already exists).~~
+Shipped: a new `GET /passages` list endpoint (filtered by author/theme/
+band, `PassageRepository.list`) backs a per-passage summary DTO
+(`PassageSummaryItem`: id/band/opening/work.title/author); `LibraryPage.tsx`
+adds a lazy "show passages" disclosure under each author/theme row. Picking
+a passage links to `/?passage=<id>`, which `StagePage.tsx` reads and loads
+via a new `loadById` store action (`fetchPassageById` → `GET /passages/:id`,
+the route already existed).
 - Favorites can wait (Tier 3); direct linking is the 80%.
 
 ---
@@ -133,15 +142,23 @@ completion semantics — spec it separately before committing.
 
 
 
-### 2.4 Corpus growth
+### ~~2.4 Corpus growth~~ ✅ shipped 2026-07-13
 
 30 passages exhausts in a week of regular use (word mode was added
 precisely for this).
 
-- Use the existing `pnpm propose` tooling to curate a second batch
+- ~~Use the existing `pnpm propose` tooling to curate a second batch
 (target: 100+ passages, weighted toward the thin bands — warmup has
-only 5).
-- More authors/themes also makes the library page worth browsing.
+only 5).~~ Shipped: 71 new passages curated via `pnpm propose` from 10
+additional Project Gutenberg works — Baum, Twain, Stevenson, London,
+Dickens, Austen, Stoker, Wells, Aesop (trans. Vernon Jones), Melville —
+appended to `corpus/passages.yaml` and ingested. Aesop's short,
+simple-sentence fables were deliberately biased toward warmup. Corpus is
+now 101 passages · warmup 15 · standard 45 · hard 26 · brutal 15 (warmup
+tripled from 5).
+- ~~More authors/themes also makes the library page worth browsing.~~ 24
+authors now (was 14); 20 themes now (was 5) — pairs naturally with the
+new library passage listing from 1.5.
 
 ---
 
@@ -221,7 +238,8 @@ needs passage caching; nice-to-have, not asked for yet.
 
 1. ~~**Batch A (one sitting each):** 1.1 first-run hint, 1.2 PB on result,
   1.3 mobile notice, 1.4 leaderboard links/toggle.~~ ✅ shipped 2026-07-13.
-2. **Batch B:** 1.5 passage linking + retype, 2.4 corpus batch #2.
+2. ~~**Batch B:** 1.5 passage linking + retype, 2.4 corpus batch #2.~~ ✅
+  shipped 2026-07-13.
 3. **Batch C:** 2.1 streak, 2.2 weak-key drill, 2.3 word-mode toggles.
 4. **Batch D:** 3.1 account management, 3.2 replay, then reassess.
 

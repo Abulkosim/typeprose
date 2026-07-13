@@ -12,7 +12,9 @@ import { useTypingStore } from '../stage/typingStore';
  * always (re)loads a matching passage (a library pick, forcing prose), while a
  * bare `/` only loads when there is no live run - following the persisted mode
  * (a word set in word mode, else a random passage) - so returning from another
- * route keeps an in-progress test.
+ * route keeps an in-progress test. `?passage=<id>` (batch B item 1.5) loads
+ * that exact passage - a library pick or a "retype this passage" link - and
+ * takes priority over the broader filters.
  */
 export function StagePage(): ReactElement {
   usePageMeta({
@@ -24,11 +26,17 @@ export function StagePage(): ReactElement {
   const theme = params.get('theme') ?? undefined;
   const author = params.get('author') ?? undefined;
   const daily = params.get('daily') !== null;
+  const passageParam = params.get('passage');
+  const passageId = passageParam !== null && /^\d+$/.test(passageParam) ? Number(passageParam) : null;
 
   useEffect(() => {
     const state = useTypingStore.getState();
     if (daily) {
       void state.loadDaily();
+      return;
+    }
+    if (passageId !== null) {
+      void state.loadById(passageId);
       return;
     }
     const hasFilter = band !== undefined || theme !== undefined || author !== undefined;
@@ -41,7 +49,7 @@ export function StagePage(): ReactElement {
     if (state.test === null) {
       void state.loadNext();
     }
-  }, [band, theme, author, daily]);
+  }, [band, theme, author, daily, passageId]);
 
   return <TypingStage />;
 }
