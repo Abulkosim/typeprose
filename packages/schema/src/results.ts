@@ -63,6 +63,14 @@ export const postResultsResponseSchema = z.object({
   id: z.int().positive(),
   serverStats: runStatsSchema,
   clientMatch: z.boolean(),
+  /** True when this run's wpm beats the profile's best across every prior run. */
+  isNewBest: z.boolean(),
+  /** The profile's best wpm before this run (any mode/passage), or null with no prior runs. */
+  previousBestWpm: z.number().nonnegative().nullable(),
+  /** True (prose only) when this run's wpm beats the profile's best on this same passage. */
+  isNewPassageBest: z.boolean(),
+  /** The profile's best wpm on this passage before this run, or null (word runs, or no prior attempt). */
+  previousPassageBestWpm: z.number().nonnegative().nullable(),
 });
 
 export type PostResultsResponse = z.infer<typeof postResultsResponseSchema>;

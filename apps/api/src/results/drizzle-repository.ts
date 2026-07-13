@@ -1,5 +1,5 @@
 import type { Band, ResultMode } from '@prosetype/schema';
-import { desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import type { Db } from '../db/client.ts';
 import { authors, passages, profiles, results, works } from '../db/schema.ts';
 import type {
@@ -83,7 +83,8 @@ export function createDrizzleResultRepository(db: Db): ResultRepository {
       const scope = opts.passageId !== undefined ? sql`where r.passage_id = ${opts.passageId}` : sql``;
       const rows = (await db.execute(sql`
         select best.wpm, best.accuracy, best.consistency,
-               best.display_name as "displayName", best.passage_id as "passageId",
+               best.display_name as "displayName", best.profile_id as "profileId",
+               best.passage_id as "passageId",
                best.band, best.work_title as "workTitle", best.author_name as "authorName",
                best.created_at as "createdAt"
         from (
@@ -106,6 +107,7 @@ export function createDrizzleResultRepository(db: Db): ResultRepository {
         accuracy: string;
         consistency: string;
         displayName: string | null;
+        profileId: string;
         passageId: number;
         band: string;
         workTitle: string;
@@ -117,6 +119,7 @@ export function createDrizzleResultRepository(db: Db): ResultRepository {
         accuracy: Number(r.accuracy),
         consistency: Number(r.consistency),
         displayName: r.displayName,
+        profileId: r.profileId,
         passageId: r.passageId,
         band: r.band as Band,
         workTitle: r.workTitle,
@@ -125,6 +128,18 @@ export function createDrizzleResultRepository(db: Db): ResultRepository {
         // paths, which yield a Date) - normalize so the route can serialize it.
         createdAt: new Date(r.createdAt),
       }));
+    },
+
+    async bestWpmForProfile(profileId: string, passageId?: number): Promise<number | null> {
+      const condition =
+        passageId !== undefined
+          ? and(eq(results.profileId, profileId), eq(results.passageId, passageId))
+          : eq(results.profileId, profileId);
+      const [row] = await db
+        .select({ wpm: sql<string | null>`max(${results.wpm})` })
+        .from(results)
+        .where(condition);
+      return toNumberOrNull(row?.wpm ?? null);
     },
 
     async aggregatesForProfile(profileId: string): Promise<ProfileAggregates> {

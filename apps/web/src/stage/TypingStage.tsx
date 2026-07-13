@@ -1,12 +1,36 @@
 import { useEffect, useRef, useState, type ReactElement } from 'react';
+import { Link } from 'react-router';
 
 import { useCommandStore } from '../command/commandStore';
 import { Epigraph } from '../components/Epigraph';
+import { isKeyboardless } from '../lib/device';
 import { ResultView } from '../result/ResultView';
 import { playThock } from '../settings/sound';
 import { Hud } from './Hud';
 import { PassageBoard } from './PassageBoard';
 import { useTypingStore } from './typingStore';
+
+/**
+ * A quiet, honest notice for touch-only devices (§ mobile): the stage's
+ * hidden-textarea input model needs a physical keyboard (Tab/Esc have no
+ * on-screen equivalent), so typing here would otherwise just silently fail.
+ * Library/stats/leaderboard stay reachable via the letterbox nav.
+ */
+function KeyboardlessNotice(): ReactElement {
+  return (
+    <section aria-label="Typing stage unavailable" className="animate-fade-in">
+      <p className="subtitle text-smoke">prosetype needs a keyboard</p>
+      <p className="mt-4 text-bone">
+        Typing runs require a physical keyboard - open this page on a desktop or laptop to type.
+      </p>
+      <p className="mt-6 text-smoke">
+        You can still browse the <Link to="/library" className="text-bone hover:underline">library</Link>,{' '}
+        <Link to="/stats" className="text-bone hover:underline">stats</Link>, and{' '}
+        <Link to="/leaderboard" className="text-bone hover:underline">leaderboard</Link> from here.
+      </p>
+    </section>
+  );
+}
 
 /**
  * The typing stage (plan §9.3). A visually hidden textarea holds focus;
@@ -21,6 +45,7 @@ export function TypingStage(): ReactElement {
   const snapshot = useTypingStore((s) => s.snapshot);
   const completedRun = useTypingStore((s) => s.completedRun);
   const paletteOpen = useCommandStore((s) => s.isOpen);
+  const [keyboardless] = useState(() => isKeyboardless());
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const composingRef = useRef(false);
@@ -161,6 +186,8 @@ export function TypingStage(): ReactElement {
       if (blurTimerRef.current !== null) clearTimeout(blurTimerRef.current);
     };
   }, []);
+
+  if (keyboardless) return <KeyboardlessNotice />;
 
   return (
     <section aria-label="Typing stage" onClick={() => textareaRef.current?.focus()}>

@@ -12,6 +12,8 @@ export const leaderboardEntrySchema = z.object({
   accuracy: z.number().min(0).max(100),
   consistency: z.number().min(0).max(100),
   displayName: z.string().nullable(),
+  /** The profile this run belongs to - lets a client highlight its own row. */
+  profileId: z.uuid(),
   passageId: z.int().positive(),
   band: bandSchema,
   workTitle: z.string(),

@@ -49,6 +49,9 @@ function resultRepoWith(
     async topResults() {
       return [];
     },
+    async bestWpmForProfile() {
+      return null;
+    },
   };
 }
 

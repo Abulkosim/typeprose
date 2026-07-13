@@ -205,6 +205,43 @@ describe('POST /api/v1/results', () => {
     });
     expect(res.statusCode).toBe(400);
   });
+
+  it('flags the first-ever run as a new best, both global and per-passage', async () => {
+    const { app } = await setup();
+    const res = await app.inject({ method: 'POST', url: '/api/v1/results', payload: body() });
+    const parsed = res.json<PostResultsResponse>();
+    expect(parsed.isNewBest).toBe(true);
+    expect(parsed.previousBestWpm).toBeNull();
+    expect(parsed.isNewPassageBest).toBe(true);
+    expect(parsed.previousPassageBestWpm).toBeNull();
+  });
+
+  it('compares a later run against the profile\'s prior best', async () => {
+    const { app } = await setup();
+    const first = await app.inject({ method: 'POST', url: '/api/v1/results', payload: body() });
+    const firstWpm = first.json<PostResultsResponse>().serverStats.wpm;
+
+    // A slower run over the same passage: neither a global nor a passage best.
+    const slower = await app.inject({
+      method: 'POST',
+      url: '/api/v1/results',
+      payload: body({ charEvents: typeRun(shortPassage.text, 8000) }),
+    });
+    const slowerParsed = slower.json<PostResultsResponse>();
+    expect(slowerParsed.serverStats.wpm).toBeLessThan(firstWpm);
+    expect(slowerParsed.isNewBest).toBe(false);
+    expect(slowerParsed.previousBestWpm).toBe(firstWpm);
+    expect(slowerParsed.isNewPassageBest).toBe(false);
+    expect(slowerParsed.previousPassageBestWpm).toBe(firstWpm);
+  });
+
+  it('a word run never counts toward a passage best', async () => {
+    const { app } = await setup();
+    const res = await app.inject({ method: 'POST', url: '/api/v1/results', payload: wordBody() });
+    const parsed = res.json<PostResultsResponse>();
+    expect(parsed.isNewPassageBest).toBe(false);
+    expect(parsed.previousPassageBestWpm).toBeNull();
+  });
 });
 
 describe('GET /api/v1/leaderboard', () => {
@@ -227,6 +264,7 @@ describe('GET /api/v1/leaderboard', () => {
             accuracy: 98,
             consistency: 90,
             displayName: 'ada',
+            profileId: PROFILE_ID,
             passageId: 2,
             band: 'standard' as const,
             workTitle: 'The Maltese Falcon',
@@ -238,6 +276,7 @@ describe('GET /api/v1/leaderboard', () => {
             accuracy: 95,
             consistency: 85,
             displayName: null,
+            profileId: '22222222-2222-4222-8222-222222222222',
             passageId: 2,
             band: 'standard' as const,
             workTitle: 'The Maltese Falcon',
@@ -259,6 +298,7 @@ describe('GET /api/v1/leaderboard', () => {
     expect(board.entries.map((e) => e.rank)).toEqual([1, 2]);
     expect(board.entries[0]?.displayName).toBe('ada');
     expect(board.entries[1]?.displayName).toBeNull();
+    expect(board.entries[0]?.profileId).toBe(PROFILE_ID);
     expect(board.entries[0]?.createdAt).toBe('2026-07-01T10:00:00.000Z');
   });
 

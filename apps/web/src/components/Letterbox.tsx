@@ -80,6 +80,7 @@ export function Letterbox({ children }: { children: ReactNode }): ReactElement {
         <nav className="flex items-center gap-6">
           <BarLink to="/stats" label="stats" />
           <BarLink to="/library" label="library" />
+          <BarLink to="/leaderboard" label="leaderboard" />
         </nav>
       </header>
 

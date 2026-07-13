@@ -80,6 +80,7 @@ export async function resultRoutes(app: FastifyInstance, opts: ResultRoutesOptio
         accuracy: row.accuracy,
         consistency: row.consistency,
         displayName: row.displayName,
+        profileId: row.profileId,
         passageId: row.passageId,
         band: row.band,
         workTitle: row.workTitle,
@@ -162,6 +163,13 @@ export async function resultRoutes(app: FastifyInstance, opts: ResultRoutesOptio
         );
       }
 
+      // Read the profile's prior bests before inserting this run, so they
+      // naturally exclude the run being submitted (plan silent; a "new best"
+      // moment needs the old value to compare against and to show as fallback).
+      const previousBestWpm = await results.bestWpmForProfile(body.profileId);
+      const previousPassageBestWpm =
+        passageId !== null ? await results.bestWpmForProfile(body.profileId, passageId) : null;
+
       const clientMatch = statsMatch(serverStats, body.clientStats);
       const id = await results.insert({
         profileId: body.profileId,
@@ -177,7 +185,16 @@ export async function resultRoutes(app: FastifyInstance, opts: ResultRoutesOptio
         clientMatch,
       });
 
-      return reply.code(201).send({ id, serverStats, clientMatch });
+      return reply.code(201).send({
+        id,
+        serverStats,
+        clientMatch,
+        isNewBest: previousBestWpm === null || serverStats.wpm > previousBestWpm,
+        previousBestWpm,
+        isNewPassageBest:
+          passageId !== null && (previousPassageBestWpm === null || serverStats.wpm > previousPassageBestWpm),
+        previousPassageBestWpm,
+      });
     },
   );
 }
