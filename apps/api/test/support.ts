@@ -154,5 +154,12 @@ export function createStubResultRepo(): ResultRepository & { inserted: NewResult
     async topResults() {
       return [];
     },
+    async bestWpmForProfile(profileId: string, passageId?: number): Promise<number | null> {
+      const matches = this.inserted.filter(
+        (r) => r.profileId === profileId && (passageId === undefined || r.passageId === passageId),
+      );
+      if (matches.length === 0) return null;
+      return Math.max(...matches.map((r) => r.wpm));
+    },
   };
 }

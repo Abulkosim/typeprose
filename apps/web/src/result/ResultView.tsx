@@ -1,10 +1,12 @@
 import { computeHeatmap, computePerSecondRawWpm, type RunStats } from '@prosetype/engine';
 import type { CharEvents } from '@prosetype/schema';
-import { useState, useMemo, type ReactElement } from 'react';
+import { useEffect, useState, useMemo, type ReactElement } from 'react';
+import { Link } from 'react-router';
 
 import { Epigraph } from '../components/Epigraph';
 import { shareResultCard } from '../lib/shareCard';
-import type { ActiveTest } from '../stage/typingStore';
+import { hasSeenResultHint, markSeenResultHint } from '../settings/onboarding';
+import { useTypingStore, type ActiveTest, type BestInfo } from '../stage/typingStore';
 import { HeatmapPassage } from './HeatmapPassage';
 import { WpmSparkline } from './WpmSparkline';
 
@@ -45,6 +47,41 @@ function formatTax(pct: number | null): string {
 }
 
 /**
+ * A personal-best moment (a "new record" is the cheapest retention feature a
+ * typing app has). `bestInfo` is null until the fire-and-forget submission
+ * resolves, so this may render nothing at first and then pop in - read
+ * reactively from the store rather than passed as a static prop.
+ */
+function BestTag({
+  bestInfo,
+  isPassage,
+}: {
+  bestInfo: BestInfo | null;
+  isPassage: boolean;
+}): ReactElement | null {
+  if (bestInfo === null) return null;
+  if (bestInfo.isNewBest) {
+    return (
+      <p className="subtitle animate-best-pop mt-3 text-tungsten">new personal best</p>
+    );
+  }
+  if (isPassage && bestInfo.isNewPassageBest) {
+    return (
+      <p className="subtitle animate-best-pop mt-3 text-tungsten">new best on this passage</p>
+    );
+  }
+  if (isPassage && bestInfo.previousPassageBestWpm !== null) {
+    return (
+      <p className="subtitle mt-3 text-smoke">
+        your best on this passage{' '}
+        <span className="text-bone">{bestInfo.previousPassageBestWpm} wpm</span>
+      </p>
+    );
+  }
+  return null;
+}
+
+/**
  * Result view (§9.3/§9.4): a title card. Big stats (wpm large; raw, accuracy,
  * consistency smaller), the hand-rolled wpm-over-time sparkline, the passage
  * re-rendered as the §7.6 hesitation heatmap under its attribution epigraph,
@@ -72,8 +109,15 @@ export function ResultView({ run, test, onNext }: ResultViewProps): ReactElement
   const { stats } = run;
   const text = test.kind === 'passage' ? test.passage.text : test.text;
   const [share, setShare] = useState<ShareState>('idle');
+  const bestInfo = useTypingStore((s) => s.bestInfo);
   const heatmap = useMemo(() => computeHeatmap(text, run.log), [text, run.log]);
   const buckets = useMemo(() => computePerSecondRawWpm(text, run.log), [text, run.log]);
+
+  // First-ever result: point at /stats once, then never again (§ onboarding).
+  const [showResultHint] = useState(() => !hasSeenResultHint());
+  useEffect(() => {
+    markSeenResultHint();
+  }, []);
 
   // Sharing is a branded attribution artifact, so it is offered for prose only.
   const passage = test.kind === 'passage' ? test.passage : null;
@@ -92,9 +136,16 @@ export function ResultView({ run, test, onNext }: ResultViewProps): ReactElement
     <section aria-label="Result" className="animate-fade-in">
       <p className="subtitle text-smoke">result</p>
 
-      <div className="mt-8 flex flex-wrap items-baseline gap-x-10 gap-y-4">
+      <div className="relative mt-8 flex flex-wrap items-baseline gap-x-10 gap-y-4">
+        {bestInfo?.isNewBest ? <div aria-hidden className="best-flash" /> : null}
         <p>
-          <span className="text-[3.6rem] leading-none text-tungsten">{stats.wpm}</span>
+          <span
+            className={`text-[3.6rem] leading-none text-tungsten ${
+              bestInfo?.isNewBest ? 'animate-best-glow' : ''
+            }`}
+          >
+            {stats.wpm}
+          </span>
           <span className="subtitle ml-3 text-smoke">wpm</span>
         </p>
         <p className="text-smoke">
@@ -103,6 +154,17 @@ export function ResultView({ run, test, onNext }: ResultViewProps): ReactElement
           <span className="text-bone">{stats.consistency}%</span>
         </p>
       </div>
+
+      <BestTag bestInfo={bestInfo} isPassage={passage !== null} />
+
+      {showResultHint ? (
+        <p className="subtitle mt-3 text-smoke">
+          saved &middot; track your progress at{' '}
+          <Link to="/stats" className="text-bone hover:underline">
+            stats
+          </Link>
+        </p>
+      ) : null}
 
       <div className="mt-10">
         <WpmSparkline buckets={buckets} durationMs={stats.durationMs} />
@@ -159,6 +221,14 @@ export function ResultView({ run, test, onNext }: ResultViewProps): ReactElement
           >
             {SHARE_LABEL[share]}
           </button>
+        ) : null}
+        {passage !== null ? (
+          <Link
+            to={`/leaderboard?passageId=${String(passage.id)}`}
+            className="subtitle text-smoke transition-opacity duration-150 hover:text-bone"
+          >
+            leaderboard for this passage
+          </Link>
         ) : null}
       </div>
     </section>

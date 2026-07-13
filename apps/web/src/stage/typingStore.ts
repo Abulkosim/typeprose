@@ -4,7 +4,7 @@ import {
   type RunStats,
   type TypingEngine,
 } from '@prosetype/engine';
-import type { Passage } from '@prosetype/schema';
+import type { Passage, PostResultsResponse } from '@prosetype/schema';
 import { create } from 'zustand';
 
 import {
@@ -43,6 +43,20 @@ function testText(test: ActiveTest): string {
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'not-saved';
 
 /**
+ * Personal-best info for the just-submitted run, straight from the server's
+ * POST /results response. Arrives after `saveStatus` becomes 'saved' - the
+ * submission is fire-and-forget and often resolves after the result view is
+ * already showing, so the result view reads this reactively from the store
+ * rather than as a prop frozen at completion time.
+ */
+export interface BestInfo {
+  isNewBest: boolean;
+  previousBestWpm: number | null;
+  isNewPassageBest: boolean;
+  previousPassageBestWpm: number | null;
+}
+
+/**
  * Thin zustand store wrapping the engine (plan §3). The engine is the source
  * of truth: input handlers append to it synchronously (with the
  * `performance.now()` captured in the DOM handler) and React renders from the
@@ -63,6 +77,8 @@ interface TypingState {
   capsLock: boolean;
   /** Result-submission state for the current run (§9.5). */
   saveStatus: SaveStatus;
+  /** Personal-best info for the current run, populated once the submission resolves. */
+  bestInfo: BestInfo | null;
   /** Active library filter (§9.1); reused across Tab so a pick "sticks". */
   filter: PassageQuery;
   /** Up to the last 20 passage ids, excluded from the next fetch (plan §8). */
@@ -126,6 +142,7 @@ async function loadInto(
     errorMessage: null,
     restarted: false,
     saveStatus: 'idle',
+    bestInfo: null,
     filter: nextFilter,
   });
   try {
@@ -153,7 +170,7 @@ async function submitCompletedRun(
   token: number,
   set: (partial: Partial<TypingState>) => void,
 ): Promise<void> {
-  const attempt = (): Promise<unknown> =>
+  const attempt = (): Promise<PostResultsResponse> =>
     ensureProfileId().then((profileId) =>
       test.kind === 'passage'
         ? submitResult({
@@ -170,12 +187,23 @@ async function submitCompletedRun(
           }),
     );
   try {
+    let response: PostResultsResponse;
     try {
-      await attempt();
+      response = await attempt();
     } catch {
-      await attempt(); // one retry (§9.5)
+      response = await attempt(); // one retry (§9.5)
     }
-    if (token === submitToken) set({ saveStatus: 'saved' });
+    if (token === submitToken) {
+      set({
+        saveStatus: 'saved',
+        bestInfo: {
+          isNewBest: response.isNewBest,
+          previousBestWpm: response.previousBestWpm,
+          isNewPassageBest: response.isNewPassageBest,
+          previousPassageBestWpm: response.previousPassageBestWpm,
+        },
+      });
+    }
   } catch {
     if (token === submitToken) set({ saveStatus: 'not-saved' });
   }
@@ -191,6 +219,7 @@ export const useTypingStore = create<TypingState>()((set, get) => ({
   restarted: false,
   capsLock: false,
   saveStatus: 'idle',
+  bestInfo: null,
   filter: {},
   recentIds: [],
 
@@ -238,6 +267,7 @@ export const useTypingStore = create<TypingState>()((set, get) => ({
       snapshot: engine.getSnapshot(),
       completedRun: null,
       saveStatus: 'idle',
+      bestInfo: null,
       // Mark restarted only when a run of this passage had actually started.
       restarted: get().restarted || (snapshot !== null && snapshot.status !== 'idle'),
     });
@@ -309,6 +339,7 @@ export function resetTypingStore(): void {
     restarted: false,
     capsLock: false,
     saveStatus: 'idle',
+    bestInfo: null,
     filter: {},
     recentIds: [],
   });

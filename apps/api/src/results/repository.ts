@@ -60,6 +60,7 @@ export interface LeaderboardRow {
   accuracy: number;
   consistency: number;
   displayName: string | null;
+  profileId: string;
   passageId: number;
   band: Band;
   workTitle: string;
@@ -97,6 +98,12 @@ export interface ResultRepository {
   insert(row: NewResult): Promise<number>;
   /** All-time aggregates for the profile's stats page. */
   aggregatesForProfile(profileId: string): Promise<ProfileAggregates>;
+  /**
+   * The profile's best wpm so far, or null with no prior runs. Scoped to one
+   * passage when `passageId` is given (prose personal-best check), else across
+   * every run of any mode (global personal-best check).
+   */
+  bestWpmForProfile(profileId: string, passageId?: number): Promise<number | null>;
   /** The most recent results, newest first, capped at `limit`. */
   recentForProfile(profileId: string, limit: number): Promise<StoredResultRow[]>;
   /**
