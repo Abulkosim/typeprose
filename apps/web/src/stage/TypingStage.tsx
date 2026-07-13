@@ -8,7 +8,7 @@ import { ResultView } from '../result/ResultView';
 import { playThock } from '../settings/sound';
 import { Hud } from './Hud';
 import { PassageBoard } from './PassageBoard';
-import { useTypingStore } from './typingStore';
+import { useTypingStore, wordTestLabel } from './typingStore';
 
 /**
  * A quiet, honest notice for touch-only devices (§ mobile): the stage's
@@ -223,7 +223,7 @@ export function TypingStage(): ReactElement {
               {test.kind === 'passage' ? (
                 <Epigraph passage={test.passage} />
               ) : (
-                <p className="subtitle text-smoke">words &middot; {test.count}</p>
+                <p className="subtitle text-smoke">{wordTestLabel(test)}</p>
               )}
             </div>
           </div>

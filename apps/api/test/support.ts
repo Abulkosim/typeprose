@@ -3,6 +3,7 @@ import type { CharEvents, Passage } from '@prosetype/schema';
 import { displayNameFromEmail } from '../src/profiles/claim.ts';
 import type { PassageFilter, PassageRepository } from '../src/passages/repository.ts';
 import type { ClaimTokenInput, ProfileRepository } from '../src/profiles/repository.ts';
+import { advanceDailyStreak, type DailyStreakState } from '../src/profiles/streak.ts';
 import type {
   NewResult,
   ProfileAggregates,
@@ -101,11 +102,18 @@ export function dailyPick(fixtures: Passage[], dateKey: string): Passage | null 
   return sorted[seed % sorted.length] ?? null;
 }
 
+/** An unstarted daily streak - the stub's default for any profile not yet seeded. */
+const EMPTY_STREAK: DailyStreakState = { current: 0, best: 0, lastDate: null };
+
 export function createStubProfileRepo(existingIds: string[]): ProfileRepository & {
   created: number;
   claimTokens: ClaimTokenInput[];
 } {
   const tokens = new Map<string, ClaimTokenInput & { used: boolean }>();
+  // In-memory daily-streak store (Batch C §2.1), keyed by profile id; the
+  // methods below reuse the real pure functions from src/profiles/streak.ts
+  // so the stub stays behaviourally identical to the Drizzle repository.
+  const streaks = new Map<string, DailyStreakState>();
   return {
     created: 0,
     claimTokens: [],
@@ -130,6 +138,14 @@ export function createStubProfileRepo(existingIds: string[]): ProfileRepository 
       }
       t.used = true;
       return { status: 'ok' as const, profileId: t.profileId, displayName: displayNameFromEmail(t.email) };
+    },
+    async getDailyStreak(profileId: string): Promise<DailyStreakState> {
+      return streaks.get(profileId) ?? EMPTY_STREAK;
+    },
+    async recordDailyCompletion(profileId: string, todayKey: string) {
+      const { state, extended } = advanceDailyStreak(streaks.get(profileId) ?? EMPTY_STREAK, todayKey);
+      if (extended) streaks.set(profileId, state);
+      return { state, extended };
     },
   };
 }

@@ -6,3 +6,14 @@
 export function utcDateKey(date: Date): string {
   return date.toISOString().slice(0, 10); // YYYY-MM-DD, UTC
 }
+
+/**
+ * Shift a UTC date key by `days` (may be negative), used by the daily-streak
+ * logic (Batch C §2.1) to test contiguity (e.g. "is `lastDate` yesterday?")
+ * without hand-rolling calendar math.
+ */
+export function addDaysToUtcDateKey(key: string, days: number): string {
+  const date = new Date(`${key}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return utcDateKey(date);
+}

@@ -1,3 +1,5 @@
+import type { DailyStreakState } from './streak.ts';
+
 /**
  * Data access for anonymous profiles (plan §4, §8, §9.2). Kept behind an
  * interface so route tests can substitute an in-memory stub (no live Postgres
@@ -34,4 +36,15 @@ export interface ProfileRepository {
    * profile. `now` is passed in for the expiry check (testability).
    */
   verifyClaim(token: string, now: Date): Promise<ClaimOutcome>;
+  /** This profile's daily-streak columns, as stored (Batch C §2.1). */
+  getDailyStreak(profileId: string): Promise<DailyStreakState>;
+  /**
+   * Record a daily-passage completion for `todayKey` and advance the streak
+   * (Batch C §2.1). Row-locked so two concurrent submissions for the same
+   * profile serialize instead of both reading the pre-advance state.
+   */
+  recordDailyCompletion(
+    profileId: string,
+    todayKey: string,
+  ): Promise<{ state: DailyStreakState; extended: boolean }>;
 }

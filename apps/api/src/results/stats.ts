@@ -1,5 +1,5 @@
 import { aggregateKeyStats, computeHeatmap } from '@prosetype/engine';
-import type { ProfileStats } from '@prosetype/schema';
+import type { DailyStreakStats, ProfileStats } from '@prosetype/schema';
 import type { ProfileAggregates, StoredResultRow } from './repository.ts';
 
 /** How many most-recent results the last-10 wpm average draws from (plan §8). */
@@ -65,6 +65,7 @@ function punctuationTaxAvg(recent: readonly StoredResultRow[]): number | null {
 export function buildProfileStats(
   aggregates: ProfileAggregates,
   recent: readonly StoredResultRow[],
+  dailyStreak: DailyStreakStats,
 ): ProfileStats {
   const last10Wpm = recent.slice(0, AVG_WPM_WINDOW).map((r) => r.wpm);
 
@@ -123,5 +124,6 @@ export function buildProfileStats(
     })),
     keyStats: keyStats.keys,
     bigramStats: keyStats.bigrams,
+    dailyStreak,
   };
 }

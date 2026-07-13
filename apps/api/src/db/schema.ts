@@ -4,6 +4,7 @@ import {
   bigserial,
   boolean,
   check,
+  date,
   index,
   integer,
   jsonb,
@@ -73,6 +74,12 @@ export const profiles = pgTable('profiles', {
   email: text('email').unique(),
   emailVerifiedAt: timestamp('email_verified_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  // Daily-passage streak (Batch C §2.1): 1:1 with the profile, not a separate
+  // table, since claim-merge already updates/deletes `profiles` rows in one
+  // transaction. `lastDailyDate` matches the `utcDateKey` format ('YYYY-MM-DD').
+  dailyStreak: integer('daily_streak').notNull().default(0),
+  dailyBestStreak: integer('daily_best_streak').notNull().default(0),
+  lastDailyDate: date('last_daily_date', { mode: 'string' }),
 });
 
 /** Pending email-claim magic links (Phase 3, §10.3). Short-lived, single-use. */

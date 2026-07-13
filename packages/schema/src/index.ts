@@ -36,10 +36,12 @@ export {
   MAX_WORD_TEXT_LEN,
   postResultsRequestSchema,
   postResultsResponseSchema,
+  dailyStreakInfoSchema,
   type RunStats,
   type ResultMode,
   type PostResultsRequest,
   type PostResultsResponse,
+  type DailyStreakInfo,
 } from './results.ts';
 
 export { postProfilesResponseSchema, type PostProfilesResponse } from './profiles.ts';
@@ -68,11 +70,13 @@ export {
   authorAggregateSchema,
   keyStatSchema,
   bigramStatSchema,
+  dailyStreakStatsSchema,
   profileStatsSchema,
   type ResultSummary,
   type BestRun,
   type AuthorAggregate,
   type KeyStat,
   type BigramStat,
+  type DailyStreakStats,
   type ProfileStats,
 } from './stats.ts';

@@ -6,7 +6,7 @@ import { Link } from 'react-router';
 import { Epigraph } from '../components/Epigraph';
 import { shareResultCard } from '../lib/shareCard';
 import { hasSeenResultHint, markSeenResultHint } from '../settings/onboarding';
-import { useTypingStore, type ActiveTest, type BestInfo } from '../stage/typingStore';
+import { useTypingStore, wordTestLabel, type ActiveTest, type BestInfo } from '../stage/typingStore';
 import { HeatmapPassage } from './HeatmapPassage';
 import { WpmSparkline } from './WpmSparkline';
 
@@ -79,6 +79,24 @@ function BestTag({
     );
   }
   return null;
+}
+
+/**
+ * The daily-streak line (Batch C §2.1): non-null only when this run was
+ * matched against today's daily server-side. Gets the same "just happened"
+ * pop treatment as a new best when it actually advanced the streak.
+ */
+function DailyStreakTag({ bestInfo }: { bestInfo: BestInfo | null }): ReactElement | null {
+  const dailyStreak = bestInfo?.dailyStreak ?? null;
+  if (dailyStreak === null) return null;
+  return (
+    <p className={`subtitle mt-3 text-smoke ${dailyStreak.extended ? 'animate-best-pop' : ''}`}>
+      daily streak &middot;{' '}
+      <span className="text-bone">
+        {dailyStreak.current} {dailyStreak.current === 1 ? 'day' : 'days'}
+      </span>
+    </p>
+  );
 }
 
 /**
@@ -156,6 +174,7 @@ export function ResultView({ run, test, onNext }: ResultViewProps): ReactElement
       </div>
 
       <BestTag bestInfo={bestInfo} isPassage={passage !== null} />
+      <DailyStreakTag bestInfo={bestInfo} />
 
       {showResultHint ? (
         <p className="subtitle mt-3 text-smoke">
@@ -176,7 +195,7 @@ export function ResultView({ run, test, onNext }: ResultViewProps): ReactElement
           {test.kind === 'passage' ? (
             <Epigraph passage={test.passage} />
           ) : (
-            <p className="subtitle text-smoke">words &middot; {test.count}</p>
+            <p className="subtitle text-smoke">{wordTestLabel(test)}</p>
           )}
         </div>
       </div>

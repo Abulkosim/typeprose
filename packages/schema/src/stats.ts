@@ -89,6 +89,20 @@ export const bigramStatSchema = z.object({
 export type BigramStat = z.infer<typeof bigramStatSchema>;
 
 /**
+ * A profile's daily-passage streak, as it reads "right now" (Batch C §2.1):
+ * lazily reset (no write) rather than the raw stored columns, so a lapsed
+ * streak shows 0 without needing a completion to clear it.
+ */
+export const dailyStreakStatsSchema = z.object({
+  current: z.int().nonnegative(),
+  best: z.int().nonnegative(),
+  /** Whether today's daily has already been completed. */
+  completedToday: z.boolean(),
+});
+
+export type DailyStreakStats = z.infer<typeof dailyStreakStatsSchema>;
+
+/**
  * GET /profiles/:id/stats response (plan §8). Every aggregate is nullable so a
  * brand-new profile with zero results renders cleanly (nulls, empty arrays).
  */
@@ -113,6 +127,8 @@ export const profileStatsSchema = z.object({
   keyStats: z.array(keyStatSchema),
   /** Worst problem bigrams over the recent window, worst first. */
   bigramStats: z.array(bigramStatSchema),
+  /** Daily-passage streak (Batch C §2.1); zeros for a profile that never has. */
+  dailyStreak: dailyStreakStatsSchema,
 });
 
 export type ProfileStats = z.infer<typeof profileStatsSchema>;

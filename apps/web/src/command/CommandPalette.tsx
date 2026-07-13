@@ -24,6 +24,8 @@ export function CommandPalette(): ReactElement | null {
   const theme = useThemeStore((s) => s.theme);
   const soundEnabled = useSoundStore((s) => s.enabled);
   const mode = useModeStore((s) => s.mode);
+  const wordPunctuation = useModeStore((s) => s.punctuation);
+  const wordNumbers = useModeStore((s) => s.numbers);
   const musicChannel = useMusicStore((s) => s.channel);
   const musicVolume = useMusicStore((s) => s.volume);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -81,12 +83,43 @@ export function CommandPalette(): ReactElement | null {
           if (location.pathname !== '/') navigate('/');
           void useTypingStore.getState().loadNext({});
         },
+        wordPunctuation,
+        toggleWordPunctuation: () => {
+          const m = useModeStore.getState();
+          m.setPunctuation(!m.punctuation);
+          // Flipping the toggle only changes the *next* generated set; when a
+          // words run is already showing, reload immediately so the toggle
+          // feels live rather than deferred to the next Tab.
+          if (m.mode === 'words') {
+            if (location.pathname !== '/') navigate('/');
+            void useTypingStore.getState().loadNext();
+          }
+        },
+        wordNumbers,
+        toggleWordNumbers: () => {
+          const m = useModeStore.getState();
+          m.setNumbers(!m.numbers);
+          if (m.mode === 'words') {
+            if (location.pathname !== '/') navigate('/');
+            void useTypingStore.getState().loadNext();
+          }
+        },
         musicChannel,
         setMusicChannel: (channel) => useMusicStore.getState().setChannel(channel),
         musicVolume,
         adjustMusicVolume: (delta) => useMusicStore.getState().adjustVolume(delta),
       }),
-    [location.pathname, navigate, theme, soundEnabled, mode, musicChannel, musicVolume],
+    [
+      location.pathname,
+      navigate,
+      theme,
+      soundEnabled,
+      mode,
+      wordPunctuation,
+      wordNumbers,
+      musicChannel,
+      musicVolume,
+    ],
   );
   const results = useMemo(() => filterCommands(commands, query), [commands, query]);
 

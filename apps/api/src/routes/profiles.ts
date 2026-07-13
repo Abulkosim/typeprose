@@ -2,8 +2,10 @@ import { claimRequestSchema, claimVerifyRequestSchema } from '@prosetype/schema'
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import type { Mailer } from '../mail/mailer.ts';
+import { utcDateKey } from '../passages/daily.ts';
 import { CLAIM_TOKEN_TTL_MS, generateClaimToken } from '../profiles/claim.ts';
 import type { ProfileRepository } from '../profiles/repository.ts';
+import { effectiveDailyStreak } from '../profiles/streak.ts';
 import type { ResultRepository } from '../results/repository.ts';
 import { buildProfileStats } from '../results/stats.ts';
 import { sendBadRequest, sendBadRequestMessage, sendNotFound } from './http.ts';
@@ -89,10 +91,11 @@ export async function profileRoutes(
     if (!(await profiles.exists(id))) {
       return sendNotFound(reply, `Profile ${id} not found`);
     }
-    const [aggregates, recent] = await Promise.all([
+    const [aggregates, recent, streak] = await Promise.all([
       results.aggregatesForProfile(id),
       results.recentForProfile(id, STATS_HISTORY_LIMIT),
+      profiles.getDailyStreak(id),
     ]);
-    return buildProfileStats(aggregates, recent);
+    return buildProfileStats(aggregates, recent, effectiveDailyStreak(streak, utcDateKey(new Date())));
   });
 }

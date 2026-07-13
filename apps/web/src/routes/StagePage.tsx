@@ -14,7 +14,9 @@ import { useTypingStore } from '../stage/typingStore';
  * (a word set in word mode, else a random passage) - so returning from another
  * route keeps an in-progress test. `?passage=<id>` (batch B item 1.5) loads
  * that exact passage - a library pick or a "retype this passage" link - and
- * takes priority over the broader filters.
+ * takes priority over the broader filters. `?drill` (Batch C §2.2) loads a
+ * weak-key word drill, forcing words mode; it ranks below `?daily` (a daily
+ * link always wins) but above `?passage=`/filters/bare.
  */
 export function StagePage(): ReactElement {
   usePageMeta({
@@ -26,6 +28,7 @@ export function StagePage(): ReactElement {
   const theme = params.get('theme') ?? undefined;
   const author = params.get('author') ?? undefined;
   const daily = params.get('daily') !== null;
+  const drill = params.get('drill') !== null;
   const passageParam = params.get('passage');
   const passageId = passageParam !== null && /^\d+$/.test(passageParam) ? Number(passageParam) : null;
 
@@ -33,6 +36,10 @@ export function StagePage(): ReactElement {
     const state = useTypingStore.getState();
     if (daily) {
       void state.loadDaily();
+      return;
+    }
+    if (drill) {
+      void state.loadDrill();
       return;
     }
     if (passageId !== null) {
@@ -49,7 +56,7 @@ export function StagePage(): ReactElement {
     if (state.test === null) {
       void state.loadNext();
     }
-  }, [band, theme, author, daily, passageId]);
+  }, [band, theme, author, daily, drill, passageId]);
 
   return <TypingStage />;
 }

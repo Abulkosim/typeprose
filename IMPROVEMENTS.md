@@ -108,7 +108,7 @@ the route already existed).
 
 
 
-### 2.1 Daily streak
+### ~~2.1 Daily streak~~ ✅ shipped 2026-07-14
 
 The daily passage exists but nothing tracks doing it.
 
@@ -120,7 +120,7 @@ keeps it across devices.
 
 
 
-### 2.2 Practice weak keys
+### ~~2.2 Practice weak keys~~ ✅ shipped 2026-07-14
 
 Stats already computes problem keys/bigrams and shows a table; there's no
 way to act on it.
@@ -133,12 +133,13 @@ changes, same words-mode submission path).
 
 
 
-### 2.3 Word-mode options
+### ~~2.3 Word-mode options~~ ✅ shipped 2026-07-14
 
-- Punctuation and numbers toggles (Monkeytype's most-used options) —
-inject into the sampled word stream; engine already handles both.
+- ~~Punctuation and numbers toggles (Monkeytype's most-used options) —
+inject into the sampled word stream; engine already handles both.~~
 - A timed mode (30s / 60s) is popular but changes the engine's
-completion semantics — spec it separately before committing.
+completion semantics — spec it separately before committing. (Still
+open — deliberately excluded from batch C.)
 
 
 
@@ -240,7 +241,8 @@ needs passage caching; nice-to-have, not asked for yet.
   1.3 mobile notice, 1.4 leaderboard links/toggle.~~ ✅ shipped 2026-07-13.
 2. ~~**Batch B:** 1.5 passage linking + retype, 2.4 corpus batch #2.~~ ✅
   shipped 2026-07-13.
-3. **Batch C:** 2.1 streak, 2.2 weak-key drill, 2.3 word-mode toggles.
+3. ~~**Batch C:** 2.1 streak, 2.2 weak-key drill, 2.3 word-mode toggles.~~
+  ✅ shipped 2026-07-14 (timed mode deferred).
 4. **Batch D:** 3.1 account management, 3.2 replay, then reassess.
 
 Rationale: Batch A fixes the silent-failure moments (confused first

@@ -4,9 +4,10 @@ import {
   MalformedLogError,
   type RunStats,
 } from '@prosetype/engine';
-import { postResultsRequestSchema, type Leaderboard } from '@prosetype/schema';
+import { postResultsRequestSchema, type DailyStreakInfo, type Leaderboard } from '@prosetype/schema';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
+import { utcDateKey } from '../passages/daily.ts';
 import type { PassageRepository } from '../passages/repository.ts';
 import type { ProfileRepository } from '../profiles/repository.ts';
 import type { ResultRepository } from '../results/repository.ts';
@@ -185,6 +186,19 @@ export async function resultRoutes(app: FastifyInstance, opts: ResultRoutesOptio
         clientMatch,
       });
 
+      // Daily streak (Batch C §2.1): server-authoritative - compare this run's
+      // own passageId against *today's* daily pick, so the client cannot fake
+      // a daily completion by submitting an arbitrary passage id.
+      let dailyStreak: DailyStreakInfo | null = null;
+      if (passageId !== null) {
+        const todayKey = utcDateKey(new Date());
+        const daily = await passages.findDaily(todayKey);
+        if (daily !== null && daily.id === passageId) {
+          const { state, extended } = await profiles.recordDailyCompletion(body.profileId, todayKey);
+          dailyStreak = { current: state.current, best: state.best, extended };
+        }
+      }
+
       return reply.code(201).send({
         id,
         serverStats,
@@ -194,6 +208,7 @@ export async function resultRoutes(app: FastifyInstance, opts: ResultRoutesOptio
         isNewPassageBest:
           passageId !== null && (previousPassageBestWpm === null || serverStats.wpm > previousPassageBestWpm),
         previousPassageBestWpm,
+        dailyStreak,
       });
     },
   );
