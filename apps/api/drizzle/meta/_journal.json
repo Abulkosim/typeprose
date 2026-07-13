@@ -22,6 +22,13 @@
       "when": 1783744734414,
       "tag": "0002_dark_prima",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1783967048337,
+      "tag": "0003_daily_streak",
+      "breakpoints": true
     }
   ]
 }

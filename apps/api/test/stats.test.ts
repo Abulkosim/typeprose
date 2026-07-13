@@ -12,6 +12,9 @@ const EMPTY_AGGREGATES: ProfileAggregates = {
   perAuthor: [],
 };
 
+/** These fixtures aren't exercising the daily streak, so pass a fixed zero state. */
+const NO_STREAK = { current: 0, best: 0, completedToday: false };
+
 /** A clean 'aa bb' run: two 'a' slots and two 'b' slots, no errors. */
 const cleanAABB: CharEvents = {
   v: 1,
@@ -66,7 +69,7 @@ describe('buildProfileStats - deeper stats fields', () => {
   it('populates keyStats / bigramStats from the recent window logs', () => {
     // 5 identical clean 'aa bb' rows → each letter reaches 10 occurrences.
     const recent = Array.from({ length: 5 }, (_, i) => row({ id: i + 1 }));
-    const stats = buildProfileStats(EMPTY_AGGREGATES, recent);
+    const stats = buildProfileStats(EMPTY_AGGREGATES, recent, NO_STREAK);
 
     const a = stats.keyStats.find((k) => k.key === 'a');
     expect(a).toMatchObject({ key: 'a', occurrences: 10, errors: 0, errorRate: 0 });
@@ -75,7 +78,7 @@ describe('buildProfileStats - deeper stats fields', () => {
   });
 
   it('returns empty arrays for a profile with no results', () => {
-    const stats = buildProfileStats(EMPTY_AGGREGATES, []);
+    const stats = buildProfileStats(EMPTY_AGGREGATES, [], NO_STREAK);
     expect(stats.keyStats).toEqual([]);
     expect(stats.bigramStats).toEqual([]);
   });
@@ -84,7 +87,7 @@ describe('buildProfileStats - deeper stats fields', () => {
     // Word runs replay against wordText, so they feed per-key/bigram just like
     // prose. 5 word rows → each letter reaches 10 occurrences.
     const recent = Array.from({ length: 5 }, (_, i) => wordRow({ id: i + 1 }));
-    const stats = buildProfileStats(EMPTY_AGGREGATES, recent);
+    const stats = buildProfileStats(EMPTY_AGGREGATES, recent, NO_STREAK);
 
     expect(stats.keyStats.find((k) => k.key === 'a')).toMatchObject({ occurrences: 10 });
     const first = stats.history[0];
@@ -109,6 +112,7 @@ describe('buildProfileStats - deeper stats fields', () => {
         },
       },
       [wordRow()],
+      NO_STREAK,
     );
     expect(stats.bestWpm).toMatchObject({ wpm: 88, mode: 'words', wordCount: 3, passageId: null });
   });

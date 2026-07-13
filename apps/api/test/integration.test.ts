@@ -1,6 +1,7 @@
 import { computeStats } from '@prosetype/engine';
 import type {
   AuthorListItem,
+  Passage,
   PostProfilesResponse,
   PostResultsResponse,
   ProfileStats,
@@ -197,5 +198,106 @@ suite('API integration (real Postgres)', () => {
       ThemeListItem[]
     >();
     expect(themes.find((t) => t.theme === THEME)?.passageCount).toBe(2);
+  });
+
+  it('completing the daily passage starts a streak; a same-day resubmit does not extend it', async () => {
+    const dailyRes = await app.inject({ method: 'GET', url: '/api/v1/passages/daily' });
+    expect(dailyRes.statusCode).toBe(200);
+    const daily = dailyRes.json<Passage>();
+    // The real corpus's daily pick can be much longer than the other fixtures
+    // in this file, so scale the duration to stay under the 350wpm ceiling
+    // (plan §8) regardless of which passage today's pick is.
+    const durationMs = Math.max(6000, daily.wordCount * 600);
+
+    const first = await submit(daily.id, daily.text, durationMs);
+    expect(first.dailyStreak).toEqual({ current: 1, best: 1, extended: true });
+
+    const second = await submit(daily.id, daily.text, durationMs);
+    expect(second.dailyStreak).toEqual({ current: 1, best: 1, extended: false });
+
+    const stats = (
+      await app.inject({ method: 'GET', url: `/api/v1/profiles/${profileId}/stats` })
+    ).json<ProfileStats>();
+    expect(stats.dailyStreak).toEqual({ current: 1, best: 1, completedToday: true });
+  });
+
+  it('a claim merges the requester\'s daily streak into the canonical profile (Batch C §2.1)', async () => {
+    const email = 'zz-streak-merge@example.com';
+    // Defensive: a previous failed run of this test can leave a profile owning
+    // this email behind (cleanup below never ran), which would silently become
+    // the "existing" owner instead of the ownerId created just below.
+    await sql`delete from results where profile_id in (select id from profiles where email = ${email})`;
+    await sql`delete from claim_tokens where profile_id in (select id from profiles where email = ${email})`;
+    await sql`delete from profiles where email = ${email}`;
+
+    const ownerId = (await app.inject({ method: 'POST', url: '/api/v1/profiles' })).json<PostProfilesResponse>()
+      .id;
+    const requesterId = (
+      await app.inject({ method: 'POST', url: '/api/v1/profiles' })
+    ).json<PostProfilesResponse>().id;
+
+    async function tokenFor(id: string): Promise<string> {
+      const [row] = await sql<{ token: string }[]>`
+        select token from claim_tokens where profile_id = ${id} order by created_at desc limit 1`;
+      if (row === undefined) throw new Error(`no claim token issued for profile ${id}`);
+      return row.token;
+    }
+
+    try {
+      // Owner claims the email first, becoming its canonical profile.
+      const ownerClaim = await app.inject({
+        method: 'POST',
+        url: `/api/v1/profiles/${ownerId}/claim`,
+        payload: { email },
+      });
+      expect(ownerClaim.statusCode).toBe(202);
+      const ownerVerify = await app.inject({
+        method: 'POST',
+        url: '/api/v1/claim/verify',
+        payload: { token: await tokenFor(ownerId) },
+      });
+      expect(ownerVerify.statusCode).toBe(200);
+      expect(ownerVerify.json<{ profileId: string }>().profileId).toBe(ownerId);
+
+      // Seed each profile's streak columns directly - there is no API path to
+      // an arbitrary streak state. The requester's chain (starting 07-06)
+      // picks up exactly where the owner's (ending 07-05) left off, so the
+      // merge should join them rather than just taking the later one.
+      await sql`update profiles set daily_streak = 2, daily_best_streak = 2, last_daily_date = '2026-07-05' where id = ${ownerId}`;
+      await sql`update profiles set daily_streak = 3, daily_best_streak = 4, last_daily_date = '2026-07-08' where id = ${requesterId}`;
+
+      // Requester claims the same email → merge branch (§10.3).
+      const requesterClaim = await app.inject({
+        method: 'POST',
+        url: `/api/v1/profiles/${requesterId}/claim`,
+        payload: { email },
+      });
+      expect(requesterClaim.statusCode).toBe(202);
+      const verifyRes = await app.inject({
+        method: 'POST',
+        url: '/api/v1/claim/verify',
+        payload: { token: await tokenFor(requesterId) },
+      });
+      expect(verifyRes.statusCode).toBe(200);
+      expect(verifyRes.json<{ profileId: string }>().profileId).toBe(ownerId);
+
+      const [canonical] = await sql<
+        { daily_streak: number; daily_best_streak: number; last_daily_date: string }[]
+      >`select daily_streak, daily_best_streak, last_daily_date::text as last_daily_date
+        from profiles where id = ${ownerId}`;
+      // Contiguous join: 2 (owner, ending 07-05) + 3 (requester, 07-06..07-08) = 5.
+      expect(canonical).toMatchObject({
+        daily_streak: 5,
+        daily_best_streak: 5,
+        last_daily_date: '2026-07-08',
+      });
+    } finally {
+      // requesterId's row is deleted by the merge itself; only the owner (now
+      // holding both) is left to clean up. Always runs, even on assertion
+      // failure, so a broken run doesn't poison later runs via a stale email.
+      await sql`delete from results where profile_id = ${ownerId}`;
+      await sql`delete from claim_tokens where profile_id = ${ownerId}`;
+      await sql`delete from profiles where id = ${ownerId}`;
+    }
   });
 });

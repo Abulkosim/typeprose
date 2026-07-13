@@ -58,6 +58,19 @@ export const postResultsRequestSchema = z.discriminatedUnion('mode', [
 
 export type PostResultsRequest = z.infer<typeof postResultsRequestSchema>;
 
+/**
+ * Daily-passage streak state after a submission (Batch C §2.1). `extended` is
+ * true only when this submission advanced the streak (a new UTC day); a
+ * same-day retype reports the unchanged streak with `extended: false`.
+ */
+export const dailyStreakInfoSchema = z.object({
+  current: z.int().nonnegative(),
+  best: z.int().nonnegative(),
+  extended: z.boolean(),
+});
+
+export type DailyStreakInfo = z.infer<typeof dailyStreakInfoSchema>;
+
 /** POST /results response body (plan §8). */
 export const postResultsResponseSchema = z.object({
   id: z.int().positive(),
@@ -71,6 +84,12 @@ export const postResultsResponseSchema = z.object({
   isNewPassageBest: z.boolean(),
   /** The profile's best wpm on this passage before this run, or null (word runs, or no prior attempt). */
   previousPassageBestWpm: z.number().nonnegative().nullable(),
+  /**
+   * Daily-streak update (Batch C §2.1), non-null only when this run's passage
+   * was matched against today's daily pick server-side - the client cannot
+   * fake a daily completion by claiming any passage id.
+   */
+  dailyStreak: dailyStreakInfoSchema.nullable(),
 });
 
 export type PostResultsResponse = z.infer<typeof postResultsResponseSchema>;

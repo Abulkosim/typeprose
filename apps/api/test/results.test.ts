@@ -4,10 +4,12 @@ import type { FastifyInstance } from 'fastify';
 import { afterEach, describe, expect, it } from 'vitest';
 import { buildApp } from '../src/build.ts';
 import { loadConfig } from '../src/config.ts';
+import { utcDateKey } from '../src/passages/daily.ts';
 import {
   createStubPassageRepo,
   createStubProfileRepo,
   createStubResultRepo,
+  dailyPick,
   fastPassage,
   shortPassage,
   testEnv,
@@ -241,6 +243,100 @@ describe('POST /api/v1/results', () => {
     const parsed = res.json<PostResultsResponse>();
     expect(parsed.isNewPassageBest).toBe(false);
     expect(parsed.previousPassageBestWpm).toBeNull();
+  });
+});
+
+describe('POST /api/v1/results - daily streak (Batch C §2.1)', () => {
+  let app: FastifyInstance | null = null;
+
+  async function setup() {
+    const deps = makeApp();
+    app = await buildApp(loadConfig(testEnv), deps);
+    return { app, ...deps };
+  }
+
+  afterEach(async () => {
+    if (app !== null) {
+      await app.close();
+      app = null;
+    }
+  });
+
+  const fixtures = [shortPassage, fastPassage];
+  const todayKey = utcDateKey(new Date());
+  const daily = dailyPick(fixtures, todayKey);
+  if (daily === null) throw new Error('fixtures must be non-empty');
+  const notDaily = fixtures.find((p) => p.id !== daily.id);
+  if (notDaily === undefined) throw new Error('need a second, non-daily fixture');
+  // Pull the id/text out to plain locals: TS narrowing of `daily` above doesn't
+  // survive into the closures below (a fresh, non-nullable capture instead).
+  const dailyId = daily.id;
+  const dailyText = daily.text;
+
+  function submitDaily(overrides: Record<string, unknown> = {}) {
+    const charEvents = typeRun(dailyText, 5000);
+    const clientStats = computeStats(dailyText, charEvents);
+    return {
+      mode: 'prose',
+      profileId: PROFILE_ID,
+      passageId: dailyId,
+      clientStats,
+      charEvents,
+      ...overrides,
+    };
+  }
+
+  it('a submission matching today\'s daily starts the streak at 1', async () => {
+    const { app } = await setup();
+    const res = await app.inject({ method: 'POST', url: '/api/v1/results', payload: submitDaily() });
+    expect(res.statusCode).toBe(201);
+    expect(res.json<PostResultsResponse>().dailyStreak).toEqual({
+      current: 1,
+      best: 1,
+      extended: true,
+    });
+  });
+
+  it('a same-day repeat of the daily reports the streak unchanged and not extended', async () => {
+    const { app } = await setup();
+    await app.inject({ method: 'POST', url: '/api/v1/results', payload: submitDaily() });
+    const res = await app.inject({ method: 'POST', url: '/api/v1/results', payload: submitDaily() });
+    expect(res.json<PostResultsResponse>().dailyStreak).toEqual({
+      current: 1,
+      best: 1,
+      extended: false,
+    });
+  });
+
+  it('a prose run against a non-daily passage reports no streak', async () => {
+    const { app } = await setup();
+    const charEvents = typeRun(notDaily.text, 5000);
+    const clientStats = computeStats(notDaily.text, charEvents);
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/v1/results',
+      payload: {
+        mode: 'prose',
+        profileId: PROFILE_ID,
+        passageId: notDaily.id,
+        clientStats,
+        charEvents,
+      },
+    });
+    expect(res.json<PostResultsResponse>().dailyStreak).toBeNull();
+  });
+
+  it('a word run reports no streak', async () => {
+    const { app } = await setup();
+    const wordText = 'the quick brown fox jumps over the lazy dog again';
+    const charEvents = typeRun(wordText, 5000);
+    const clientStats = computeStats(wordText, charEvents);
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/v1/results',
+      payload: { mode: 'words', profileId: PROFILE_ID, text: wordText, clientStats, charEvents },
+    });
+    expect(res.json<PostResultsResponse>().dailyStreak).toBeNull();
   });
 });
 

@@ -29,6 +29,12 @@ function fixedProfileRepo(ids: string[]): ProfileRepository {
     async verifyClaim() {
       return { status: 'invalid' as const };
     },
+    async getDailyStreak() {
+      return { current: 0, best: 0, lastDate: null };
+    },
+    async recordDailyCompletion() {
+      return { state: { current: 0, best: 0, lastDate: null }, extended: false };
+    },
   };
 }
 
