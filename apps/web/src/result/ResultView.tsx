@@ -82,6 +82,24 @@ function BestTag({
 }
 
 /**
+ * The daily-streak line (Batch C §2.1): non-null only when this run was
+ * matched against today's daily server-side. Gets the same "just happened"
+ * pop treatment as a new best when it actually advanced the streak.
+ */
+function DailyStreakTag({ bestInfo }: { bestInfo: BestInfo | null }): ReactElement | null {
+  const dailyStreak = bestInfo?.dailyStreak ?? null;
+  if (dailyStreak === null) return null;
+  return (
+    <p className={`subtitle mt-3 text-smoke ${dailyStreak.extended ? 'animate-best-pop' : ''}`}>
+      daily streak &middot;{' '}
+      <span className="text-bone">
+        {dailyStreak.current} {dailyStreak.current === 1 ? 'day' : 'days'}
+      </span>
+    </p>
+  );
+}
+
+/**
  * Result view (§9.3/§9.4): a title card. Big stats (wpm large; raw, accuracy,
  * consistency smaller), the hand-rolled wpm-over-time sparkline, the passage
  * re-rendered as the §7.6 hesitation heatmap under its attribution epigraph,
@@ -156,6 +174,7 @@ export function ResultView({ run, test, onNext }: ResultViewProps): ReactElement
       </div>
 
       <BestTag bestInfo={bestInfo} isPassage={passage !== null} />
+      <DailyStreakTag bestInfo={bestInfo} />
 
       {showResultHint ? (
         <p className="subtitle mt-3 text-smoke">

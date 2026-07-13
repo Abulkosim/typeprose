@@ -199,6 +199,14 @@ export function StatsPage(): ReactElement {
           value={stats.avgConsistency === null ? '-' : `${String(stats.avgConsistency)}%`}
         />
         <Metric label="punctuation tax" value={formatTax(stats.punctuationTaxAvgPct)} />
+        <Metric
+          label="daily streak"
+          value={`${String(stats.dailyStreak.current)} ${stats.dailyStreak.current === 1 ? 'day' : 'days'}`}
+        />
+        <Metric
+          label="best daily streak"
+          value={`${String(stats.dailyStreak.best)} ${stats.dailyStreak.best === 1 ? 'day' : 'days'}`}
+        />
       </div>
 
       {stats.history.length >= 2 ? (

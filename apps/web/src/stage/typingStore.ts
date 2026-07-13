@@ -4,7 +4,7 @@ import {
   type RunStats,
   type TypingEngine,
 } from '@prosetype/engine';
-import type { Passage, PostResultsResponse } from '@prosetype/schema';
+import type { DailyStreakInfo, Passage, PostResultsResponse } from '@prosetype/schema';
 import { create } from 'zustand';
 
 import {
@@ -55,6 +55,8 @@ export interface BestInfo {
   previousBestWpm: number | null;
   isNewPassageBest: boolean;
   previousPassageBestWpm: number | null;
+  /** Daily-streak update (Batch C §2.1), non-null only for today's daily. */
+  dailyStreak: DailyStreakInfo | null;
 }
 
 /**
@@ -204,6 +206,7 @@ async function submitCompletedRun(
           previousBestWpm: response.previousBestWpm,
           isNewPassageBest: response.isNewPassageBest,
           previousPassageBestWpm: response.previousPassageBestWpm,
+          dailyStreak: response.dailyStreak,
         },
       });
     }
