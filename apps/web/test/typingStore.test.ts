@@ -74,6 +74,10 @@ beforeEach(() => {
   // Default to prose so the passage-fetch tests are unaffected by mode leakage.
   useModeStore.getState().setMode('prose');
   useModeStore.getState().setWordCount(200);
+  // Reset the punctuation/numbers toggles too (Batch C §2.3) - both persist,
+  // so a prior test leaving one on would otherwise leak here.
+  useModeStore.getState().setPunctuation(false);
+  useModeStore.getState().setNumbers(false);
   fetchedUrls = [];
 });
 
@@ -138,6 +142,22 @@ describe('typingStore.loadNext', () => {
     }
     expect(fetchedUrls).toHaveLength(0); // word mode never hits the API to load
     expect(s.recentIds).toEqual([]); // word runs don't touch recentIds
+  });
+
+  it('applies the punctuation toggle: first char uppercase, last char a terminal (Batch C §2.3)', async () => {
+    installFetch([makePassage(1, 'unused')]);
+    useModeStore.getState().setMode('words');
+    useModeStore.getState().setWordCount(25);
+    useModeStore.getState().setPunctuation(true);
+    await useTypingStore.getState().loadNext();
+    const s = useTypingStore.getState();
+    const test = s.test;
+    expect(test).toMatchObject({ kind: 'words', punctuation: true, numbers: false });
+    if (test?.kind === 'words') {
+      expect(test.text[0]).toBe(test.text[0]?.toUpperCase());
+      expect(test.text.at(-1)).toMatch(/[.!?]/);
+      expect(test.text.split(' ')).toHaveLength(25);
+    }
   });
 });
 

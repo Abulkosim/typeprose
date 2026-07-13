@@ -78,13 +78,34 @@ export const COMMON_WORDS: readonly string[] = [
 export type Rng = () => number;
 
 /**
- * Options for `generateWordText`'s per-word transforms. Empty for now - Batch
- * C §2.3 (word-mode punctuation/numbers toggles) adds fields here; the drill
- * mode (§2.2) samples via `generateDrillText` in `lib/drill.ts` instead, which
- * intentionally never passes these through (digits/punctuation would dilute
- * the letter-training signal).
+ * Options for `generateWordText`'s per-word transforms (Batch C §2.3: word-mode
+ * punctuation/numbers toggles). The drill mode (§2.2) samples via
+ * `generateDrillText` in `lib/drill.ts` instead, which intentionally never
+ * passes these through (digits/punctuation would dilute the letter-training
+ * signal).
  */
-export type WordTextOptions = Record<string, never>;
+export interface WordTextOptions {
+  /** Replace some sampled words with digit-only numbers. */
+  numbers?: boolean;
+  /** Add terminal punctuation/commas and capitalize sentence starts. */
+  punctuation?: boolean;
+}
+
+/** Probability `applyNumbers` replaces a given word with a number. */
+export const NUMBER_PROB = 0.15;
+/** Probability `applyPunctuation` ends a "sentence" at a given non-last word. */
+export const SENTENCE_END_PROB = 0.12;
+/** Probability `applyPunctuation` appends a comma to a non-last, non-sentence-ending word. */
+export const COMMA_PROB = 0.08;
+
+/** Sentence-terminal marks; periods are weighted to be the common case. */
+const TERMINALS = ['.', '.', '.', '!', '?'] as const;
+
+/** Uppercase a word's first character; words are never empty here, but guard anyway. */
+function capitalize(word: string): string {
+  const first = word[0];
+  return first === undefined ? word : first.toUpperCase() + word.slice(1);
+}
 
 /**
  * Sample `count` words with replacement from `pool` using `rng` for the index
@@ -104,11 +125,64 @@ export function sampleWords(pool: readonly string[], count: number, rng: Rng): s
 }
 
 /**
+ * Replace some words outright with a digit-only "number" (probability
+ * `NUMBER_PROB` per word). Lengths are 1-4 digits, uniformly; multi-digit
+ * numbers never start with a leading zero (single digits may be '0'). A pure
+ * 1:1 word-for-word swap - the word count and space layout are untouched, so
+ * the canonicality invariant (§6.2) holds automatically.
+ */
+export function applyNumbers(words: readonly string[], rng: Rng): string[] {
+  return words.map((word) => {
+    if (rng() >= NUMBER_PROB) return word;
+    const digits = 1 + Math.floor(rng() * 4); // 1-4 digits
+    const first = digits === 1 ? Math.floor(rng() * 10) : 1 + Math.floor(rng() * 9);
+    let number = String(first);
+    for (let i = 1; i < digits; i += 1) {
+      number += String(Math.floor(rng() * 10));
+    }
+    return number;
+  });
+}
+
+/**
+ * Add Monkeytype-style sentence punctuation: the first word is capitalized,
+ * the last word always gets a trailing '.', and each other non-last word gets
+ * (independently rolled, in this order) either a sentence-ending terminal -
+ * which also capitalizes the following word - at `SENTENCE_END_PROB`, or a
+ * trailing comma at `COMMA_PROB`. Punctuation is always appended directly to a
+ * word (never as its own token), so no spaces or empty words are introduced
+ * and the word count is preserved (§6.2 canonicality).
+ */
+export function applyPunctuation(words: readonly string[], rng: Rng): string[] {
+  const last = words.length - 1;
+  let capitalizeNext = true;
+  return words.map((original, i) => {
+    let word = capitalizeNext ? capitalize(original) : original;
+    capitalizeNext = false;
+    if (i === last) {
+      word += '.';
+    } else if (rng() < SENTENCE_END_PROB) {
+      // The index is always in range (TERMINALS is non-empty), so the guard
+      // just satisfies noUncheckedIndexedAccess.
+      const terminal = TERMINALS[Math.floor(rng() * TERMINALS.length)];
+      if (terminal !== undefined) word += terminal;
+      capitalizeNext = true;
+    } else if (rng() < COMMA_PROB) {
+      word += ',';
+    }
+    return word;
+  });
+}
+
+/**
  * Sample `count` words with replacement into a canonical single-spaced string.
- * The output is guaranteed canonical (§6.2) because every word is lowercase and
- * space-free, so `createEngine(generateWordText(n))` is always valid. `rng`
- * defaults to `Math.random` so every existing bare `generateWordText(n)` call
- * site is unaffected; tests can seed it for determinism.
+ * Numbers are applied before punctuation (a number can end a "sentence" just
+ * like any other word). The output is guaranteed canonical (§6.2): sampled
+ * words are lowercase and space-free, and both transforms only append
+ * non-space characters to existing words, so `createEngine(generateWordText(n))`
+ * is always valid. `rng` defaults to `Math.random` so every existing bare
+ * `generateWordText(n)` call site is unaffected; tests can seed it for
+ * determinism.
  *
  * @throws if `count` is not a positive integer.
  */
@@ -117,9 +191,11 @@ export function generateWordText(
   options: WordTextOptions = {},
   rng: Rng = Math.random,
 ): string {
-  void options; // reserved for §2.3's punctuation/numbers toggles; unused until then
   if (!Number.isInteger(count) || count <= 0) {
     throw new Error(`word count must be a positive integer, got ${String(count)}`);
   }
-  return sampleWords(COMMON_WORDS, count, rng).join(' ');
+  let words = sampleWords(COMMON_WORDS, count, rng);
+  if (options.numbers === true) words = applyNumbers(words, rng);
+  if (options.punctuation === true) words = applyPunctuation(words, rng);
+  return words.join(' ');
 }

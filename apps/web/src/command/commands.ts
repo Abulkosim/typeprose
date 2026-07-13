@@ -37,6 +37,11 @@ export interface CommandContext {
   startWords: (count: WordCount) => void;
   /** Switch to prose mode and start a fresh random passage. */
   startProse: () => void;
+  /** Word-mode punctuation/numbers toggles (§2.3), so their commands can name state and flip it. */
+  wordPunctuation: boolean;
+  toggleWordPunctuation: () => void;
+  wordNumbers: boolean;
+  toggleWordNumbers: () => void;
   /** Active music channel, so its commands can omit the current one. */
   musicChannel: MusicChannel;
   setMusicChannel: (channel: MusicChannel) => void;
@@ -104,6 +109,25 @@ export function buildCommands(ctx: CommandContext): Command[] {
       run: () => ctx.startWords(count),
     });
   }
+
+  // Punctuation/numbers toggles (§2.3), named after the action they perform
+  // (same convention as the sound command below).
+  commands.push(
+    {
+      id: 'words-punctuation',
+      title: ctx.wordPunctuation ? 'Words · punctuation off' : 'Words · punctuation on',
+      hint: 'words',
+      keywords: ['punctuation', 'words', 'sentence', 'capital', 'comma'],
+      run: ctx.toggleWordPunctuation,
+    },
+    {
+      id: 'words-numbers',
+      title: ctx.wordNumbers ? 'Words · numbers off' : 'Words · numbers on',
+      hint: 'words',
+      keywords: ['numbers', 'digits', 'words'],
+      run: ctx.toggleWordNumbers,
+    },
+  );
 
   commands.push(
     {

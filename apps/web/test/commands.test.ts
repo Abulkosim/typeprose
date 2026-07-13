@@ -15,6 +15,10 @@ function makeContext(overrides: Partial<CommandContext> = {}): CommandContext {
     mode: 'prose',
     startWords: vi.fn(),
     startProse: vi.fn(),
+    wordPunctuation: false,
+    toggleWordPunctuation: vi.fn(),
+    wordNumbers: false,
+    toggleWordNumbers: vi.fn(),
     musicChannel: 'off',
     setMusicChannel: vi.fn(),
     musicVolume: 0.5,
@@ -48,6 +52,8 @@ describe('buildCommands', () => {
         'go-stats',
         'go-leaderboard',
         'go-claim',
+        'words-punctuation',
+        'words-numbers',
         'band-warmup',
         'band-standard',
         'band-hard',
@@ -109,6 +115,28 @@ describe('buildCommands', () => {
     expect(commands.map((c) => c.id)).not.toContain('mode-words');
     commands.find((c) => c.id === 'mode-prose')?.run();
     expect(ctx.startProse).toHaveBeenCalledOnce();
+  });
+
+  it('names the punctuation toggle after the action it performs and wires it', () => {
+    const ctx = makeContext({ wordPunctuation: false });
+    const off = buildCommands(ctx).find((c) => c.id === 'words-punctuation');
+    expect(off?.title).toBe('Words · punctuation on');
+    off?.run();
+    expect(ctx.toggleWordPunctuation).toHaveBeenCalledOnce();
+    const on = buildCommands(makeContext({ wordPunctuation: true })).find(
+      (c) => c.id === 'words-punctuation',
+    );
+    expect(on?.title).toBe('Words · punctuation off');
+  });
+
+  it('names the numbers toggle after the action it performs and wires it', () => {
+    const ctx = makeContext({ wordNumbers: false });
+    const off = buildCommands(ctx).find((c) => c.id === 'words-numbers');
+    expect(off?.title).toBe('Words · numbers on');
+    off?.run();
+    expect(ctx.toggleWordNumbers).toHaveBeenCalledOnce();
+    const on = buildCommands(makeContext({ wordNumbers: true })).find((c) => c.id === 'words-numbers');
+    expect(on?.title).toBe('Words · numbers off');
   });
 
   it('offers every music channel but no stop/volume while off', () => {

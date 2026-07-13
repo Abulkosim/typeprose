@@ -13,6 +13,9 @@ export type Mode = 'prose' | 'words';
 
 export const MODE_STORAGE_KEY = 'prosetype.mode';
 export const WORD_COUNT_STORAGE_KEY = 'prosetype.wordCount';
+/** Batch C §2.3: word-mode punctuation/numbers toggles, persisted like everything else here. */
+export const WORD_PUNCTUATION_STORAGE_KEY = 'prosetype.wordPunctuation';
+export const WORD_NUMBERS_STORAGE_KEY = 'prosetype.wordNumbers';
 
 function readMode(): Mode {
   try {
@@ -47,16 +50,41 @@ function persistWordCount(count: WordCount): void {
   }
 }
 
+/** Generic on/off flag reader, mirroring `readMode`'s try/catch-default shape. */
+function readFlag(key: string): boolean {
+  try {
+    return localStorage.getItem(key) === 'on';
+  } catch {
+    return false;
+  }
+}
+
+/** Generic on/off flag writer, mirroring `persistMode`. */
+function persistFlag(key: string, value: boolean): void {
+  try {
+    localStorage.setItem(key, value ? 'on' : 'off');
+  } catch {
+    // Private mode: the choice still applies this session, just isn't remembered.
+  }
+}
+
 interface ModeState {
   mode: Mode;
   wordCount: WordCount;
+  /** Word-mode punctuation/numbers toggles (§2.3), off by default; drill runs never set these. */
+  punctuation: boolean;
+  numbers: boolean;
   setMode: (mode: Mode) => void;
   setWordCount: (count: WordCount) => void;
+  setPunctuation: (punctuation: boolean) => void;
+  setNumbers: (numbers: boolean) => void;
 }
 
 export const useModeStore = create<ModeState>()((set) => ({
   mode: readMode(),
   wordCount: readWordCount(),
+  punctuation: readFlag(WORD_PUNCTUATION_STORAGE_KEY),
+  numbers: readFlag(WORD_NUMBERS_STORAGE_KEY),
   setMode: (mode) => {
     persistMode(mode);
     set({ mode });
@@ -64,5 +92,13 @@ export const useModeStore = create<ModeState>()((set) => ({
   setWordCount: (wordCount) => {
     persistWordCount(wordCount);
     set({ wordCount });
+  },
+  setPunctuation: (punctuation) => {
+    persistFlag(WORD_PUNCTUATION_STORAGE_KEY, punctuation);
+    set({ punctuation });
+  },
+  setNumbers: (numbers) => {
+    persistFlag(WORD_NUMBERS_STORAGE_KEY, numbers);
+    set({ numbers });
   },
 }));
