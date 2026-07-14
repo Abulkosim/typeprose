@@ -169,7 +169,7 @@ new library passage listing from 1.5.
 
 
 
-### 3.1 Account management
+### ~~3.1 Account management~~ ✅ shipped 2026-07-14
 
 Claiming sets a display name once from the email local part; there's no
 way to change it, sign out, or delete data.
@@ -190,7 +190,7 @@ key on) — the client sends `?self=` and the server marks `isSelf` instead.
 
 
 
-### 3.2 Result replay
+### ~~3.2 Result replay~~ ✅ shipped 2026-07-14
 
 The engine keeps a full keystroke log — the README sells this — but the
 result view only shows the static heatmap.
@@ -282,3 +282,26 @@ Rationale: Batch A fixes the silent-failure moments (confused first
 visit, unnoticed PB, dead mobile tab). Batch B makes the corpus the
 product again. Batch C builds the habit loop. Batch D rewards the
 invested user.
+
+---
+
+
+
+## What's next (reassessed 2026-07-14)
+
+Batches A–D are shipped. The highest-value next step is not on this
+list: **deploy** (owner steps in `REMAINING.md` — domain, VPS, Resend,
+DNS). Everything below has diminishing returns until real users are
+hitting the app.
+
+Open product work, in priority order:
+
+1. **Batch E (pre-launch polish):** 3.5 word-run share cards (smallest
+  item, closes the share-loop gap), 3.4 accessibility pass (easier
+  before launch than after), 3.3 favorites.
+2. **Timed mode (30s/60s)** — the one deliberately deferred piece of
+  2.3. Needs a spec first: it changes the engine's completion
+  semantics. The biggest remaining "expected typing-app feature".
+3. **Tier 4** stays decide-don't-drift: wait for post-launch signal
+  before committing to mobile input, multiplayer, custom text, or
+  PWA/offline.
