@@ -1,0 +1,9 @@
+---
+description: Git commit message conventions — no AI/agent attribution trailers
+alwaysApply: true
+---
+
+# Commits
+
+- Never add `Co-authored-by: Cursor <cursoragent@cursor.com>` (or any other AI/agent `Co-authored-by` / attribution trailer) to commit messages.
+- Keep messages to the subject and, when needed, a plain body — nothing else.
