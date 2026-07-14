@@ -144,6 +144,22 @@
     background-size: 128px 128px;
   }
 
+  /* The "roll credits" title sequence plays in a dark house regardless of
+     theme - the lights go down even for a matinee. Utilities resolve the
+     tokens via var(--color-*), so re-pointing them on this scope is enough
+     (the same mechanism the matinee theme itself uses, in reverse). Values
+     are the §9.4 noir palette verbatim. */
+  .credits-noir {
+    --color-stage: #12100e;
+    --color-bone: #e6e0d2;
+    --color-smoke: #6e675c;
+    --color-tungsten: #c99a3c;
+    --color-blood: #8e3b3b;
+    --color-bar: #0b0906;
+    --color-vignette: 0 0 0;
+    --vignette-strength: 0.28;
+  }
+
   /* Char states beyond the base palette (§7.2): corrected is bone with a dim
      smoke underline; missed is smoke with a blood underline. Underlines only -
      subtle, and no layout shift. */

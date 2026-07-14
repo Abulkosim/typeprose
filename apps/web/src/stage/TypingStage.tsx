@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 
 import { useCommandStore } from '../command/commandStore';
 import { Epigraph } from '../components/Epigraph';
+import { useCreditsStore } from '../credits/creditsStore';
 import { isKeyboardless } from '../lib/device';
 import { ResultView } from '../result/ResultView';
 import { playThock } from '../settings/sound';
@@ -45,6 +46,7 @@ export function TypingStage(): ReactElement {
   const snapshot = useTypingStore((s) => s.snapshot);
   const completedRun = useTypingStore((s) => s.completedRun);
   const paletteOpen = useCommandStore((s) => s.isOpen);
+  const creditsOpen = useCreditsStore((s) => s.isOpen);
   const [keyboardless] = useState(() => isKeyboardless());
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -56,10 +58,11 @@ export function TypingStage(): ReactElement {
   // from the URL); the stage only owns input, focus, and rendering.
 
   // Regain focus whenever a fresh run becomes typeable - but not while the
-  // command palette owns focus; refocus the textarea when it closes.
+  // command palette or the credits sequence owns the keys; refocus the
+  // textarea when they close.
   useEffect(() => {
-    if (phase === 'typing' && !paletteOpen) textareaRef.current?.focus();
-  }, [phase, paletteOpen]);
+    if (phase === 'typing' && !paletteOpen && !creditsOpen) textareaRef.current?.focus();
+  }, [phase, paletteOpen, creditsOpen]);
 
   // Native listeners on the hidden textarea: beforeinput gives inputType +
   // data with a cancelable event (React's synthetic onBeforeInput does not).
@@ -149,6 +152,7 @@ export function TypingStage(): ReactElement {
   useEffect(() => {
     const onDocKeyDown = (e: KeyboardEvent): void => {
       if (useCommandStore.getState().isOpen) return;
+      if (useCreditsStore.getState().isOpen) return; // the title sequence owns the keys
       if (e.key === 'Tab') {
         e.preventDefault();
         void useTypingStore.getState().loadNext();

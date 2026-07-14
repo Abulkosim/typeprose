@@ -227,6 +227,25 @@ visual-only).
 Word runs currently get no share card. A "words · N" variant of the
 canvas card is cheap and keeps the share loop for grinders.
 
+
+
+### ~~3.6 An about screen~~ ✅ shipped 2026-07-14 (not in the original plan)
+
+Nowhere told a new visitor what prosetype actually does beyond the stage
+in front of them - no about page, no feature tour.
+
+- ~~Staged in the app's own film language instead of a modal: "roll
+credits" from a quiet footer tag or the palette opens an opening title
+sequence.~~ Shipped: `credits/` (deck data + a `TitleSequence` component).
+Each card types itself out behind the app's own caret, then its subtitle
+fades in - covering real literature, daily/word/drill modes, stats +
+heatmap + replay, the leaderboard + email claim, the music channels, and
+the Esc palette. The house goes dark regardless of theme (a
+`credits-noir` CSS scope), auto-advances, and click/space/tab skips.
+- Cost: small, self-contained (one new store, one component, a data
+file) - worth documenting here so it doesn't read as scope creep on a
+later audit.
+
 ---
 
 

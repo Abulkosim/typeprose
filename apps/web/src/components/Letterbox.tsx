@@ -3,6 +3,8 @@ import { NavLink } from 'react-router';
 
 import { CommandPalette } from '../command/CommandPalette';
 import { useCommandStore } from '../command/commandStore';
+import { TitleSequence } from '../credits/TitleSequence';
+import { useCreditsStore } from '../credits/creditsStore';
 import { useProfileStore } from '../lib/profileInfo';
 import { useMusicStore } from '../settings/music';
 import { useTypingStore } from '../stage/typingStore';
@@ -62,7 +64,24 @@ function MusicTag(): ReactElement {
 function SaveStatusTag(): ReactElement | null {
   const saveStatus = useTypingStore((s) => s.saveStatus);
   if (saveStatus !== 'not-saved') return null;
-  return <span className="subtitle col-start-1 justify-self-start text-smoke">not saved</span>;
+  return <span className="subtitle text-smoke">not saved</span>;
+}
+
+/**
+ * Quiet "credits" tag in the bottom bar: rolls the about title sequence.
+ * Dimmed smoke like the idle music tag - it is an invitation, not a control
+ * the eye needs during a run.
+ */
+function CreditsTag(): ReactElement {
+  return (
+    <button
+      type="button"
+      onClick={() => useCreditsStore.getState().open()}
+      className="subtitle cursor-pointer text-smoke/60 transition-colors duration-150 hover:text-bone"
+    >
+      credits
+    </button>
+  );
 }
 
 /**
@@ -104,9 +123,12 @@ export function Letterbox({ children }: { children: ReactNode }): ReactElement {
       </main>
 
       <footer className="grid h-10 shrink-0 grid-cols-3 items-center bg-bar px-6">
-        <SaveStatusTag />
         {/* Explicit columns: the save tag is usually null, and auto-placement
             would shift everything a column left. */}
+        <div className="col-start-1 flex items-center gap-4 justify-self-start">
+          <CreditsTag />
+          <SaveStatusTag />
+        </div>
         <p className="subtitle col-start-2 justify-self-center text-smoke">
           tab next &middot; esc commands
         </p>
@@ -117,6 +139,7 @@ export function Letterbox({ children }: { children: ReactNode }): ReactElement {
       </footer>
 
       <CommandPalette />
+      <TitleSequence />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactElement } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
+import { useCreditsStore } from '../credits/creditsStore';
 import { useModeStore } from '../settings/mode';
 import { useMusicStore } from '../settings/music';
 import { useSoundStore } from '../settings/sound';
@@ -37,6 +38,9 @@ export function CommandPalette(): ReactElement | null {
   useEffect(() => {
     const onKeyDown = (e: globalThis.KeyboardEvent): void => {
       if (e.key !== 'Escape') return;
+      // While the credits title sequence is up, Esc belongs to it (it leaves
+      // the theater) - same coordination the stage applies for this palette.
+      if (useCreditsStore.getState().isOpen) return;
       e.preventDefault();
       useCommandStore.getState().toggle();
     };
@@ -95,6 +99,7 @@ export function CommandPalette(): ReactElement | null {
             void useTypingStore.getState().loadNext();
           }
         },
+        rollCredits: () => useCreditsStore.getState().open(),
         wordNumbers,
         toggleWordNumbers: () => {
           const m = useModeStore.getState();

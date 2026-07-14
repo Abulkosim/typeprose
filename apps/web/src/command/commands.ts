@@ -42,6 +42,8 @@ export interface CommandContext {
   toggleWordPunctuation: () => void;
   wordNumbers: boolean;
   toggleWordNumbers: () => void;
+  /** Roll the about title sequence (the credits, not a modal). */
+  rollCredits: () => void;
   /** Active music channel, so its commands can omit the current one. */
   musicChannel: MusicChannel;
   setMusicChannel: (channel: MusicChannel) => void;
@@ -186,6 +188,14 @@ export function buildCommands(ctx: CommandContext): Command[] {
     hint: 'theme',
     keywords: ['theme', 'appearance', 'light', 'dark', 'matinee', 'noir'],
     run: ctx.toggleTheme,
+  });
+
+  commands.push({
+    id: 'credits',
+    title: 'Roll credits',
+    hint: 'about',
+    keywords: ['about', 'credits', 'help', 'features', 'intro', 'tour', 'what is prosetype'],
+    run: ctx.rollCredits,
   });
 
   commands.push({
