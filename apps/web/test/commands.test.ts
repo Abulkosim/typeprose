@@ -51,7 +51,7 @@ describe('buildCommands', () => {
         'go-library',
         'go-stats',
         'go-leaderboard',
-        'go-claim',
+        'go-account',
         'words-punctuation',
         'words-numbers',
         'band-warmup',
@@ -64,13 +64,17 @@ describe('buildCommands', () => {
 
   it('routes the daily command to /?daily', () => {
     const ctx = makeContext();
-    buildCommands(ctx).find((c) => c.id === 'daily')?.run();
+    buildCommands(ctx)
+      .find((c) => c.id === 'daily')
+      ?.run();
     expect(ctx.navigate).toHaveBeenCalledWith('/?daily');
   });
 
   it('routes the drill command to /?drill', () => {
     const ctx = makeContext();
-    buildCommands(ctx).find((c) => c.id === 'drill')?.run();
+    buildCommands(ctx)
+      .find((c) => c.id === 'drill')
+      ?.run();
     expect(ctx.navigate).toHaveBeenCalledWith('/?drill');
   });
 
@@ -85,12 +89,12 @@ describe('buildCommands', () => {
   });
 
   it('names the sound command after the action it performs', () => {
-    expect(buildCommands(makeContext({ soundEnabled: false })).find((c) => c.id === 'sound')?.title).toBe(
-      'Enable keystroke sound',
-    );
-    expect(buildCommands(makeContext({ soundEnabled: true })).find((c) => c.id === 'sound')?.title).toBe(
-      'Mute keystroke sound',
-    );
+    expect(
+      buildCommands(makeContext({ soundEnabled: false })).find((c) => c.id === 'sound')?.title,
+    ).toBe('Enable keystroke sound');
+    expect(
+      buildCommands(makeContext({ soundEnabled: true })).find((c) => c.id === 'sound')?.title,
+    ).toBe('Mute keystroke sound');
   });
 
   it('offers "Type words" + length presets in prose mode, and switches on run', () => {
@@ -99,9 +103,7 @@ describe('buildCommands', () => {
     const ids = commands.map((c) => c.id);
     expect(ids).toContain('mode-words');
     expect(ids).not.toContain('mode-prose');
-    expect(ids).toEqual(
-      expect.arrayContaining(['words-25', 'words-50', 'words-100', 'words-200']),
-    );
+    expect(ids).toEqual(expect.arrayContaining(['words-25', 'words-50', 'words-100', 'words-200']));
     commands.find((c) => c.id === 'mode-words')?.run();
     expect(ctx.startWords).toHaveBeenCalledWith(200);
     commands.find((c) => c.id === 'words-50')?.run();
@@ -135,7 +137,9 @@ describe('buildCommands', () => {
     expect(off?.title).toBe('Words · numbers on');
     off?.run();
     expect(ctx.toggleWordNumbers).toHaveBeenCalledOnce();
-    const on = buildCommands(makeContext({ wordNumbers: true })).find((c) => c.id === 'words-numbers');
+    const on = buildCommands(makeContext({ wordNumbers: true })).find(
+      (c) => c.id === 'words-numbers',
+    );
     expect(on?.title).toBe('Words · numbers off');
   });
 
@@ -153,7 +157,13 @@ describe('buildCommands', () => {
     const ids = commands.map((c) => c.id);
     expect(ids).not.toContain('music-lofi');
     expect(ids).toEqual(
-      expect.arrayContaining(['music-classical', 'music-ambient', 'music-off', 'music-quieter', 'music-louder']),
+      expect.arrayContaining([
+        'music-classical',
+        'music-ambient',
+        'music-off',
+        'music-quieter',
+        'music-louder',
+      ]),
     );
     expect(commands.find((c) => c.id === 'music-louder')?.hint).toBe('50%');
     commands.find((c) => c.id === 'music-classical')?.run();

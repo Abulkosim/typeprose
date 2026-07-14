@@ -2,6 +2,7 @@ import {
   authorListSchema,
   claimRequestResponseSchema,
   claimVerifyResponseSchema,
+  getProfileResponseSchema,
   leaderboardSchema,
   passageSchema,
   passageSummaryListSchema,
@@ -13,6 +14,7 @@ import {
   type CharEvents,
   type ClaimRequestResponse,
   type ClaimVerifyResponse,
+  type GetProfileResponse,
   type Leaderboard,
   type Passage,
   type PassageSummaryItem,
@@ -111,9 +113,7 @@ export interface SubmitWordResultInput {
   charEvents: CharEvents;
 }
 
-export async function submitWordResult(
-  input: SubmitWordResultInput,
-): Promise<PostResultsResponse> {
+export async function submitWordResult(input: SubmitWordResultInput): Promise<PostResultsResponse> {
   const response = await fetch(`${BASE}/results`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -174,9 +174,43 @@ export async function verifyClaim(token: string): Promise<ClaimVerifyResponse> {
   return parseJson(response, claimVerifyResponseSchema, 'POST /claim/verify');
 }
 
-/** GET /leaderboard - each profile's best run, optionally scoped to a passage (§10.3). */
-export async function fetchLeaderboard(passageId?: number): Promise<Leaderboard> {
-  const qs = passageId === undefined ? '' : `?passageId=${String(passageId)}`;
-  const response = await fetch(`${BASE}/leaderboard${qs}`);
+/**
+ * GET /leaderboard - each profile's best run, optionally scoped to a passage
+ * (§10.3). `self` is this client's own profile id, so the server can mark its
+ * row `isSelf` without ever handing raw profile ids back on the wire (§3.1).
+ */
+export async function fetchLeaderboard(passageId?: number, self?: string): Promise<Leaderboard> {
+  const params = new URLSearchParams();
+  if (passageId !== undefined) params.set('passageId', String(passageId));
+  if (self !== undefined) params.set('self', self);
+  const qs = params.toString();
+  const response = await fetch(`${BASE}/leaderboard${qs === '' ? '' : `?${qs}`}`);
   return parseJson(response, leaderboardSchema, 'GET /leaderboard');
+}
+
+/** GET /profiles/:id - this client's own profile info, for the /account page (§3.1). */
+export async function fetchProfile(profileId: string): Promise<GetProfileResponse> {
+  const response = await fetch(`${BASE}/profiles/${profileId}`);
+  return parseJson(response, getProfileResponseSchema, 'GET /profiles/:id');
+}
+
+/** PATCH /profiles/:id - rename the display name shown on the leaderboard (§3.1). */
+export async function renameProfile(
+  profileId: string,
+  displayName: string,
+): Promise<GetProfileResponse> {
+  const response = await fetch(`${BASE}/profiles/${profileId}`, {
+    method: 'PATCH',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ displayName }),
+  });
+  return parseJson(response, getProfileResponseSchema, 'PATCH /profiles/:id');
+}
+
+/** DELETE /profiles/:id - permanently delete a profile and its results (§3.1). 204, no body. */
+export async function deleteProfile(profileId: string): Promise<void> {
+  const response = await fetch(`${BASE}/profiles/${profileId}`, { method: 'DELETE' });
+  if (!response.ok) {
+    throw new Error(`DELETE /profiles/:id failed with status ${String(response.status)}`);
+  }
 }

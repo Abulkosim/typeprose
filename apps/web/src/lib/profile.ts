@@ -29,6 +29,28 @@ export function setProfileId(id: string): void {
 }
 
 /**
+ * Read the stored profile id without creating one (Batch D, §3.1 account
+ * management). Passive call sites - like the /account page and the header's
+ * claimed-state label - must not conjure a profile just by rendering.
+ */
+export function getStoredProfileId(): string | null {
+  return readStored();
+}
+
+/**
+ * Forget the local profile id (§3.1): used by "sign out" on /account. The next
+ * ensureProfileId() call creates a fresh anonymous profile.
+ */
+export function clearProfileId(): void {
+  pending = null;
+  try {
+    localStorage.removeItem(PROFILE_STORAGE_KEY);
+  } catch {
+    // Private mode: nothing was persisted to clear.
+  }
+}
+
+/**
  * Resolve the anonymous profile id (plan §9.2): return the one in localStorage,
  * or create one via POST /profiles and persist it. The in-flight promise is
  * memoized so concurrent callers (submission + stats) share one create; a

@@ -7,9 +7,7 @@ import { usePageMeta } from '../lib/head';
 import { ensureProfileId } from '../lib/profile';
 
 type LoadState =
-  | { status: 'loading' }
-  | { status: 'error' }
-  | { status: 'ready'; board: Leaderboard };
+  { status: 'loading' } | { status: 'error' } | { status: 'ready'; board: Leaderboard };
 
 function formatWhen(iso: string): string {
   return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
@@ -31,7 +29,6 @@ export function LeaderboardPage(): ReactElement {
   const passageId = passageParam !== null ? Number(passageParam) : undefined;
   const scoped = passageId !== undefined && Number.isFinite(passageId);
   const [state, setState] = useState<LoadState>({ status: 'loading' });
-  const [profileId, setProfileId] = useState<string | null>(null);
   // Remembers the passage this page was reached with, even after toggling to
   // "global" (which drops ?passageId from the URL) - so the tabs stay usable
   // both ways instead of vanishing once you leave the scoped view.
@@ -44,7 +41,10 @@ export function LeaderboardPage(): ReactElement {
     setState({ status: 'loading' });
     void (async () => {
       try {
-        const board = await fetchLeaderboard(scoped ? passageId : undefined);
+        // The own-profile id is passed as `?self=` so the server can mark our
+        // row `isSelf` without ever returning raw profile ids on the wire (§3.1).
+        const self = await ensureProfileId();
+        const board = await fetchLeaderboard(scoped ? passageId : undefined, self);
         if (!cancelled) setState({ status: 'ready', board });
       } catch {
         if (!cancelled) setState({ status: 'error' });
@@ -54,16 +54,6 @@ export function LeaderboardPage(): ReactElement {
       cancelled = true;
     };
   }, [passageId, scoped]);
-
-  useEffect(() => {
-    let cancelled = false;
-    void ensureProfileId().then((id) => {
-      if (!cancelled) setProfileId(id);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   if (state.status === 'loading') {
     return (
@@ -85,7 +75,7 @@ export function LeaderboardPage(): ReactElement {
   }
 
   const { board } = state;
-  const ownEntry = profileId === null ? undefined : board.entries.find((e) => e.profileId === profileId);
+  const ownEntry = board.entries.find((e) => e.isSelf);
 
   return (
     <section aria-label="Leaderboard" className="animate-fade-in">
@@ -146,7 +136,7 @@ export function LeaderboardPage(): ReactElement {
           </thead>
           <tbody>
             {board.entries.map((e) => {
-              const isOwn = profileId !== null && e.profileId === profileId;
+              const isOwn = e.isSelf;
               return (
                 <tr
                   key={`${String(e.rank)}-${e.createdAt}`}

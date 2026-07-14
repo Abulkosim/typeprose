@@ -163,10 +163,10 @@ export function buildCommands(ctx: CommandContext): Command[] {
       run: () => ctx.navigate('/leaderboard'),
     },
     {
-      id: 'go-claim',
-      title: 'Claim account (email)',
-      keywords: ['account', 'email', 'sign in', 'magic link', 'name', 'save'],
-      run: () => ctx.navigate('/claim'),
+      id: 'go-account',
+      title: 'Account',
+      keywords: ['account', 'claim', 'email', 'sign out', 'name', 'delete', 'profile'],
+      run: () => ctx.navigate('/account'),
     },
   );
 

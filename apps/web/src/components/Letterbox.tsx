@@ -1,8 +1,9 @@
-import type { ReactElement, ReactNode } from 'react';
+import { useEffect, type ReactElement, type ReactNode } from 'react';
 import { NavLink } from 'react-router';
 
 import { CommandPalette } from '../command/CommandPalette';
 import { useCommandStore } from '../command/commandStore';
+import { useProfileStore } from '../lib/profileInfo';
 import { useMusicStore } from '../settings/music';
 import { useTypingStore } from '../stage/typingStore';
 
@@ -71,6 +72,17 @@ function SaveStatusTag(): ReactElement | null {
  * vignette overlays.
  */
 export function Letterbox({ children }: { children: ReactNode }): ReactElement {
+  const profileInfo = useProfileStore((s) => s.info);
+  useEffect(() => {
+    // One passive refresh per app mount - the claimed-state indicator below
+    // reads whatever localStorage already holds, it never creates a profile.
+    void useProfileStore.getState().refresh();
+  }, []);
+  const accountLabel =
+    profileInfo?.claimed === true && profileInfo.displayName !== null
+      ? profileInfo.displayName.toLowerCase()
+      : 'account';
+
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="flex h-10 shrink-0 items-center justify-between bg-bar px-6">
@@ -81,6 +93,7 @@ export function Letterbox({ children }: { children: ReactNode }): ReactElement {
           <BarLink to="/stats" label="stats" />
           <BarLink to="/library" label="library" />
           <BarLink to="/leaderboard" label="leaderboard" />
+          <BarLink to="/account" label={accountLabel} />
         </nav>
       </header>
 

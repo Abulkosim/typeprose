@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 import { Route, Routes } from 'react-router';
 
 import { Letterbox } from './components/Letterbox';
+import { AccountPage } from './routes/AccountPage';
 import { ClaimPage } from './routes/ClaimPage';
 import { LeaderboardPage } from './routes/LeaderboardPage';
 import { LibraryPage } from './routes/LibraryPage';
@@ -17,6 +18,7 @@ export function App(): ReactElement {
         <Route path="/library" element={<LibraryPage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route path="/claim" element={<ClaimPage />} />
+        <Route path="/account" element={<AccountPage />} />
       </Routes>
     </Letterbox>
   );

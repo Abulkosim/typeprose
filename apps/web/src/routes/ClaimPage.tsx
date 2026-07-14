@@ -1,9 +1,10 @@
 import { useEffect, useState, type FormEvent, type ReactElement } from 'react';
-import { useSearchParams } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 
 import { requestClaim, verifyClaim } from '../lib/api';
 import { usePageMeta } from '../lib/head';
 import { ensureProfileId, setProfileId } from '../lib/profile';
+import { useProfileStore } from '../lib/profileInfo';
 
 /**
  * `/claim` (Phase 3, plan §10.3, account claim). Two modes:
@@ -14,9 +15,7 @@ import { ensureProfileId, setProfileId } from '../lib/profile';
  */
 type RequestState = 'idle' | 'sending' | 'sent' | 'error';
 type VerifyState =
-  | { status: 'verifying' }
-  | { status: 'done'; displayName: string }
-  | { status: 'error' };
+  { status: 'verifying' } | { status: 'done'; displayName: string } | { status: 'error' };
 
 export function ClaimPage(): ReactElement {
   usePageMeta({
@@ -38,6 +37,7 @@ export function ClaimPage(): ReactElement {
       try {
         const result = await verifyClaim(token);
         setProfileId(result.profileId);
+        void useProfileStore.getState().refresh();
         if (!cancelled) setVerify({ status: 'done', displayName: result.displayName });
       } catch {
         if (!cancelled) setVerify({ status: 'error' });
@@ -77,11 +77,21 @@ export function ClaimPage(): ReactElement {
             <p className="mt-2 text-smoke">
               Your history now follows this account, and your name appears on the leaderboard.
             </p>
+            <p className="mt-4">
+              <Link
+                to="/account"
+                className="subtitle text-smoke transition-opacity duration-150 hover:text-bone"
+              >
+                manage account
+              </Link>
+            </p>
           </>
         ) : (
           <>
             <p className="mt-6 text-bone">That link didn&rsquo;t work.</p>
-            <p className="mt-2 text-smoke">It may have expired or already been used. Request a new one.</p>
+            <p className="mt-2 text-smoke">
+              It may have expired or already been used. Request a new one.
+            </p>
           </>
         )}
       </section>
