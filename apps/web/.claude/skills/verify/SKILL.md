@@ -1,6 +1,6 @@
 ---
 name: verify
-description: Launch and drive the prosetype web app to verify changes end-to-end in a real browser.
+description: Launch and drive the typeprose web app to verify changes end-to-end in a real browser.
 ---
 
 # Verifying apps/web changes
@@ -24,7 +24,7 @@ script, resolve it via the app's package.json:
 
 ```js
 const { createRequire } = require('node:module');
-const req = createRequire('/…/prosetype/apps/web/package.json');
+const req = createRequire('/…/typeprose/apps/web/package.json');
 const { chromium } = req('@playwright/test');
 ```
 
@@ -36,7 +36,7 @@ Useful handles:
 - Audio playback evidence: the `Audio` element is module-scoped (not in the
   DOM) - assert via network instead:
   `performance.getEntriesByType('resource')` filtered to `/music/`.
-- Settings persist in localStorage under `prosetype.*` keys.
+- Settings persist in localStorage under `typeprose.*` keys.
 
 ## Gotchas
 

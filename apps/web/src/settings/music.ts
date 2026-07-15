@@ -10,7 +10,7 @@ import { ensureAudioContext } from './sound';
  * selection persists; playback always (re)starts inside a user gesture, so
  * the autoplay policy is satisfied without special cases.
  */
-export const MUSIC_STORAGE_KEY = 'prosetype.music';
+export const MUSIC_STORAGE_KEY = 'typeprose.music';
 
 export type MusicChannel = 'off' | 'lofi' | 'classical' | 'ambient';
 type FileChannel = 'lofi' | 'classical';
@@ -144,7 +144,7 @@ function ensureElement(): HTMLAudioElement {
       if (activeFileChannel === null) return;
       failedTracks += 1;
       if (failedTracks >= TRACKS[activeFileChannel].length) {
-        console.warn('prosetype: no music track in this channel could be loaded');
+        console.warn('typeprose: no music track in this channel could be loaded');
         return; // Channel stays selected; silent by design, no error UI.
       }
       advance(1);

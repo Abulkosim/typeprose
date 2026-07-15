@@ -1,4 +1,4 @@
-import type { Band, ResultMode } from '@prosetype/schema';
+import type { Band, ResultMode } from '@typeprose/schema';
 import { and, desc, eq, sql } from 'drizzle-orm';
 import type { Db } from '../db/client.ts';
 import { authors, passages, profiles, results, works } from '../db/schema.ts';

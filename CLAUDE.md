@@ -1,4 +1,4 @@
-# prosetype
+# typeprose
 
 Typing practice on real prose (Project Gutenberg literature). pnpm monorepo, TypeScript throughout.
 

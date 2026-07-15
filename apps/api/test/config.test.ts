@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { loadConfig } from '../src/config.ts';
 
 const validEnv = {
-  DATABASE_URL: 'postgres://prosetype:prosetype@localhost:5432/prosetype',
+  DATABASE_URL: 'postgres://typeprose:typeprose@localhost:5432/typeprose',
   PORT: '4000',
   CORS_ORIGIN: 'http://localhost:5173',
   NODE_ENV: 'test',
@@ -12,7 +12,7 @@ describe('loadConfig', () => {
   it('parses a valid environment', () => {
     const config = loadConfig(validEnv);
     expect(config).toEqual({
-      DATABASE_URL: 'postgres://prosetype:prosetype@localhost:5432/prosetype',
+      DATABASE_URL: 'postgres://typeprose:typeprose@localhost:5432/typeprose',
       PORT: 4000,
       CORS_ORIGIN: 'http://localhost:5173',
       NODE_ENV: 'test',
@@ -63,10 +63,10 @@ describe('loadConfig', () => {
     const config = loadConfig({
       ...validEnv,
       RESEND_API_KEY: 're_test_123',
-      EMAIL_FROM: 'prosetype <no-reply@prosetype.app>',
+      EMAIL_FROM: 'typeprose <no-reply@typeprose.com>',
     });
     expect(config.RESEND_API_KEY).toBe('re_test_123');
-    expect(config.EMAIL_FROM).toBe('prosetype <no-reply@prosetype.app>');
+    expect(config.EMAIL_FROM).toBe('typeprose <no-reply@typeprose.com>');
   });
 
   it('rejects a Resend key with no EMAIL_FROM', () => {

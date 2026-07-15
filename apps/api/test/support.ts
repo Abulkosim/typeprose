@@ -1,5 +1,5 @@
-import { createEngine } from '@prosetype/engine';
-import type { CharEvents, Passage } from '@prosetype/schema';
+import { createEngine } from '@typeprose/engine';
+import type { CharEvents, Passage } from '@typeprose/schema';
 import { displayNameFromEmail } from '../src/profiles/claim.ts';
 import type { PassageFilter, PassageRepository } from '../src/passages/repository.ts';
 import type {
@@ -16,7 +16,7 @@ import type {
 } from '../src/results/repository.ts';
 
 export const testEnv = {
-  DATABASE_URL: 'postgres://prosetype:prosetype@localhost:5432/prosetype',
+  DATABASE_URL: 'postgres://typeprose:typeprose@localhost:5432/typeprose',
   CORS_ORIGIN: 'http://localhost:5173',
   NODE_ENV: 'test',
 };

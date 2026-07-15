@@ -1,4 +1,4 @@
-import type { Band, CharEvents, ResultMode } from '@prosetype/schema';
+import type { Band, CharEvents, ResultMode } from '@typeprose/schema';
 
 /**
  * A result to persist - server-computed stats plus the raw log (plan §4, §8).

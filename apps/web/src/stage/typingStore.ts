@@ -3,8 +3,8 @@ import {
   type EngineSnapshot,
   type RunStats,
   type TypingEngine,
-} from '@prosetype/engine';
-import type { DailyStreakInfo, Passage, PostResultsResponse } from '@prosetype/schema';
+} from '@typeprose/engine';
+import type { DailyStreakInfo, Passage, PostResultsResponse } from '@typeprose/schema';
 import { create } from 'zustand';
 
 import {

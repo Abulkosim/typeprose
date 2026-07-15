@@ -1,4 +1,4 @@
-import type { Leaderboard } from '@prosetype/schema';
+import type { Leaderboard } from '@typeprose/schema';
 import { useEffect, useRef, useState, type ReactElement } from 'react';
 import { useSearchParams } from 'react-router';
 
@@ -22,7 +22,7 @@ export function LeaderboardPage(): ReactElement {
   usePageMeta({
     title: 'Leaderboard',
     description:
-      'The fastest verified runs on prosetype - global, or scoped to a single passage for a fair same-text board.',
+      'The fastest verified runs on typeprose - global, or scoped to a single passage for a fair same-text board.',
   });
   const [params, setParams] = useSearchParams();
   const passageParam = params.get('passageId');

@@ -1,4 +1,4 @@
-import { parsePassage, type CharHeat, type HeatmapData } from '@prosetype/engine';
+import { parsePassage, type CharHeat, type HeatmapData } from '@typeprose/engine';
 import { Fragment, type ReactElement } from 'react';
 
 /**

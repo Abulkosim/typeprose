@@ -1,4 +1,4 @@
-import { passageSchema, passageSummaryItemSchema, type Passage } from '@prosetype/schema';
+import { passageSchema, passageSummaryItemSchema, type Passage } from '@typeprose/schema';
 import type { FastifyInstance } from 'fastify';
 import { afterEach, describe, expect, it } from 'vitest';
 import { buildApp } from '../src/build.ts';
@@ -6,7 +6,7 @@ import { loadConfig } from '../src/config.ts';
 import type { PassageFilter, PassageListFilter, PassageRepository } from '../src/passages/repository.ts';
 
 const testEnv = {
-  DATABASE_URL: 'postgres://prosetype:prosetype@localhost:5432/prosetype',
+  DATABASE_URL: 'postgres://typeprose:typeprose@localhost:5432/typeprose',
   CORS_ORIGIN: 'http://localhost:5173',
   NODE_ENV: 'test',
 };

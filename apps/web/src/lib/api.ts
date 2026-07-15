@@ -22,7 +22,7 @@ import {
   type ProfileStats,
   type RunStats,
   type ThemeListItem,
-} from '@prosetype/schema';
+} from '@typeprose/schema';
 
 /** Minimal structural view of a zod schema - avoids a direct zod dep in web. */
 interface Parser<T> {

@@ -17,7 +17,7 @@ The base tsconfig is maximally strict. Write code that passes these flags on the
 Import rules:
 
 - `apps/api`, `packages/*`, and `scripts` use **explicit `.ts` extensions** on relative imports (`./state.ts`, not `./state`) so Node 24 can run the sources directly. Follow the style of the file you're editing.
-- Workspace imports: `@prosetype/engine`, `@prosetype/schema` (they export raw `.ts` sources, no build step).
-- The engine must stay **zero runtime dependencies** — it may import from `@prosetype/schema` as types only.
+- Workspace imports: `@typeprose/engine`, `@typeprose/schema` (they export raw `.ts` sources, no build step).
+- The engine must stay **zero runtime dependencies** — it may import from `@typeprose/schema` as types only.
 
 Never use `any` (lint error). Prefer precise types, `unknown` + narrowing, or a structural interface. No non-null assertions where a thunk or narrowing works.

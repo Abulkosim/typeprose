@@ -1,4 +1,4 @@
-import { parsePassage } from '@prosetype/engine';
+import { parsePassage } from '@typeprose/engine';
 import { describe, expect, it } from 'vitest';
 
 import {

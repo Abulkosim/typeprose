@@ -3,7 +3,7 @@ import {
   claimVerifyRequestSchema,
   renameProfileRequestSchema,
   type GetProfileResponse,
-} from '@prosetype/schema';
+} from '@typeprose/schema';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import type { Mailer } from '../mail/mailer.ts';

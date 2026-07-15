@@ -1,5 +1,5 @@
-import { computeStats } from '@prosetype/engine';
-import { leaderboardSchema, type PostResultsResponse } from '@prosetype/schema';
+import { computeStats } from '@typeprose/engine';
+import { leaderboardSchema, type PostResultsResponse } from '@typeprose/schema';
 import type { FastifyInstance } from 'fastify';
 import { afterEach, describe, expect, it } from 'vitest';
 import { buildApp } from '../src/build.ts';

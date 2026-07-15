@@ -20,7 +20,7 @@ import { useTypingStore, wordTestLabel } from './typingStore';
 function KeyboardlessNotice(): ReactElement {
   return (
     <section aria-label="Typing stage unavailable" className="animate-fade-in">
-      <p className="subtitle text-smoke">prosetype needs a keyboard</p>
+      <p className="subtitle text-smoke">typeprose needs a keyboard</p>
       <p className="mt-4 text-bone">
         Typing runs require a physical keyboard - open this page on a desktop or laptop to type.
       </p>

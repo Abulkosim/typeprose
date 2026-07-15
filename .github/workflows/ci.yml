@@ -18,7 +18,7 @@ concurrency:
 env:
   NODE_VERSION: '24'
   PNPM_VERSION: '11.7.0'
-  DATABASE_URL: postgres://prosetype:prosetype@localhost:5432/prosetype
+  DATABASE_URL: postgres://typeprose:typeprose@localhost:5432/typeprose
   CORS_ORIGIN: http://localhost:5173
 
 jobs:
@@ -58,13 +58,13 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_USER: prosetype
-          POSTGRES_PASSWORD: prosetype
-          POSTGRES_DB: prosetype
+          POSTGRES_USER: typeprose
+          POSTGRES_PASSWORD: typeprose
+          POSTGRES_DB: typeprose
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U prosetype -d prosetype"
+          --health-cmd "pg_isready -U typeprose -d typeprose"
           --health-interval 5s
           --health-timeout 3s
           --health-retries 10
@@ -90,13 +90,13 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_USER: prosetype
-          POSTGRES_PASSWORD: prosetype
-          POSTGRES_DB: prosetype
+          POSTGRES_USER: typeprose
+          POSTGRES_PASSWORD: typeprose
+          POSTGRES_DB: typeprose
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U prosetype -d prosetype"
+          --health-cmd "pg_isready -U typeprose -d typeprose"
           --health-interval 5s
           --health-timeout 3s
           --health-retries 10

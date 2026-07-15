@@ -1,6 +1,6 @@
 $ node --env-file-if-exists=.env scripts/ingest.ts
 
-PROSETYPE ingest - curation report
+TYPEPROSE ingest - curation report
 ==================================
 
 #1 Fyodor Dostoevsky - Crime and Punishment

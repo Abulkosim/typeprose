@@ -1,4 +1,4 @@
-import type { CharEvents } from '@prosetype/schema';
+import type { CharEvents } from '@typeprose/schema';
 import { describe, expect, it } from 'vitest';
 import type { ProfileAggregates, StoredResultRow } from '../src/results/repository.ts';
 import { buildProfileStats } from '../src/results/stats.ts';

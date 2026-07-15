@@ -1,4 +1,4 @@
-import type { AuthorListItem, Band, PassageSummaryItem, ThemeListItem } from '@prosetype/schema';
+import type { AuthorListItem, Band, PassageSummaryItem, ThemeListItem } from '@typeprose/schema';
 import { useEffect, useState, type ReactElement } from 'react';
 import { Link, useNavigate } from 'react-router';
 
@@ -101,7 +101,7 @@ export function LibraryPage(): ReactElement {
   usePageMeta({
     title: 'Library',
     description:
-      'Browse the prosetype library by author, theme, or difficulty band - Dostoevsky to Woolf - and start a typing test on any passage.',
+      'Browse the typeprose library by author, theme, or difficulty band - Dostoevsky to Woolf - and start a typing test on any passage.',
   });
   const navigate = useNavigate();
   const [state, setState] = useState<LoadState>({ status: 'loading' });

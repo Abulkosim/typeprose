@@ -5,6 +5,6 @@ export default defineConfig({
   schema: './src/db/schema.ts',
   out: './drizzle',
   dbCredentials: {
-    url: process.env['DATABASE_URL'] ?? 'postgres://prosetype:prosetype@localhost:5432/prosetype',
+    url: process.env['DATABASE_URL'] ?? 'postgres://typeprose:typeprose@localhost:5432/typeprose',
   },
 });

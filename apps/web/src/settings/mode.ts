@@ -11,11 +11,11 @@ import { asWordCount, DEFAULT_WORD_COUNT, type WordCount } from '../lib/words';
  */
 export type Mode = 'prose' | 'words';
 
-export const MODE_STORAGE_KEY = 'prosetype.mode';
-export const WORD_COUNT_STORAGE_KEY = 'prosetype.wordCount';
+export const MODE_STORAGE_KEY = 'typeprose.mode';
+export const WORD_COUNT_STORAGE_KEY = 'typeprose.wordCount';
 /** Batch C §2.3: word-mode punctuation/numbers toggles, persisted like everything else here. */
-export const WORD_PUNCTUATION_STORAGE_KEY = 'prosetype.wordPunctuation';
-export const WORD_NUMBERS_STORAGE_KEY = 'prosetype.wordNumbers';
+export const WORD_PUNCTUATION_STORAGE_KEY = 'typeprose.wordPunctuation';
+export const WORD_NUMBERS_STORAGE_KEY = 'typeprose.wordNumbers';
 
 function readMode(): Mode {
   try {

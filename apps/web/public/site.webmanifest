@@ -1,6 +1,6 @@
 {
-  "name": "prosetype - type the classics",
-  "short_name": "prosetype",
+  "name": "typeprose - type the classics",
+  "short_name": "typeprose",
   "description": "Typing practice on public-domain literary prose, with Monkeytype-grade stats and a hesitation heatmap.",
   "start_url": "/",
   "scope": "/",

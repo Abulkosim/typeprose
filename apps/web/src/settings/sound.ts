@@ -7,7 +7,7 @@ import { create } from 'zustand';
  * mirrors Monkeytype). The mute toggle persists; a keystroke is a user gesture,
  * so the AudioContext resumes fine under the autoplay policy.
  */
-export const SOUND_STORAGE_KEY = 'prosetype.sound';
+export const SOUND_STORAGE_KEY = 'typeprose.sound';
 
 export type ThockVariant = 'key' | 'space' | 'back';
 

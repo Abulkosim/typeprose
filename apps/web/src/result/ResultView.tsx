@@ -1,5 +1,5 @@
-import { computeHeatmap, computePerSecondRawWpm, type RunStats } from '@prosetype/engine';
-import type { CharEvents } from '@prosetype/schema';
+import { computeHeatmap, computePerSecondRawWpm, type RunStats } from '@typeprose/engine';
+import type { CharEvents } from '@typeprose/schema';
 import { useEffect, useState, useMemo, type ReactElement } from 'react';
 import { Link } from 'react-router';
 

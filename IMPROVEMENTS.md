@@ -54,7 +54,7 @@ The hidden-textarea input model requires a physical keyboard; on a phone
 the app just doesn't respond, with no explanation.
 
 - ~~Detect coarse pointer / no keyboard and show a quiet letterboxed notice
-("prosetype needs a keyboard — visit on desktop").~~ Shipped as
+("typeprose needs a keyboard — visit on desktop").~~ Shipped as
 `lib/device.ts` (`isKeyboardless`) + `KeyboardlessNotice` in
 `TypingStage.tsx`.
 - ~~Library/stats/leaderboard already render fine — keep them browsable.~~
@@ -198,7 +198,7 @@ result view only shows the static heatmap.
 - ~~"Watch replay" on the result view: re-render the passage board driven
 by the charEvents timeline (1×/2× speed). High wow-factor, pure
 client-side, data already stored.~~ Shipped: `ReplayEngine` in
-`@prosetype/engine` (same reducer as the live engine, so replay cannot
+`@typeprose/engine` (same reducer as the live engine, so replay cannot
 drift from live rendering) drives `PassageBoard` from a rAF clock;
 "watch replay" swaps the heatmap for the replay with pause, 1×/2×, and
 watch-again. Works for prose and word runs. Known cosmetic limit: the
@@ -231,7 +231,7 @@ canvas card is cheap and keeps the share loop for grinders.
 
 ### ~~3.6 An about screen~~ ✅ shipped 2026-07-14 (not in the original plan)
 
-Nowhere told a new visitor what prosetype actually does beyond the stage
+Nowhere told a new visitor what typeprose actually does beyond the stage
 in front of them - no about page, no feature tour.
 
 - ~~Staged in the app's own film language instead of a modal: "roll

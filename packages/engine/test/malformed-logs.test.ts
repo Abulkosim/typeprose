@@ -1,4 +1,4 @@
-import type { CharEvent, CharEvents } from '@prosetype/schema';
+import type { CharEvent, CharEvents } from '@typeprose/schema';
 import { describe, expect, it } from 'vitest';
 import {
   EngineError,

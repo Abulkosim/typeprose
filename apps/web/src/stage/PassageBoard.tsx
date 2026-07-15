@@ -1,4 +1,4 @@
-import type { EngineSnapshot } from '@prosetype/engine';
+import type { EngineSnapshot } from '@typeprose/engine';
 import { Fragment, useCallback, useLayoutEffect, useRef, type ReactElement } from 'react';
 
 import { Word, type RegisterChar } from './Word';

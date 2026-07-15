@@ -1,4 +1,4 @@
-import type { Passage, ProfileStats } from '@prosetype/schema';
+import type { Passage, ProfileStats } from '@typeprose/schema';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { PROFILE_STORAGE_KEY } from '../src/lib/profile';
@@ -38,7 +38,7 @@ function makeStats(overrides: Partial<ProfileStats> = {}): ProfileStats {
   };
 }
 
-/** Pre-seed `prosetype.profileId` so `ensureProfileId` resolves without a POST /profiles call. */
+/** Pre-seed `typeprose.profileId` so `ensureProfileId` resolves without a POST /profiles call. */
 function installProfileStorage(profileId: string): void {
   const store = new Map<string, string>([[PROFILE_STORAGE_KEY, profileId]]);
   globalThis.localStorage = {

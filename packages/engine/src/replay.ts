@@ -1,4 +1,4 @@
-import type { CharEvent, CharEvents } from '@prosetype/schema';
+import type { CharEvent, CharEvents } from '@typeprose/schema';
 import { MalformedLogError } from './errors.ts';
 import { parsePassage, type ParsedPassage } from './passage.ts';
 import {

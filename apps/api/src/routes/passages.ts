@@ -1,4 +1,4 @@
-import { bandSchema } from '@prosetype/schema';
+import { bandSchema } from '@typeprose/schema';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { utcDateKey } from '../passages/daily.ts';

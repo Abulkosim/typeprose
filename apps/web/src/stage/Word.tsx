@@ -1,4 +1,4 @@
-import type { CharState, WordSnapshot } from '@prosetype/engine';
+import type { CharState, WordSnapshot } from '@typeprose/engine';
 import { memo, type ReactElement } from 'react';
 
 /** Registers/unregisters a char span for caret + line measurement. */

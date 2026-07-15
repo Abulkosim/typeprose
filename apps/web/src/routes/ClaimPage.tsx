@@ -20,7 +20,7 @@ type VerifyState =
 export function ClaimPage(): ReactElement {
   usePageMeta({
     title: 'Claim your account',
-    description: 'Claim your prosetype profile with an email magic link to keep your history.',
+    description: 'Claim your typeprose profile with an email magic link to keep your history.',
     noindex: true,
   });
   const [params] = useSearchParams();

@@ -3,12 +3,12 @@ import {
   InvalidPassageError,
   MalformedLogError,
   type RunStats,
-} from '@prosetype/engine';
+} from '@typeprose/engine';
 import {
   postResultsRequestSchema,
   type DailyStreakInfo,
   type Leaderboard,
-} from '@prosetype/schema';
+} from '@typeprose/schema';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { utcDateKey } from '../passages/daily.ts';

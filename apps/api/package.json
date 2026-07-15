@@ -14,8 +14,8 @@
   "dependencies": {
     "@fastify/cors": "^11.2.0",
     "@fastify/rate-limit": "^11.1.0",
-    "@prosetype/engine": "workspace:*",
-    "@prosetype/schema": "workspace:*",
+    "@typeprose/engine": "workspace:*",
+    "@typeprose/schema": "workspace:*",
     "drizzle-orm": "^0.45.2",
     "fastify": "^5.10.0",
     "postgres": "^3.4.9",

@@ -111,7 +111,7 @@ function CreditsRoll(): ReactElement {
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="About prosetype"
+      aria-label="About typeprose"
       className="credits-noir film-stage fixed inset-0 z-50 flex flex-col items-center justify-center bg-stage px-6 text-bone"
       onMouseDown={skip}
     >

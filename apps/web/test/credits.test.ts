@@ -4,7 +4,7 @@ import { CREDIT_CARDS, CREDITS_HOLD_MS, CREDITS_MS_PER_CHAR } from '../src/credi
 
 describe('credit cards', () => {
   it('opens on the wordmark and ends on a single final card', () => {
-    expect(CREDIT_CARDS[0]?.title).toBe('prosetype');
+    expect(CREDIT_CARDS[0]?.title).toBe('typeprose');
     const finals = CREDIT_CARDS.filter((c) => c.final === true);
     expect(finals).toHaveLength(1);
     expect(CREDIT_CARDS[CREDIT_CARDS.length - 1]?.final).toBe(true);

@@ -1,5 +1,5 @@
-import { aggregateKeyStats, computeHeatmap } from '@prosetype/engine';
-import type { DailyStreakStats, ProfileStats } from '@prosetype/schema';
+import { aggregateKeyStats, computeHeatmap } from '@typeprose/engine';
+import type { DailyStreakStats, ProfileStats } from '@typeprose/schema';
 import type { ProfileAggregates, StoredResultRow } from './repository.ts';
 
 /** How many most-recent results the last-10 wpm average draws from (plan §8). */

@@ -1,5 +1,5 @@
-import { createReplayEngine, type EngineSnapshot } from '@prosetype/engine';
-import type { CharEvents } from '@prosetype/schema';
+import { createReplayEngine, type EngineSnapshot } from '@typeprose/engine';
+import type { CharEvents } from '@typeprose/schema';
 import { useEffect, useRef, useState, type ReactElement } from 'react';
 
 import { PassageBoard } from '../stage/PassageBoard';

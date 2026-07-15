@@ -1,4 +1,4 @@
-import type { BigramStat, KeyStat, ProfileStats, ResultMode } from '@prosetype/schema';
+import type { BigramStat, KeyStat, ProfileStats, ResultMode } from '@typeprose/schema';
 import { useEffect, useState, type ReactElement } from 'react';
 import { Link } from 'react-router';
 
@@ -118,7 +118,7 @@ function ProblemTable({
 export function StatsPage(): ReactElement {
   usePageMeta({
     title: 'Your stats',
-    description: 'Your prosetype typing history, per-author aggregates, and personal bests.',
+    description: 'Your typeprose typing history, per-author aggregates, and personal bests.',
     noindex: true,
   });
   const [state, setState] = useState<LoadState>({ status: 'loading' });

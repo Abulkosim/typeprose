@@ -67,7 +67,7 @@ services:
       - -c
       - >
         while true; do
-          pg_dump "$DATABASE_URL" | gzip > "/backups/prosetype-$(date +%Y%m%d-%H%M%S).sql.gz";
+          pg_dump "$DATABASE_URL" | gzip > "/backups/typeprose-$(date +%Y%m%d-%H%M%S).sql.gz";
           find /backups -name '*.sql.gz' -mtime +14 -delete;
           sleep 86400;
         done

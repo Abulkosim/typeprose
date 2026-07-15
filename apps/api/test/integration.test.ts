@@ -1,4 +1,4 @@
-import { computeStats } from '@prosetype/engine';
+import { computeStats } from '@typeprose/engine';
 import type {
   AuthorListItem,
   Passage,
@@ -6,7 +6,7 @@ import type {
   PostResultsResponse,
   ProfileStats,
   ThemeListItem,
-} from '@prosetype/schema';
+} from '@typeprose/schema';
 import { createHash } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import postgres from 'postgres';

@@ -1,4 +1,4 @@
-import type { Passage } from '@prosetype/schema';
+import type { Passage } from '@typeprose/schema';
 import type { ReactElement } from 'react';
 
 import { formatAttribution } from '../lib/shareCard';

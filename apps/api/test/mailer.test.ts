@@ -24,11 +24,11 @@ describe('createResendMailer', () => {
 
     const mailer = createResendMailer({
       apiKey: 're_test_123',
-      from: 'prosetype <no-reply@prosetype.app>',
+      from: 'typeprose <no-reply@typeprose.com>',
     });
     await mailer.sendClaimLink({
       email: 'ada@example.com',
-      url: 'https://prosetype.app/claim?token=abc',
+      url: 'https://typeprose.com/claim?token=abc',
     });
 
     expect(fetchMock).toHaveBeenCalledOnce();
@@ -38,10 +38,10 @@ describe('createResendMailer', () => {
     expect(init.method).toBe('POST');
     expect((init.headers as Record<string, string>)['authorization']).toBe('Bearer re_test_123');
     const body = JSON.parse(init.body as string);
-    expect(body.from).toBe('prosetype <no-reply@prosetype.app>');
+    expect(body.from).toBe('typeprose <no-reply@typeprose.com>');
     expect(body.to).toBe('ada@example.com');
-    expect(body.text).toContain('https://prosetype.app/claim?token=abc');
-    expect(body.html).toContain('https://prosetype.app/claim?token=abc');
+    expect(body.text).toContain('https://typeprose.com/claim?token=abc');
+    expect(body.html).toContain('https://typeprose.com/claim?token=abc');
   });
 
   it('throws with the status and body on a non-2xx response', async () => {

@@ -8,11 +8,11 @@ import { useEffect } from 'react';
  * actually see. Dependency-free (no react-helmet).
  */
 
-const SITE_NAME = 'prosetype';
-const DEFAULT_TITLE = 'prosetype - type the classics';
+const SITE_NAME = 'typeprose';
+const DEFAULT_TITLE = 'typeprose - type the classics';
 
 interface PageMeta {
-  /** Page title; suffixed with " · prosetype". Omit on the home route for the full default. */
+  /** Page title; suffixed with " · typeprose". Omit on the home route for the full default. */
   title?: string;
   /** Meta description for this route. Falls back to the index.html default when omitted. */
   description?: string;

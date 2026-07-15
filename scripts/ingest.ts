@@ -172,7 +172,7 @@ function printReport(
   duplicates: { passage: PreparedPassage; firstSeen: PreparedPassage }[],
 ): void {
   console.log('');
-  console.log('PROSETYPE ingest - curation report');
+  console.log('TYPEPROSE ingest - curation report');
   console.log('==================================');
   for (const p of prepared) {
     const bandNote = p.bandOverridden ? `${p.band} (override)` : p.band;

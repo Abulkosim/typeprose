@@ -1,5 +1,5 @@
-import type { RunStats } from '@prosetype/engine';
-import type { Passage } from '@prosetype/schema';
+import type { RunStats } from '@typeprose/engine';
+import type { Passage } from '@typeprose/schema';
 import { describe, expect, it } from 'vitest';
 
 import { cardFilename, formatAttribution } from '../src/lib/shareCard';
@@ -41,6 +41,6 @@ describe('formatAttribution', () => {
 describe('cardFilename', () => {
   it('is slug + rounded wpm', () => {
     const stats = { wpm: 91.6 } as RunStats;
-    expect(cardFilename(passage({ slug: 'woolf' }), stats)).toBe('prosetype-woolf-92wpm.png');
+    expect(cardFilename(passage({ slug: 'woolf' }), stats)).toBe('typeprose-woolf-92wpm.png');
   });
 });

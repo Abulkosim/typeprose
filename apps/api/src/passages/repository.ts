@@ -1,4 +1,4 @@
-import type { AuthorListItem, Band, Passage, PassageSummaryItem, ThemeListItem } from '@prosetype/schema';
+import type { AuthorListItem, Band, Passage, PassageSummaryItem, ThemeListItem } from '@typeprose/schema';
 
 /**
  * Filters for random passage selection (plan §8, GET /passages/next).

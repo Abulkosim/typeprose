@@ -7,7 +7,7 @@ import {
   type Passage,
   type PassageSummaryItem,
   type ThemeListItem,
-} from '@prosetype/schema';
+} from '@typeprose/schema';
 import { and, arrayContains, asc, eq, notInArray, sql, type SQL } from 'drizzle-orm';
 import type { Db } from '../db/client.ts';
 import { authors, passages, works } from '../db/schema.ts';

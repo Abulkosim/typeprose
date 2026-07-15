@@ -1,5 +1,5 @@
-import type { RunStats } from '@prosetype/engine';
-import type { Passage } from '@prosetype/schema';
+import type { RunStats } from '@typeprose/engine';
+import type { Passage } from '@typeprose/schema';
 
 import type { CompletedRun } from '../result/ResultView';
 
@@ -16,9 +16,9 @@ export function formatAttribution(passage: Passage): string {
   return passage.work.translator !== null ? `${base}, trans. ${passage.work.translator}` : base;
 }
 
-/** Filename for the downloaded card, e.g. `prosetype-dostoevsky-92wpm.png`. */
+/** Filename for the downloaded card, e.g. `typeprose-dostoevsky-92wpm.png`. */
 export function cardFilename(passage: Passage, stats: RunStats): string {
-  return `prosetype-${passage.author.slug}-${String(Math.round(stats.wpm))}wpm.png`;
+  return `typeprose-${passage.author.slug}-${String(Math.round(stats.wpm))}wpm.png`;
 }
 
 const CARD_W = 1200;
@@ -72,7 +72,7 @@ export async function renderResultCardCanvas(
   ctx.fillStyle = INK.smoke;
   ctx.font = '500 15px "IBM Plex Mono"';
   ctx.letterSpacing = '3px';
-  ctx.fillText('PROSETYPE', MARGIN, 22);
+  ctx.fillText('TYPEPROSE', MARGIN, 22);
   ctx.letterSpacing = '0px';
 
   // Big wpm number + unit.

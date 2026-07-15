@@ -14,7 +14,7 @@ alwaysApply: false
 
 ## packages/engine — pure, zero-dependency
 
-- **Zero runtime dependencies.** `@prosetype/schema` is a type-only devDependency (`import type` of CharEvent etc.). The engine defines its own `RunStats` interface rather than importing a zod-derived type — keep it that way.
+- **Zero runtime dependencies.** `@typeprose/schema` is a type-only devDependency (`import type` of CharEvent etc.). The engine defines its own `RunStats` interface rather than importing a zod-derived type — keep it that way.
 - Stats are **Monkeytype-compatible and pinned**: accuracy counts every keypress (retypes included, backspaces never), consistency uses `kogasa` verified verbatim against Monkeytype's `packages/util/src/numbers.ts`, values round to 2 decimals. Tests pin exact values — a "small refactor" that shifts the 2nd decimal is a regression.
 - Timestamps: caller-clock ms normalized to integers since first keystroke, clamped monotonic non-decreasing. A backwards clock can never corrupt the log.
 - Event-index conventions (extras/over-cap/space commits/backspace-across-words) are documented in `DECISIONS.md` — read the relevant lines before touching `engine.ts` or `replayEngine.ts`. Replay must reproduce the run exactly from the log.

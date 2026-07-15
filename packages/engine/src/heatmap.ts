@@ -1,4 +1,4 @@
-import type { CharEvents } from '@prosetype/schema';
+import type { CharEvents } from '@typeprose/schema';
 import { parsePassage } from './passage.ts';
 import { replayEvents } from './replay.ts';
 

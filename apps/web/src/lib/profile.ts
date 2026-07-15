@@ -1,7 +1,7 @@
 import { postProfile } from './api';
 
 /** localStorage key for the anonymous profile uuid (plan §9.2). */
-export const PROFILE_STORAGE_KEY = 'prosetype.profileId';
+export const PROFILE_STORAGE_KEY = 'typeprose.profileId';
 
 let pending: Promise<string> | null = null;
 

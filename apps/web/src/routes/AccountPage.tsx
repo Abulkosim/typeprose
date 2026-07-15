@@ -19,7 +19,7 @@ export function AccountPage(): ReactElement {
   usePageMeta({
     title: 'Account',
     description:
-      'Manage your prosetype profile: rename it, claim it with an email, sign out, or delete your data.',
+      'Manage your typeprose profile: rename it, claim it with an email, sign out, or delete your data.',
     noindex: true,
   });
   const navigate = useNavigate();

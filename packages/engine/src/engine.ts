@@ -1,4 +1,4 @@
-import type { CharEvent, CharEvents } from '@prosetype/schema';
+import type { CharEvent, CharEvents } from '@typeprose/schema';
 import { InvalidInputError } from './errors.ts';
 import { parsePassage, type ParsedPassage } from './passage.ts';
 import { statsFromState, type RunStats } from './replay.ts';

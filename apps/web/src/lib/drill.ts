@@ -6,7 +6,7 @@
  * new mode field.
  */
 
-import type { BigramStat, KeyStat } from '@prosetype/schema';
+import type { BigramStat, KeyStat } from '@typeprose/schema';
 
 import { COMMON_WORDS, sampleWords, type Rng } from './words';
 

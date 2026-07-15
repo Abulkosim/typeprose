@@ -26,8 +26,8 @@ Cinematic "letterbox" look. Colors come from CSS variables in `src/styles.css` �
 
 ## Data & persistence
 
-- All API calls go through `src/lib/api.ts`, which validates responses via a structural `Parser<T>` satisfied by the shared `@prosetype/schema` zod schemas — the web app has **no direct zod dependency**; keep it that way.
-- localStorage keys are namespaced `prosetype.*`; storage failures (private mode) must fall back gracefully (see `lib/profile.ts`).
+- All API calls go through `src/lib/api.ts`, which validates responses via a structural `Parser<T>` satisfied by the shared `@typeprose/schema` zod schemas — the web app has **no direct zod dependency**; keep it that way.
+- localStorage keys are namespaced `typeprose.*`; storage failures (private mode) must fall back gracefully (see `lib/profile.ts`).
 - Result submission is fire-and-forget with one retry and a stale-token guard; only failures surface in the UI.
 
 ## Verifying changes

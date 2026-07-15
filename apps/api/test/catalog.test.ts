@@ -1,4 +1,4 @@
-import { authorListSchema, themeListSchema } from '@prosetype/schema';
+import { authorListSchema, themeListSchema } from '@typeprose/schema';
 import type { FastifyInstance } from 'fastify';
 import { afterEach, describe, expect, it } from 'vitest';
 import { buildApp } from '../src/build.ts';

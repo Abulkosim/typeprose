@@ -1,5 +1,5 @@
-import { parsePassage } from '@prosetype/engine';
-import type { BigramStat, KeyStat } from '@prosetype/schema';
+import { parsePassage } from '@typeprose/engine';
+import type { BigramStat, KeyStat } from '@typeprose/schema';
 import { describe, expect, it } from 'vitest';
 
 import { extractWeakTargets, generateDrillText, MIN_DRILL_POOL, selectDrillPool } from '../src/lib/drill';

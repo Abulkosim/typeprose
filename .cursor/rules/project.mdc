@@ -1,9 +1,9 @@
 ---
-description: Project overview, commands, and repo-wide conventions for prosetype
+description: Project overview, commands, and repo-wide conventions for typeprose
 alwaysApply: true
 ---
 
-# prosetype
+# typeprose
 
 A typing practice app built on real prose (public-domain literature from Project Gutenberg). pnpm monorepo, TypeScript throughout: Fastify API, React/Vite web app, Postgres via Drizzle, plus a zero-dependency typing engine.
 

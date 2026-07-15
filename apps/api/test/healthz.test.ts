@@ -4,7 +4,7 @@ import { buildApp } from '../src/build.ts';
 import { loadConfig } from '../src/config.ts';
 
 const testEnv = {
-  DATABASE_URL: 'postgres://prosetype:prosetype@localhost:5432/prosetype',
+  DATABASE_URL: 'postgres://typeprose:typeprose@localhost:5432/typeprose',
   CORS_ORIGIN: 'http://localhost:5173',
   NODE_ENV: 'test',
 };

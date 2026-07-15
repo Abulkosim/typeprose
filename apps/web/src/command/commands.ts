@@ -194,7 +194,7 @@ export function buildCommands(ctx: CommandContext): Command[] {
     id: 'credits',
     title: 'Roll credits',
     hint: 'about',
-    keywords: ['about', 'credits', 'help', 'features', 'intro', 'tour', 'what is prosetype'],
+    keywords: ['about', 'credits', 'help', 'features', 'intro', 'tour', 'what is typeprose'],
     run: ctx.rollCredits,
   });
 

@@ -1,4 +1,4 @@
-import type { CharEvent, CharEvents } from '@prosetype/schema';
+import type { CharEvent, CharEvents } from '@typeprose/schema';
 import { TypingEngine, createEngine } from '../src/index.ts';
 
 /** Build a v1 log from raw tuples (tests only). */

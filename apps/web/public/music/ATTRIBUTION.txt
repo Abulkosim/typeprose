@@ -1,4 +1,4 @@
-Background music bundled with prosetype. All tracks are used under
+Background music bundled with typeprose. All tracks are used under
 Creative Commons Attribution licenses; they were loudness-matched and
 re-encoded to AAC for delivery. The same credits live in the track
 manifest in apps/web/src/settings/music.ts.

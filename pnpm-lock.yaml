@@ -38,10 +38,10 @@ importers:
       '@fastify/rate-limit':
         specifier: ^11.1.0
         version: 11.1.0
-      '@prosetype/engine':
+      '@typeprose/engine':
         specifier: workspace:*
         version: link:../../packages/engine
-      '@prosetype/schema':
+      '@typeprose/schema':
         specifier: workspace:*
         version: link:../../packages/schema
       drizzle-orm:
@@ -78,10 +78,10 @@ importers:
       '@fontsource/ibm-plex-mono':
         specifier: ^5.2.7
         version: 5.2.7
-      '@prosetype/engine':
+      '@typeprose/engine':
         specifier: workspace:*
         version: link:../../packages/engine
-      '@prosetype/schema':
+      '@typeprose/schema':
         specifier: workspace:*
         version: link:../../packages/schema
       react:
@@ -127,7 +127,7 @@ importers:
 
   packages/engine:
     devDependencies:
-      '@prosetype/schema':
+      '@typeprose/schema':
         specifier: workspace:*
         version: link:../schema
       typescript:

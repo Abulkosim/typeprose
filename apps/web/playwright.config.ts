@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 const WEB_URL = 'http://localhost:5173';
 const API_HEALTH = 'http://localhost:3001/api/v1/healthz';
 const DATABASE_URL =
-  process.env['DATABASE_URL'] ?? 'postgres://prosetype:prosetype@localhost:5432/prosetype';
+  process.env['DATABASE_URL'] ?? 'postgres://typeprose:typeprose@localhost:5432/typeprose';
 
 /**
  * Playwright config for the single Phase 2 smoke (plan §11): it exists to catch

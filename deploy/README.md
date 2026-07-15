@@ -39,7 +39,7 @@ provisions and renews certificates automatically. For local testing use
 those older than 14 days. Restore with:
 
 ```sh
-gunzip -c /path/to/prosetype-YYYYMMDD-HHMMSS.sql.gz \
+gunzip -c /path/to/typeprose-YYYYMMDD-HHMMSS.sql.gz \
   | docker compose -f deploy/docker-compose.yml exec -T postgres psql "$DATABASE_URL"
 ```
 

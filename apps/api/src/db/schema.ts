@@ -1,4 +1,4 @@
-import type { CharEvents } from '@prosetype/schema';
+import type { CharEvents } from '@typeprose/schema';
 import { sql } from 'drizzle-orm';
 import {
   bigserial,

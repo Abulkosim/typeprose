@@ -106,7 +106,7 @@ export function Letterbox({ children }: { children: ReactNode }): ReactElement {
     <div className="flex min-h-dvh flex-col">
       <header className="flex h-10 shrink-0 items-center justify-between bg-bar px-6">
         <NavLink to="/" className="subtitle text-bone">
-          prosetype
+          typeprose
         </NavLink>
         <nav className="flex items-center gap-6">
           <BarLink to="/stats" label="stats" />

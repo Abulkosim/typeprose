@@ -1,4 +1,4 @@
-import { charEventsSchema } from '@prosetype/schema';
+import { charEventsSchema } from '@typeprose/schema';
 import { describe, expect, it } from 'vitest';
 import { computeHeatmap, computePerSecondRawWpm, computeStats } from '../src/index.ts';
 import { mulberry32, randomPassage, randomRun } from './helpers.ts';

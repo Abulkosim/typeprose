@@ -24,7 +24,7 @@ export const CREDITS_HOLD_MS = 2600;
 
 export const CREDIT_CARDS: readonly CreditCard[] = [
   {
-    title: 'prosetype',
+    title: 'typeprose',
     body: 'a typing picture',
   },
   {

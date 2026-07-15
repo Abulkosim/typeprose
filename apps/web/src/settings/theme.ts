@@ -9,7 +9,7 @@ import { create } from 'zustand';
 export type Theme = 'noir' | 'matinee';
 
 /** localStorage key for the persisted theme preference. */
-export const THEME_STORAGE_KEY = 'prosetype.theme';
+export const THEME_STORAGE_KEY = 'typeprose.theme';
 
 function readStored(): Theme {
   try {

@@ -3,8 +3,8 @@
  * Each hint is shown once, ever, then permanently dismissed via localStorage -
  * mirroring the hand-rolled persistence style of theme/sound/mode.
  */
-const TYPING_HINT_KEY = 'prosetype.seenTypingHint';
-const RESULT_HINT_KEY = 'prosetype.seenResultHint';
+const TYPING_HINT_KEY = 'typeprose.seenTypingHint';
+const RESULT_HINT_KEY = 'typeprose.seenResultHint';
 
 function readFlag(key: string): boolean {
   try {

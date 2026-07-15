@@ -22,11 +22,11 @@ const RESEND_ENDPOINT = 'https://api.resend.com/emails';
 /** Plain-text and HTML bodies for the claim email. */
 function claimBodies(url: string): { text: string; html: string } {
   const text =
-    `Claim your prosetype profile by opening this link:\n\n${url}\n\n` +
+    `Claim your typeprose profile by opening this link:\n\n${url}\n\n` +
     `It expires in 30 minutes and can be used once. ` +
     `If you didn't request this, you can ignore this email.`;
   const html =
-    `<p>Claim your prosetype profile by opening this link:</p>` +
+    `<p>Claim your typeprose profile by opening this link:</p>` +
     `<p><a href="${url}">${url}</a></p>` +
     `<p>It expires in 30 minutes and can be used once. ` +
     `If you didn't request this, you can ignore this email.</p>`;
@@ -35,7 +35,7 @@ function claimBodies(url: string): { text: string; html: string } {
 
 /**
  * Resend transport (https://resend.com). Uses the native fetch - no SDK. `from`
- * is the verified sender, e.g. `prosetype <no-reply@prosetype.app>`. Throws on a
+ * is the verified sender, e.g. `typeprose <no-reply@typeprose.com>`. Throws on a
  * non-2xx response so the route surfaces the failure rather than silently
  * dropping the link.
  */
@@ -52,7 +52,7 @@ export function createResendMailer(opts: { apiKey: string; from: string }): Mail
         body: JSON.stringify({
           from: opts.from,
           to: email,
-          subject: 'Claim your prosetype profile',
+          subject: 'Claim your typeprose profile',
           text,
           html,
         }),

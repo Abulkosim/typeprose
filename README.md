@@ -1,4 +1,4 @@
-# prosetype
+# typeprose
 
 A typing practice app built on real prose - Dostoevsky, Woolf, Hammett, Aurelius, and friends - pulled from Project Gutenberg. Not random word lists. Actual sentences, with the punctuation still in them.
 
@@ -21,7 +21,7 @@ A typing practice app built on real prose - Dostoevsky, Woolf, Hammett, Aurelius
 
 ## What makes it different
 
-Most typing apps train you on shuffled dictionaries. prosetype trains you on literature. The engine keeps a full keystroke log, so the result screen doesn't just show a heatmap - it can replay the run frame by frame, exactly as it happened. Difficulty bands come from the prose itself - sentence length, punctuation load - not from how long the string is.
+Most typing apps train you on shuffled dictionaries. typeprose trains you on literature. The engine keeps a full keystroke log, so the result screen doesn't just show a heatmap - it can replay the run frame by frame, exactly as it happened. Difficulty bands come from the prose itself - sentence length, punctuation load - not from how long the string is.
 
 ## Stack
 
