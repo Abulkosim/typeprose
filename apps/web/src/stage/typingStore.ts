@@ -7,19 +7,22 @@ import {
 import type { DailyStreakInfo, Passage, PostResultsResponse } from '@typeprose/schema';
 import { create } from 'zustand';
 
+import type { TimedSeconds } from '@typeprose/schema';
+
 import {
   fetchDailyPassage,
   fetchNextPassage,
   fetchPassageById,
   fetchProfileStats,
   submitResult,
+  submitTimedResult,
   submitWordResult,
   type PassageQuery,
 } from '../lib/api';
 import { extractWeakTargets, generateDrillText, type WeakTargets } from '../lib/drill';
 import { ensureProfileId } from '../lib/profile';
 import { pushRecent } from '../lib/recent';
-import { generateWordText } from '../lib/words';
+import { generateWordText, timedBufferWordCount } from '../lib/words';
 import { useModeStore } from '../settings/mode';
 import type { CompletedRun } from '../result/ResultView';
 
@@ -46,6 +49,16 @@ export type ActiveTest =
       drill?: boolean;
       punctuation?: boolean;
       numbers?: boolean;
+    }
+  | {
+      kind: 'timed';
+      text: string;
+      /** The fixed window in seconds (§2.3). */
+      seconds: TimedSeconds;
+      /** The window in ms, the stat duration override handed to the engine/server. */
+      durationMs: number;
+      punctuation?: boolean;
+      numbers?: boolean;
     };
 
 /** The engine input for a test, regardless of kind. */
@@ -54,12 +67,16 @@ function testText(test: ActiveTest): string {
 }
 
 /**
- * Attribution label for a words-mode test: "drill · 50" for a weak-key drill
- * run, else "words · 50", with " · punctuation" / " · numbers" suffixes
- * appended when those toggles (Batch C §2.3) were on for this run.
+ * Attribution label for a generated (words or timed) test. A weak-key drill run
+ * reads "drill · 50", a plain word run "words · 50", a timed run "time · 60s";
+ * " · punctuation" / " · numbers" suffixes are appended when those toggles
+ * (Batch C §2.3) were on for the run.
  */
-export function wordTestLabel(test: Extract<ActiveTest, { kind: 'words' }>): string {
-  let label = `${test.drill === true ? 'drill' : 'words'} · ${String(test.count)}`;
+export function wordTestLabel(test: Extract<ActiveTest, { kind: 'words' | 'timed' }>): string {
+  let label =
+    test.kind === 'timed'
+      ? `time · ${String(test.seconds)}s`
+      : `${test.drill === true ? 'drill' : 'words'} · ${String(test.count)}`;
   if (test.punctuation === true) label += ' · punctuation';
   if (test.numbers === true) label += ' · numbers';
   return label;
@@ -128,6 +145,12 @@ interface TypingState {
    * forces prose - mode follows content.
    */
   loadDrill: () => Promise<void>;
+  /**
+   * Load a timed run (§2.3): a fixed-window run over a pre-generated word
+   * buffer. Forces timed mode and persists the chosen window; the run ends on
+   * the countdown (see the timer in `typeChar`), never by finishing the text.
+   */
+  loadTimed: (seconds: TimedSeconds) => Promise<void>;
   /** Esc: restart the same passage from scratch. */
   restart: () => void;
   typeChar: (char: string, timestampMs: number) => void;
@@ -141,6 +164,12 @@ interface TypingState {
 let inFlight = false;
 let holdTimer: ReturnType<typeof setTimeout> | null = null;
 /**
+ * Timed-mode countdown (§2.3): started on the first keystroke of a timed run,
+ * fires `finishTimed` at the window boundary. Cleared whenever a run is loaded,
+ * restarted, or reset so a stale countdown can't end the next run.
+ */
+let timedTimer: ReturnType<typeof setTimeout> | null = null;
+/**
  * Invalidation token for in-flight submissions: loading/restarting a run bumps
  * it so a late submit resolution can't set a stale save status on a run the
  * user already left.
@@ -151,6 +180,13 @@ function clearHold(): void {
   if (holdTimer !== null) {
     clearTimeout(holdTimer);
     holdTimer = null;
+  }
+}
+
+function clearTimedTimer(): void {
+  if (timedTimer !== null) {
+    clearTimeout(timedTimer);
+    timedTimer = null;
   }
 }
 
@@ -170,6 +206,7 @@ async function loadInto(
   inFlight = true;
   submitToken += 1; // invalidate any in-flight submission for the old run
   clearHold();
+  clearTimedTimer();
   set({
     phase: 'loading',
     engine: null,
@@ -207,21 +244,31 @@ async function submitCompletedRun(
   set: (partial: Partial<TypingState>) => void,
 ): Promise<void> {
   const attempt = (): Promise<PostResultsResponse> =>
-    ensureProfileId().then((profileId) =>
-      test.kind === 'passage'
-        ? submitResult({
-            profileId,
-            passageId: test.passage.id,
-            clientStats: run.stats,
-            charEvents: run.log,
-          })
-        : submitWordResult({
-            profileId,
-            text: test.text,
-            clientStats: run.stats,
-            charEvents: run.log,
-          }),
-    );
+    ensureProfileId().then((profileId) => {
+      if (test.kind === 'passage') {
+        return submitResult({
+          profileId,
+          passageId: test.passage.id,
+          clientStats: run.stats,
+          charEvents: run.log,
+        });
+      }
+      if (test.kind === 'timed') {
+        return submitTimedResult({
+          profileId,
+          text: test.text,
+          durationMs: test.durationMs,
+          clientStats: run.stats,
+          charEvents: run.log,
+        });
+      }
+      return submitWordResult({
+        profileId,
+        text: test.text,
+        clientStats: run.stats,
+        charEvents: run.log,
+      });
+    });
   try {
     let response: PostResultsResponse;
     try {
@@ -244,6 +291,39 @@ async function submitCompletedRun(
   } catch {
     if (token === submitToken) set({ saveStatus: 'not-saved' });
   }
+}
+
+/**
+ * End a timed run (§2.3). Fired by the countdown, or by the hard-stop guard in
+ * `typeChar` if a keystroke reaches the boundary first - idempotent, so
+ * whichever wins ends the run exactly once. Freezes the engine mid-word,
+ * computes the final stats over the fixed window (`durationOverrideMs`), submits
+ * (against the same window, so the server recompute matches), and cuts to the
+ * result after the completion hold.
+ */
+function finishTimed(
+  set: (partial: Partial<TypingState>) => void,
+  get: () => TypingState,
+  cutoffTimestampMs: number,
+): void {
+  const { engine, test } = get();
+  if (engine === null || test?.kind !== 'timed') return;
+  if (holdTimer !== null) return; // already finalizing (timer + guard both fired)
+  clearTimedTimer();
+  engine.finish(cutoffTimestampMs);
+  const durationOverrideMs = test.durationMs;
+  const completedRun: CompletedRun = {
+    stats: engine.getStats({ durationOverrideMs }),
+    log: engine.getLog(),
+    restarted: get().restarted,
+    durationOverrideMs,
+  };
+  set({ saveStatus: 'saving' });
+  void submitCompletedRun(test, completedRun, submitToken, set);
+  holdTimer = setTimeout(() => {
+    holdTimer = null;
+    set({ phase: 'complete', completedRun });
+  }, COMPLETION_HOLD_MS);
 }
 
 export const useTypingStore = create<TypingState>()((set, get) => ({
@@ -271,7 +351,20 @@ export const useTypingStore = create<TypingState>()((set, get) => ({
       return;
     }
     // No filter: follow the persisted mode.
-    const { mode, wordCount, punctuation, numbers } = useModeStore.getState();
+    const { mode, wordCount, timedSeconds, punctuation, numbers } = useModeStore.getState();
+    if (mode === 'timed') {
+      await loadInto(set, get, {}, () =>
+        Promise.resolve({
+          kind: 'timed',
+          text: generateWordText(timedBufferWordCount(timedSeconds), { punctuation, numbers }),
+          seconds: timedSeconds,
+          durationMs: timedSeconds * 1000,
+          punctuation,
+          numbers,
+        }),
+      );
+      return;
+    }
     if (mode === 'words') {
       await loadInto(set, get, {}, () =>
         Promise.resolve({
@@ -329,11 +422,31 @@ export const useTypingStore = create<TypingState>()((set, get) => ({
     });
   },
 
+  loadTimed: async (seconds: TimedSeconds) => {
+    // Mode follows content, like loadDrill forcing words. Persist the window so
+    // a later bare Tab reloads a timed run of the same length.
+    const modeStore = useModeStore.getState();
+    modeStore.setMode('timed');
+    modeStore.setTimedSeconds(seconds);
+    const { punctuation, numbers } = modeStore;
+    await loadInto(set, get, {}, () =>
+      Promise.resolve({
+        kind: 'timed',
+        text: generateWordText(timedBufferWordCount(seconds), { punctuation, numbers }),
+        seconds,
+        durationMs: seconds * 1000,
+        punctuation,
+        numbers,
+      }),
+    );
+  },
+
   restart: () => {
     const { test, snapshot } = get();
     if (test === null) return;
     submitToken += 1; // invalidate any in-flight submission for the abandoned run
     clearHold();
+    clearTimedTimer(); // the countdown restarts on the next first keystroke
     const engine = createEngine(testText(test));
     set({
       phase: 'typing',
@@ -348,14 +461,34 @@ export const useTypingStore = create<TypingState>()((set, get) => ({
   },
 
   typeChar: (char, timestampMs) => {
-    const { engine, phase } = get();
+    const { engine, phase, test } = get();
     if (engine === null || phase !== 'typing') return;
     // Engine chars are single UTF-16 code units; non-BMP input (emoji etc.)
     // can never be correct against an ASCII passage and is skipped.
     if (char.length !== 1 || char === ' ') return;
+    // Timed mode (§2.3): hard-stop at the window boundary so no keystroke ever
+    // lands past it (the server rejects a log extending beyond the window). The
+    // setTimeout below is the backstop for when the typist stops early.
+    if (test?.kind === 'timed') {
+      const startedAt = engine.getSnapshot().startedAtMs;
+      if (startedAt !== null && timestampMs - startedAt >= test.durationMs) {
+        finishTimed(set, get, startedAt + test.durationMs);
+        return;
+      }
+    }
     engine.addChar(char, timestampMs);
     const snapshot = engine.getSnapshot();
     set({ snapshot });
+    // Timed mode: the first keystroke starts the run - arm the countdown now.
+    if (
+      test?.kind === 'timed' &&
+      timedTimer === null &&
+      snapshot.status === 'running' &&
+      snapshot.startedAtMs !== null
+    ) {
+      const startedAt = snapshot.startedAtMs;
+      timedTimer = setTimeout(() => finishTimed(set, get, startedAt + test.durationMs), test.durationMs);
+    }
     if (snapshot.status === 'complete' && holdTimer === null) {
       const completedRun: CompletedRun = {
         stats: engine.getStats(),
@@ -401,6 +534,7 @@ export const useTypingStore = create<TypingState>()((set, get) => ({
 /** Reset module-level timers/flags and store state. Test helper only. */
 export function resetTypingStore(): void {
   clearHold();
+  clearTimedTimer();
   inFlight = false;
   submitToken += 1;
   useTypingStore.setState({

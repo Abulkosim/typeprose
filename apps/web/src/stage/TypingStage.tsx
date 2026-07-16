@@ -227,7 +227,9 @@ export function TypingStage(): ReactElement {
           <p id="stage-target-text" className="sr-only">
             {test.kind === 'passage'
               ? `Type the following passage: ${test.passage.text}`
-              : `Type the following ${String(test.count)} words: ${test.text}`}
+              : test.kind === 'timed'
+                ? `Timed test, ${String(test.seconds)} seconds. Type the following words: ${test.text}`
+                : `Type the following ${String(test.count)} words: ${test.text}`}
           </p>
           <div className={`transition-opacity duration-150 ${unfocused ? 'opacity-30' : ''}`}>
             <Hud />

@@ -223,6 +223,55 @@ describe('typingStore.loadDrill', () => {
   });
 });
 
+describe('typingStore.loadTimed (§2.3)', () => {
+  const TIMED_PROFILE = '11111111-1111-4111-8111-111111111111';
+
+  it('loads a fixed-window run, switches to timed mode, and ends on the countdown', async () => {
+    vi.useFakeTimers();
+    installProfileStorage(TIMED_PROFILE);
+    installFetch([new Error('submit ignored')]); // fire-and-forget submit, result unused here
+    await useTypingStore.getState().loadTimed(30);
+
+    const test = useTypingStore.getState().test;
+    expect(test?.kind).toBe('timed');
+    if (test?.kind === 'timed') {
+      expect(test.seconds).toBe(30);
+      expect(test.durationMs).toBe(30_000);
+    }
+    expect(useModeStore.getState().mode).toBe('timed');
+
+    // The first keystroke starts the run and arms the countdown.
+    const store = useTypingStore.getState();
+    store.typeChar('t', 0);
+    store.typeChar('h', 100);
+    store.typeChar('e', 200);
+    expect(useTypingStore.getState().phase).toBe('typing');
+
+    // The countdown fires, then the completion hold cuts to the result.
+    vi.advanceTimersByTime(30_000);
+    vi.advanceTimersByTime(COMPLETION_HOLD_MS);
+    const s = useTypingStore.getState();
+    expect(s.phase).toBe('complete');
+    expect(s.completedRun?.durationOverrideMs).toBe(30_000);
+    expect(s.completedRun?.stats.durationMs).toBe(30_000);
+  });
+
+  it('hard-stops input at the window boundary', async () => {
+    vi.useFakeTimers();
+    installProfileStorage(TIMED_PROFILE);
+    installFetch([new Error('submit ignored')]);
+    await useTypingStore.getState().loadTimed(15);
+
+    const store = useTypingStore.getState();
+    store.typeChar('t', 0); // starts the run
+    store.typeChar('h', 15_000); // at the boundary: ignored, ends the run instead
+    vi.advanceTimersByTime(COMPLETION_HOLD_MS);
+    const s = useTypingStore.getState();
+    expect(s.phase).toBe('complete');
+    expect(s.completedRun?.durationOverrideMs).toBe(15_000);
+  });
+});
+
 describe('typingStore typing flow', () => {
   it('applies keystrokes synchronously and derives the snapshot', async () => {
     installFetch([makePassage(1, 'it is')]);

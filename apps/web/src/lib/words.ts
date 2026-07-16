@@ -24,6 +24,17 @@ export function asWordCount(value: number): WordCount {
 }
 
 /**
+ * How many words to pre-generate for a timed run of `seconds` (§2.3). Sized so
+ * a typist at the submission plausibility ceiling (350 wpm) cannot reach the
+ * end before the clock runs out - a timed run must always end on the timer, not
+ * by exhausting the buffer. 350 wpm = 350 words/min; add a margin on top.
+ */
+export function timedBufferWordCount(seconds: number): number {
+  const CEILING_WPM = 350;
+  return Math.ceil((seconds * CEILING_WPM) / 60) + 40;
+}
+
+/**
  * The ~500 most common English words (lowercase, no punctuation). Sampled with
  * replacement, this gives effectively unlimited distinct tests. Curated from
  * standard frequency lists; order is not significant.

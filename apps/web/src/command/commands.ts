@@ -1,3 +1,5 @@
+import { TIMED_SECONDS, type TimedSeconds } from '@typeprose/schema';
+
 import { WORD_COUNTS, type WordCount } from '../lib/words';
 import type { Mode } from '../settings/mode';
 import type { MusicChannel } from '../settings/music';
@@ -37,6 +39,10 @@ export interface CommandContext {
   startWords: (count: WordCount) => void;
   /** Switch to prose mode and start a fresh random passage. */
   startProse: () => void;
+  /** The persisted timed-mode window (§2.3), so "Type timed" reuses it. */
+  timedSeconds: TimedSeconds;
+  /** Switch to timed mode at the given window (seconds) and start a fresh run. */
+  startTimed: (seconds: TimedSeconds) => void;
   /** Word-mode punctuation/numbers toggles (§2.3), so their commands can name state and flip it. */
   wordPunctuation: boolean;
   toggleWordPunctuation: () => void;
@@ -83,9 +89,10 @@ export function buildCommands(ctx: CommandContext): Command[] {
     });
   }
 
-  // Mode toggle: word mode is a departure from the default prose. Offer the
-  // opposite mode plus the word-length presets (each also switches to words).
-  if (ctx.mode === 'words') {
+  // Mode switches: offer each mode the run isn't already in (prose is the
+  // default corpus, words the Monkeytype-style list, timed a fixed window §2.3),
+  // then the per-length word presets and the per-window timed presets.
+  if (ctx.mode !== 'prose') {
     commands.push({
       id: 'mode-prose',
       title: 'Type prose',
@@ -93,13 +100,23 @@ export function buildCommands(ctx: CommandContext): Command[] {
       keywords: ['prose', 'passage', 'literary', 'quote', 'corpus'],
       run: ctx.startProse,
     });
-  } else {
+  }
+  if (ctx.mode !== 'words') {
     commands.push({
       id: 'mode-words',
       title: 'Type words',
       hint: 'mode',
       keywords: ['words', 'word list', 'monkeytype', 'random', 'practice'],
       run: () => ctx.startWords(200),
+    });
+  }
+  if (ctx.mode !== 'timed') {
+    commands.push({
+      id: 'mode-timed',
+      title: 'Type timed',
+      hint: 'mode',
+      keywords: ['timed', 'time', 'clock', 'countdown', 'monkeytype', 'seconds'],
+      run: () => ctx.startTimed(ctx.timedSeconds),
     });
   }
   for (const count of WORD_COUNTS) {
@@ -109,6 +126,15 @@ export function buildCommands(ctx: CommandContext): Command[] {
       hint: 'words',
       keywords: ['words', 'word list', 'length', String(count)],
       run: () => ctx.startWords(count),
+    });
+  }
+  for (const seconds of TIMED_SECONDS) {
+    commands.push({
+      id: `timed-${String(seconds)}`,
+      title: `Time · ${String(seconds)}s`,
+      hint: 'timed',
+      keywords: ['timed', 'time', 'clock', 'countdown', 'seconds', String(seconds)],
+      run: () => ctx.startTimed(seconds),
     });
   }
 

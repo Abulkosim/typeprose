@@ -25,6 +25,12 @@ export interface CompletedRun {
   log: CharEvents;
   /** True when this run followed an esc-restart of the same passage (§7.1). */
   restarted: boolean;
+  /**
+   * Fixed stat window for a timed run (§2.3), in ms; absent for prose/words.
+   * When set, stats and the sparkline are measured over this window rather than
+   * the time of the last keystroke - and `stats` was already computed with it.
+   */
+  durationOverrideMs?: number;
 }
 
 /**
@@ -132,7 +138,17 @@ export function ResultView({ run, test, onNext }: ResultViewProps): ReactElement
   const [replaying, setReplaying] = useState(false);
   const bestInfo = useTypingStore((s) => s.bestInfo);
   const heatmap = useMemo(() => computeHeatmap(text, run.log), [text, run.log]);
-  const buckets = useMemo(() => computePerSecondRawWpm(text, run.log), [text, run.log]);
+  // A timed run's sparkline spans its fixed window (§2.3), not just up to the
+  // last keystroke, so a slow finish still reads as time on the clock.
+  const buckets = useMemo(
+    () =>
+      computePerSecondRawWpm(
+        text,
+        run.log,
+        run.durationOverrideMs !== undefined ? { durationOverrideMs: run.durationOverrideMs } : undefined,
+      ),
+    [text, run.log, run.durationOverrideMs],
+  );
 
   // First-ever result: point at /stats once, then never again (§ onboarding).
   const [showResultHint] = useState(() => !hasSeenResultHint());
@@ -150,12 +166,16 @@ export function ResultView({ run, test, onNext }: ResultViewProps): ReactElement
   const passageIsFavorite = test.kind === 'passage' && favoriteIds.has(test.passage.id);
 
   const passage = test.kind === 'passage' ? test.passage : null;
-  // The card captions prose with its attribution and word runs with their mode
-  // label (§3.5) - both share, only the typography and filename slug differ.
-  const shareMeta: ShareCardMeta =
-    test.kind === 'passage'
-      ? { caption: formatAttribution(test.passage), variant: 'prose', slug: test.passage.author.slug }
-      : { caption: wordTestLabel(test), variant: 'words', slug: test.drill === true ? 'drill' : 'words' };
+  // The card captions prose with its attribution and word/timed runs with their
+  // mode label (§3.5) - both share, only the typography and filename slug differ.
+  let shareMeta: ShareCardMeta;
+  if (test.kind === 'passage') {
+    shareMeta = { caption: formatAttribution(test.passage), variant: 'prose', slug: test.passage.author.slug };
+  } else if (test.kind === 'timed') {
+    shareMeta = { caption: wordTestLabel(test), variant: 'words', slug: 'time' };
+  } else {
+    shareMeta = { caption: wordTestLabel(test), variant: 'words', slug: test.drill === true ? 'drill' : 'words' };
+  }
   const onShare = (): void => {
     if (share === 'working') return;
     setShare('working');

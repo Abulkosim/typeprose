@@ -21,6 +21,10 @@ function formatClock(elapsedMs: number): string {
 export function Hud(): ReactElement {
   const status = useTypingStore((s) => s.snapshot?.status ?? 'idle');
   const startedAtMs = useTypingStore((s) => s.snapshot?.startedAtMs ?? null);
+  // Timed mode (§2.3) shows a countdown of remaining time instead of elapsed.
+  const timedDurationMs = useTypingStore((s) =>
+    s.test?.kind === 'timed' ? s.test.durationMs : null,
+  );
   const [display, setDisplay] = useState({ wpm: 0, elapsedMs: 0 });
   const [showHint, setShowHint] = useState(() => !hasSeenTypingHint());
 
@@ -48,6 +52,13 @@ export function Hud(): ReactElement {
     return <p className="subtitle mb-10 text-smoke">type the passage below to begin</p>;
   }
 
+  // Timed: count down; the remaining time reads as the primary tungsten number
+  // (the run ends when it hits zero), with live wpm beside it.
+  const clock =
+    timedDurationMs !== null
+      ? formatClock(Math.max(0, timedDurationMs - display.elapsedMs))
+      : formatClock(display.elapsedMs);
+
   return (
     <p
       className={`subtitle mb-10 transition-opacity duration-150 ${
@@ -55,8 +66,17 @@ export function Hud(): ReactElement {
       }`}
       aria-hidden={status === 'idle'}
     >
-      <span className="text-tungsten">{Math.round(display.wpm)} wpm</span>
-      <span className="text-smoke"> &middot; {formatClock(display.elapsedMs)}</span>
+      {timedDurationMs !== null ? (
+        <>
+          <span className="text-tungsten">{clock}</span>
+          <span className="text-smoke"> &middot; {Math.round(display.wpm)} wpm</span>
+        </>
+      ) : (
+        <>
+          <span className="text-tungsten">{Math.round(display.wpm)} wpm</span>
+          <span className="text-smoke"> &middot; {clock}</span>
+        </>
+      )}
     </p>
   );
 }

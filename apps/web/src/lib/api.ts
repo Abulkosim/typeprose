@@ -122,6 +122,28 @@ export async function submitWordResult(input: SubmitWordResultInput): Promise<Po
   return parseJson(response, postResultsResponseSchema, 'POST /results');
 }
 
+/**
+ * POST /results (timed, §2.3) - submit a finished fixed-window run. Carries the
+ * generated buffer text (recomputed against, like a word run) plus the window
+ * `durationMs`, so the server measures WPM over the same fixed window.
+ */
+export interface SubmitTimedResultInput {
+  profileId: string;
+  text: string;
+  durationMs: number;
+  clientStats: RunStats;
+  charEvents: CharEvents;
+}
+
+export async function submitTimedResult(input: SubmitTimedResultInput): Promise<PostResultsResponse> {
+  const response = await fetch(`${BASE}/results`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ mode: 'timed', ...input }),
+  });
+  return parseJson(response, postResultsResponseSchema, 'POST /results');
+}
+
 /** GET /profiles/:id/stats - aggregates + history for the stats page (§8). */
 export async function fetchProfileStats(profileId: string): Promise<ProfileStats> {
   const response = await fetch(`${BASE}/profiles/${profileId}/stats`);

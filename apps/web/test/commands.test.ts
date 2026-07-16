@@ -15,6 +15,8 @@ function makeContext(overrides: Partial<CommandContext> = {}): CommandContext {
     mode: 'prose',
     startWords: vi.fn(),
     startProse: vi.fn(),
+    timedSeconds: 60,
+    startTimed: vi.fn(),
     wordPunctuation: false,
     toggleWordPunctuation: vi.fn(),
     wordNumbers: false,
@@ -99,13 +101,15 @@ describe('buildCommands', () => {
     ).toBe('Mute keystroke sound');
   });
 
-  it('offers "Type words" + length presets in prose mode, and switches on run', () => {
+  it('offers "Type words"/"Type timed" + presets in prose mode, and switches on run', () => {
     const ctx = makeContext({ mode: 'prose' });
     const commands = buildCommands(ctx);
     const ids = commands.map((c) => c.id);
     expect(ids).toContain('mode-words');
+    expect(ids).toContain('mode-timed');
     expect(ids).not.toContain('mode-prose');
     expect(ids).toEqual(expect.arrayContaining(['words-25', 'words-50', 'words-100', 'words-200']));
+    expect(ids).toEqual(expect.arrayContaining(['timed-15', 'timed-30', 'timed-60', 'timed-120']));
     commands.find((c) => c.id === 'mode-words')?.run();
     expect(ctx.startWords).toHaveBeenCalledWith(200);
     commands.find((c) => c.id === 'words-50')?.run();
@@ -119,6 +123,23 @@ describe('buildCommands', () => {
     expect(commands.map((c) => c.id)).not.toContain('mode-words');
     commands.find((c) => c.id === 'mode-prose')?.run();
     expect(ctx.startProse).toHaveBeenCalledOnce();
+  });
+
+  it('offers "Type timed" (reusing the persisted window) and per-window presets', () => {
+    const ctx = makeContext({ mode: 'prose', timedSeconds: 30 });
+    const commands = buildCommands(ctx);
+    expect(commands.find((c) => c.id === 'timed-60')?.title).toBe('Time · 60s');
+    commands.find((c) => c.id === 'mode-timed')?.run();
+    expect(ctx.startTimed).toHaveBeenCalledWith(30); // the persisted window
+    commands.find((c) => c.id === 'timed-15')?.run();
+    expect(ctx.startTimed).toHaveBeenCalledWith(15);
+  });
+
+  it('does not offer "Type timed" while already in timed mode', () => {
+    const ids = buildCommands(makeContext({ mode: 'timed' })).map((c) => c.id);
+    expect(ids).not.toContain('mode-timed');
+    expect(ids).toContain('mode-prose');
+    expect(ids).toContain('mode-words');
   });
 
   it('names the punctuation toggle after the action it performs and wires it', () => {

@@ -25,6 +25,7 @@ export function CommandPalette(): ReactElement | null {
   const theme = useThemeStore((s) => s.theme);
   const soundEnabled = useSoundStore((s) => s.enabled);
   const mode = useModeStore((s) => s.mode);
+  const timedSeconds = useModeStore((s) => s.timedSeconds);
   const wordPunctuation = useModeStore((s) => s.punctuation);
   const wordNumbers = useModeStore((s) => s.numbers);
   const musicChannel = useMusicStore((s) => s.channel);
@@ -87,14 +88,19 @@ export function CommandPalette(): ReactElement | null {
           if (location.pathname !== '/') navigate('/');
           void useTypingStore.getState().loadNext({});
         },
+        timedSeconds,
+        startTimed: (seconds) => {
+          if (location.pathname !== '/') navigate('/');
+          void useTypingStore.getState().loadTimed(seconds);
+        },
         wordPunctuation,
         toggleWordPunctuation: () => {
           const m = useModeStore.getState();
           m.setPunctuation(!m.punctuation);
           // Flipping the toggle only changes the *next* generated set; when a
-          // words run is already showing, reload immediately so the toggle
-          // feels live rather than deferred to the next Tab.
-          if (m.mode === 'words') {
+          // words or timed run is already showing, reload immediately so the
+          // toggle feels live rather than deferred to the next Tab.
+          if (m.mode === 'words' || m.mode === 'timed') {
             if (location.pathname !== '/') navigate('/');
             void useTypingStore.getState().loadNext();
           }
@@ -104,7 +110,7 @@ export function CommandPalette(): ReactElement | null {
         toggleWordNumbers: () => {
           const m = useModeStore.getState();
           m.setNumbers(!m.numbers);
-          if (m.mode === 'words') {
+          if (m.mode === 'words' || m.mode === 'timed') {
             if (location.pathname !== '/') navigate('/');
             void useTypingStore.getState().loadNext();
           }
@@ -120,6 +126,7 @@ export function CommandPalette(): ReactElement | null {
       theme,
       soundEnabled,
       mode,
+      timedSeconds,
       wordPunctuation,
       wordNumbers,
       musicChannel,
