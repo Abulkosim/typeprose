@@ -214,3 +214,29 @@ export async function deleteProfile(profileId: string): Promise<void> {
     throw new Error(`DELETE /profiles/:id failed with status ${String(response.status)}`);
   }
 }
+
+/** GET /profiles/:id/favorites - this profile's favorited passages, newest first (§3.3). */
+export async function fetchFavorites(profileId: string): Promise<PassageSummaryItem[]> {
+  const response = await fetch(`${BASE}/profiles/${profileId}/favorites`);
+  return parseJson(response, passageSummaryListSchema, 'GET /profiles/:id/favorites');
+}
+
+/** PUT /profiles/:id/favorites/:passageId - star a passage (§3.3). 204, idempotent. */
+export async function addFavorite(profileId: string, passageId: number): Promise<void> {
+  const response = await fetch(`${BASE}/profiles/${profileId}/favorites/${String(passageId)}`, {
+    method: 'PUT',
+  });
+  if (!response.ok) {
+    throw new Error(`PUT favorites failed with status ${String(response.status)}`);
+  }
+}
+
+/** DELETE /profiles/:id/favorites/:passageId - unstar a passage (§3.3). 204, idempotent. */
+export async function removeFavorite(profileId: string, passageId: number): Promise<void> {
+  const response = await fetch(`${BASE}/profiles/${profileId}/favorites/${String(passageId)}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    throw new Error(`DELETE favorites failed with status ${String(response.status)}`);
+  }
+}

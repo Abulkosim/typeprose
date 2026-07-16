@@ -3,6 +3,7 @@ import { useEffect, useState, type ReactElement } from 'react';
 import { Link, useNavigate } from 'react-router';
 
 import { fetchAuthors, fetchPassages, fetchThemes, type PassageQuery } from '../lib/api';
+import { useFavoritesStore } from '../lib/favorites';
 import { usePageMeta } from '../lib/head';
 
 /** The four difficulty bands, warm-up first (§6.4). */
@@ -90,6 +91,52 @@ function PassageDisclosure({ query }: { query: PassageQuery }): ReactElement {
 }
 
 /**
+ * The "your favorites" section (§3.3): the passages this profile has starred,
+ * newest first, each linking straight to `/?passage=<id>` with an unstar
+ * control. Rendered only when there is at least one favorite - a first-time
+ * visitor with none sees the library exactly as before.
+ */
+function FavoritesSection(): ReactElement | null {
+  const items = useFavoritesStore((s) => s.items);
+  const toggle = useFavoritesStore((s) => s.toggle);
+
+  useEffect(() => {
+    void useFavoritesStore.getState().load();
+  }, []);
+
+  if (items === null || items.length === 0) return null;
+
+  return (
+    <div>
+      <h2 className="subtitle text-tungsten">your favorites</h2>
+      <ul className="mt-4 space-y-2 border-l border-tungsten/20 pl-4">
+        {items.map((p) => (
+          <li key={p.id} className="flex items-baseline justify-between gap-4">
+            <Link
+              to={`/?passage=${String(p.id)}`}
+              className="flex flex-1 items-baseline justify-between gap-4 text-bone transition-opacity duration-150 hover:text-tungsten"
+            >
+              <span>
+                {p.work.title} <span className="text-smoke">&middot; {p.opening}</span>
+              </span>
+              <span className="text-smoke">{p.band}</span>
+            </Link>
+            <button
+              type="button"
+              aria-label={`Remove ${p.work.title} from favorites`}
+              onClick={() => void toggle(p.id)}
+              className="subtitle text-smoke transition-opacity duration-150 hover:text-bone"
+            >
+              unstar
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/**
  * `/library` (§9.1): browse by band, author, or theme. The author/theme name
  * navigates to `/` with the corresponding filter (a random matching passage,
  * kept across Tab); "show passages" instead lists the actual excerpts under
@@ -139,6 +186,7 @@ export function LibraryPage(): ReactElement {
 
       {state.status === 'ready' ? (
         <div className="mt-8 space-y-12">
+          <FavoritesSection />
           <div>
             <h2 className="subtitle text-smoke">by difficulty</h2>
             <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3">
