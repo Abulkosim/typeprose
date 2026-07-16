@@ -4,10 +4,16 @@ import type { Passage } from '@typeprose/schema';
 import type { CompletedRun } from '../result/ResultView';
 
 /**
- * Shareable result card (Phase 3, plan §10.3). Rendered on a canvas - not
- * SVG→img - so the loaded web fonts (Plex Mono, EB Garamond) draw reliably
- * without font embedding. The card is always the noir look regardless of the
- * active UI theme: it is a brand artifact, not a screenshot of the current view.
+ * Shareable result card (Phase 3, plan §10.3; word-run variant §3.5). Rendered
+ * on a canvas - not SVG→img - so the loaded web fonts (Plex Mono, EB Garamond)
+ * draw reliably without font embedding. The card is always the noir look
+ * regardless of the active UI theme: it is a brand artifact, not a screenshot
+ * of the current view.
+ *
+ * Prose runs caption the card with the literary attribution in italic serif;
+ * word runs caption it with their mode label ("words · 50") in the same mono
+ * caps as the wordmark - a word run has no work to attribute, but grinders
+ * still get a card to share (closing the share-loop gap, §3.5).
  */
 
 /** "- Fyodor Dostoevsky, Crime and Punishment, trans. Garnett" (shared with the epigraph). */
@@ -16,9 +22,21 @@ export function formatAttribution(passage: Passage): string {
   return passage.work.translator !== null ? `${base}, trans. ${passage.work.translator}` : base;
 }
 
+/**
+ * What to caption the card with. `variant` picks the typography: 'prose' draws
+ * `caption` as an italic-serif attribution line; 'words' draws it as an
+ * uppercase letterspaced mono label. `slug` is the filename discriminator
+ * (author slug for prose, "words"/"drill" for word runs).
+ */
+export interface ShareCardMeta {
+  caption: string;
+  variant: 'prose' | 'words';
+  slug: string;
+}
+
 /** Filename for the downloaded card, e.g. `typeprose-dostoevsky-92wpm.png`. */
-export function cardFilename(passage: Passage, stats: RunStats): string {
-  return `typeprose-${passage.author.slug}-${String(Math.round(stats.wpm))}wpm.png`;
+export function cardFilename(meta: ShareCardMeta, stats: RunStats): string {
+  return `typeprose-${meta.slug}-${String(Math.round(stats.wpm))}wpm.png`;
 }
 
 const CARD_W = 1200;
@@ -48,7 +66,7 @@ function fit(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): str
 /** Draw the result card onto a fresh canvas at 2x. Awaits web fonts first. */
 export async function renderResultCardCanvas(
   run: CompletedRun,
-  passage: Passage,
+  meta: ShareCardMeta,
 ): Promise<HTMLCanvasElement> {
   const canvas = document.createElement('canvas');
   canvas.width = CARD_W * SCALE;
@@ -104,19 +122,26 @@ export async function renderResultCardCanvas(
   stat('acc', `${String(stats.accuracy)}%`);
   stat('consistency', `${String(stats.consistency)}%`);
 
-  // Tungsten rule + attribution epigraph.
+  // Tungsten rule + caption (prose: italic-serif attribution; words: mono label).
   ctx.fillStyle = INK.tungsten;
   ctx.fillRect(MARGIN, 430, 60, 3);
   ctx.fillStyle = INK.smoke;
-  ctx.font = 'italic 34px "EB Garamond"';
-  ctx.fillText(fit(ctx, formatAttribution(passage), CARD_W - 2 * MARGIN), MARGIN, 500);
+  if (meta.variant === 'prose') {
+    ctx.font = 'italic 34px "EB Garamond"';
+    ctx.fillText(fit(ctx, meta.caption, CARD_W - 2 * MARGIN), MARGIN, 500);
+  } else {
+    ctx.font = '500 28px "IBM Plex Mono"';
+    ctx.letterSpacing = '3px';
+    ctx.fillText(fit(ctx, meta.caption.toUpperCase(), CARD_W - 2 * MARGIN), MARGIN, 498);
+    ctx.letterSpacing = '0px';
+  }
 
   return canvas;
 }
 
 /** Render the card to a PNG blob. */
-export async function renderResultCard(run: CompletedRun, passage: Passage): Promise<Blob> {
-  const canvas = await renderResultCardCanvas(run, passage);
+export async function renderResultCard(run: CompletedRun, meta: ShareCardMeta): Promise<Blob> {
+  const canvas = await renderResultCardCanvas(run, meta);
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
       if (blob === null) reject(new Error('canvas.toBlob returned null'));
@@ -141,8 +166,8 @@ function download(blob: Blob, filename: string): void {
  * ClipboardItem), else download it. Returns which path was taken so the UI can
  * report it.
  */
-export async function shareResultCard(run: CompletedRun, passage: Passage): Promise<ShareOutcome> {
-  const blob = await renderResultCard(run, passage);
+export async function shareResultCard(run: CompletedRun, meta: ShareCardMeta): Promise<ShareOutcome> {
+  const blob = await renderResultCard(run, meta);
   try {
     if (typeof ClipboardItem !== 'undefined' && navigator.clipboard?.write !== undefined) {
       await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
@@ -151,6 +176,6 @@ export async function shareResultCard(run: CompletedRun, passage: Passage): Prom
   } catch {
     // Clipboard denied/unavailable - fall back to a download.
   }
-  download(blob, cardFilename(passage, run.stats));
+  download(blob, cardFilename(meta, run.stats));
   return 'downloaded';
 }

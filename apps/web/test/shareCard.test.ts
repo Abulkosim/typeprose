@@ -41,6 +41,15 @@ describe('formatAttribution', () => {
 describe('cardFilename', () => {
   it('is slug + rounded wpm', () => {
     const stats = { wpm: 91.6 } as RunStats;
-    expect(cardFilename(passage({ slug: 'woolf' }), stats)).toBe('typeprose-woolf-92wpm.png');
+    expect(
+      cardFilename({ caption: '', variant: 'prose', slug: 'woolf' }, stats),
+    ).toBe('typeprose-woolf-92wpm.png');
+  });
+
+  it('slugs a word run by its mode', () => {
+    const stats = { wpm: 80 } as RunStats;
+    expect(
+      cardFilename({ caption: 'words · 50', variant: 'words', slug: 'words' }, stats),
+    ).toBe('typeprose-words-80wpm.png');
   });
 });
