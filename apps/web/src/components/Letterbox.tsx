@@ -104,6 +104,10 @@ export function Letterbox({ children }: { children: ReactNode }): ReactElement {
 
   return (
     <div className="flex min-h-dvh flex-col">
+      {/* §3.4: keyboard users can jump the nav straight to the stage/page body. */}
+      <a href="#main-content" className="skip-link subtitle">
+        skip to content
+      </a>
       <header className="flex h-10 shrink-0 items-center justify-between bg-bar px-6">
         <NavLink to="/" className="subtitle text-bone">
           typeprose
@@ -116,7 +120,7 @@ export function Letterbox({ children }: { children: ReactNode }): ReactElement {
         </nav>
       </header>
 
-      <main className="film-stage flex flex-1 flex-col bg-stage">
+      <main id="main-content" tabIndex={-1} className="film-stage flex flex-1 flex-col bg-stage">
         <div className="animate-fade-in mx-auto flex w-full max-w-[68ch] flex-1 flex-col justify-center px-6 py-16">
           {children}
         </div>

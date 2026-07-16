@@ -199,6 +199,7 @@ export function TypingStage(): ReactElement {
         ref={textareaRef}
         className="absolute h-px w-px resize-none opacity-0"
         aria-label="Type the passage"
+        aria-describedby="stage-target-text"
         autoFocus
         autoCapitalize="off"
         autoCorrect="off"
@@ -220,9 +221,19 @@ export function TypingStage(): ReactElement {
 
       {phase === 'typing' && snapshot !== null && test !== null ? (
         <div className="relative">
+          {/* §3.4: the visual board is a stream of per-char spans - noise to a
+              screen reader. Hide it and expose the clean target text (referenced
+              by the textarea's aria-describedby) so an SR user knows what to type. */}
+          <p id="stage-target-text" className="sr-only">
+            {test.kind === 'passage'
+              ? `Type the following passage: ${test.passage.text}`
+              : `Type the following ${String(test.count)} words: ${test.text}`}
+          </p>
           <div className={`transition-opacity duration-150 ${unfocused ? 'opacity-30' : ''}`}>
             <Hud />
-            <PassageBoard snapshot={snapshot} />
+            <div aria-hidden="true">
+              <PassageBoard snapshot={snapshot} />
+            </div>
             <div className="mt-10">
               {test.kind === 'passage' ? (
                 <Epigraph passage={test.passage} />
