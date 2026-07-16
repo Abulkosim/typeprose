@@ -32,8 +32,8 @@ below to begin" in `Hud.tsx`, flagged via `settings/onboarding.ts`.
 Best WPM exists only on `/stats`; a run that beats it passes silently.
 
 - ~~Show "personal best" tag (and previous best) on the result view when a
-run beats the profile's best — needs the profile best returned from
-`POST /results` response or a cheap `GET`.~~ Shipped: `POST /results`
+run beats the profile's best — needs the profile best returned from~~
+`POST /results` ~~response or a cheap~~ `GET`~~.~~ Shipped: `POST /results`
 now returns `isNewBest`/`previousBestWpm`/`isNewPassageBest`/
 `previousPassageBestWpm`; `BestTag` in `ResultView.tsx` renders it.
 - ~~Per-passage PB: "your best on this passage: 72 wpm" — makes repeats
@@ -68,13 +68,13 @@ The notice links out to all three.
 Leaderboard and claim are palette-only; the result screen doesn't link to
 the board for the passage you just typed.
 
-- ~~Result view: "see leaderboard for this passage" link (`?passageId=`).~~
+- ~~Result view: "see leaderboard for this passage" link (~~`?passageId=`~~).~~
 Shipped.
 - ~~Leaderboard page: in-page toggle global ↔ this-passage instead of
 URL-only; highlight the viewer's own row / show "your rank".~~ Shipped:
 tabs + a "your rank #N at X wpm" line + highlighted own row (needed
 adding `profileId` to the leaderboard entry DTO).
-- ~~Consider adding `leaderboard` to the top-bar nav (it currently holds
+- ~~Consider adding~~ `leaderboard` ~~to the top-bar nav (it currently holds
 only stats · library).~~ Shipped.
 
 
@@ -89,8 +89,8 @@ already in the store).~~ Shipped: a button next to "leaderboard for this
 passage" in `ResultView.tsx` calls the existing `restart()` store action
 (no refetch — the result view's `test` is already that passage).
 - ~~Library: list actual passages (title + opening words + band) under each
-author/theme, each linking to `/?passage=<id>` — needs a
-`GET /passages/:id` load path in the store (route already exists).~~
+author/theme, each linking to~~ `/?passage=<id>` ~~— needs a~~
+`GET /passages/:id` ~~load path in the store (route already exists).~~
 Shipped: a new `GET /passages` list endpoint (filtered by author/theme/
 band, `PassageRepository.list`) backs a per-passage summary DTO
 (`PassageSummaryItem`: id/band/opening/work.title/author); `LibraryPage.tsx`
@@ -137,9 +137,9 @@ changes, same words-mode submission path).
 
 - ~~Punctuation and numbers toggles (Monkeytype's most-used options) —
 inject into the sampled word stream; engine already handles both.~~
-- A timed mode (30s / 60s) is popular but changes the engine's
-completion semantics — spec it separately before committing. (Still
-open — deliberately excluded from batch C.)
+- ~~A timed mode (30s / 60s) is popular but changes the engine's
+completion semantics — spec it separately before committing.~~ ✅
+shipped 2026-07-16 as 15/30/60/120s timed mode (see below).
 
 
 
@@ -148,7 +148,7 @@ open — deliberately excluded from batch C.)
 30 passages exhausts in a week of regular use (word mode was added
 precisely for this).
 
-- ~~Use the existing `pnpm propose` tooling to curate a second batch
+- ~~Use the existing~~ `pnpm propose` ~~tooling to curate a second batch
 (target: 100+ passages, weighted toward the thin bands — warmup has
 only 5).~~ Shipped: 71 new passages curated via `pnpm propose` from 10
 additional Project Gutenberg works — Baum, Twain, Stevenson, London,
@@ -180,7 +180,7 @@ Shipped: `PATCH /profiles/:id` + rename form on `/account`.
 delete profile + results).~~ Shipped: sign out clears the local id;
 `DELETE /profiles/:id` removes profile + results + claim tokens in one
 transaction, behind a two-step confirm.
-- ~~A minimal `/account` page or palette commands; claimed-state indicator
+- ~~A minimal~~ `/account` ~~page or palette commands; claimed-state indicator
 in the letterbox.~~ Shipped: `/account` page (three states: no profile /
 anonymous / claimed), the palette's claim command became "Account", and
 the header nav shows the display name once claimed.
@@ -210,8 +210,7 @@ wire log carries no typed characters, so extras replay as blanks.
 
 - ~~Star a passage from the result view; "favorites" filter in the library.
 Per-profile server-side (survives claim/merge).~~ Shipped: a `favorites`
-join table (composite PK, idempotent), `GET`/`PUT`/`DELETE
-/profiles/:id/favorites`; the profile owns the join (cascades on delete,
+join table (composite PK, idempotent), `GET`/`PUT`/`DELETE /profiles/:id/favorites`; the profile owns the join (cascades on delete,
 merges on claim), the catalog turns ids into summaries. Web: an optimistic
 `useFavoritesStore`, a prose-only star on the result view, and a "your
 favorites" section on the library page.
@@ -220,7 +219,7 @@ favorites" section on the library page.
 
 ### ~~3.4 Accessibility pass~~ ✅ shipped 2026-07-16
 
-- ~~`aria-live` region announcing completion + final WPM.~~ Shipped: a
+- `aria-live` ~~region announcing completion + final WPM.~~ Shipped: a
 visually-hidden `role="status"` region on the result view.
 - ~~Screen-reader review of the stage (the passage is currently
 visual-only).~~ Shipped: the char-span board is `aria-hidden`; the input's
@@ -309,9 +308,15 @@ Open product work, in priority order:
 
 1. ~~**Batch E (pre-launch polish):** 3.5 word-run share cards, 3.4
   accessibility pass, 3.3 favorites.~~ ✅ shipped 2026-07-16.
-2. **Timed mode (30s/60s)** — the one deliberately deferred piece of
-  2.3. Needs a spec first: it changes the engine's completion
-  semantics. The biggest remaining "expected typing-app feature".
+2. ~~**Timed mode (30s/60s)** — the one deliberately deferred piece of
+  2.3.~~ ✅ shipped 2026-07-16 as 15/30/60/120s timed mode. Built
+  without touching the engine's core reducer: an external `finish()`
+  trigger + a `durationOverrideMs` measured over the fixed window that
+  the server reproduces from the submitted window, so the recompute
+  wire contract still holds. Words-shaped storage (`mode='timed'`,
+  migration `0005`); the buffer is sized un-exhaustible so a run always
+  ends on the clock. Details in `DECISIONS.md`.
 3. **Tier 4** stays decide-don't-drift: wait for post-launch signal
   before committing to mobile input, multiplayer, custom text, or
   PWA/offline.
+
