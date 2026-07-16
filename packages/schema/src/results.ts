@@ -16,14 +16,32 @@ export const runStatsSchema = z.object({
 export type RunStats = z.infer<typeof runStatsSchema>;
 
 /**
- * Which kind of test a run was: a curated corpus passage ('prose', the default)
- * or a generated random-word set ('words', the Monkeytype-style mode). A prose
- * run keys on a server passage id; a word run carries its generated text so the
- * server can recompute against it (there is no stored passage).
+ * Which kind of test a run was: a curated corpus passage ('prose', the default),
+ * a generated random-word set ('words', the Monkeytype-style mode), or a fixed
+ * time window ('timed', §2.3). A prose run keys on a server passage id; a word
+ * or timed run carries its generated text so the server can recompute against
+ * it (there is no stored passage). A timed run additionally carries its window
+ * `durationMs`, so the server measures WPM over that same fixed window.
  */
-export const resultModeSchema = z.enum(['prose', 'words']);
+export const resultModeSchema = z.enum(['prose', 'words', 'timed']);
 
 export type ResultMode = z.infer<typeof resultModeSchema>;
+
+/**
+ * The timed-mode windows offered (seconds), the Monkeytype-standard set. Fixed
+ * here so the client presets and the server's accepted `durationMs` values are
+ * one source of truth - the server rejects any other window (a shorter one
+ * can't be forged to inflate WPM).
+ */
+export const TIMED_SECONDS = [15, 30, 60, 120] as const;
+
+export type TimedSeconds = (typeof TIMED_SECONDS)[number];
+
+/** The same windows in milliseconds (the wire unit, matching RunStats.durationMs). */
+export const TIMED_DURATIONS_MS = TIMED_SECONDS.map((s) => s * 1000) as unknown as readonly [
+  number,
+  ...number[],
+];
 
 /**
  * Upper bound on a submitted word-mode text (chars). Comfortably covers the
@@ -31,6 +49,13 @@ export type ResultMode = z.infer<typeof resultModeSchema>;
  * word-mode text is client-supplied rather than a stored passage.
  */
 export const MAX_WORD_TEXT_LEN = 4000;
+
+/**
+ * Upper bound on a timed-mode text (chars). Larger than the word cap: a timed
+ * run pre-generates a buffer big enough that even a 350-wpm typist can't exhaust
+ * the longest (120s) window, so the buffer runs well past what's actually typed.
+ */
+export const MAX_TIMED_TEXT_LEN = 8000;
 
 /** A prose run: recomputed server-side against the passage identified by id. */
 const proseResultRequestSchema = z.object({
@@ -50,10 +75,31 @@ const wordsResultRequestSchema = z.object({
   charEvents: charEventsSchema,
 });
 
+/**
+ * A timed run (§2.3): like a word run (client-submitted generated text), plus
+ * the fixed window `durationMs` the WPM is measured over. Constrained to the
+ * supported windows so a client can't claim an arbitrary (shorter) window to
+ * inflate its WPM.
+ */
+const timedResultRequestSchema = z.object({
+  mode: z.literal('timed'),
+  profileId: z.uuid(),
+  text: z.string().min(1).max(MAX_TIMED_TEXT_LEN),
+  durationMs: z
+    .int()
+    .refine(
+      (v) => (TIMED_DURATIONS_MS as readonly number[]).includes(v),
+      'durationMs must be one of the supported timed windows',
+    ),
+  clientStats: runStatsSchema,
+  charEvents: charEventsSchema,
+});
+
 /** POST /results request body (plan §8), discriminated on `mode`. */
 export const postResultsRequestSchema = z.discriminatedUnion('mode', [
   proseResultRequestSchema,
   wordsResultRequestSchema,
+  timedResultRequestSchema,
 ]);
 
 export type PostResultsRequest = z.infer<typeof postResultsRequestSchema>;
