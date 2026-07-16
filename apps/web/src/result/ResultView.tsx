@@ -4,7 +4,8 @@ import { useEffect, useState, useMemo, type ReactElement } from 'react';
 import { Link } from 'react-router';
 
 import { Epigraph } from '../components/Epigraph';
-import { shareResultCard } from '../lib/shareCard';
+import { useFavoritesStore } from '../lib/favorites';
+import { formatAttribution, shareResultCard, type ShareCardMeta } from '../lib/shareCard';
 import { hasSeenResultHint, markSeenResultHint } from '../settings/onboarding';
 import { useTypingStore, wordTestLabel, type ActiveTest, type BestInfo } from '../stage/typingStore';
 import { HeatmapPassage } from './HeatmapPassage';
@@ -139,12 +140,26 @@ export function ResultView({ run, test, onNext }: ResultViewProps): ReactElement
     markSeenResultHint();
   }, []);
 
-  // Sharing is a branded attribution artifact, so it is offered for prose only.
+  // Favorites (§3.3): star the just-typed passage. Load passively on mount so
+  // the star reflects prior state (never creates a profile just by viewing).
+  const favoriteIds = useFavoritesStore((s) => s.ids);
+  const favoritesLoaded = useFavoritesStore((s) => s.loaded);
+  useEffect(() => {
+    if (!favoritesLoaded) void useFavoritesStore.getState().load();
+  }, [favoritesLoaded]);
+  const passageIsFavorite = test.kind === 'passage' && favoriteIds.has(test.passage.id);
+
   const passage = test.kind === 'passage' ? test.passage : null;
+  // The card captions prose with its attribution and word runs with their mode
+  // label (§3.5) - both share, only the typography and filename slug differ.
+  const shareMeta: ShareCardMeta =
+    test.kind === 'passage'
+      ? { caption: formatAttribution(test.passage), variant: 'prose', slug: test.passage.author.slug }
+      : { caption: wordTestLabel(test), variant: 'words', slug: test.drill === true ? 'drill' : 'words' };
   const onShare = (): void => {
-    if (share === 'working' || passage === null) return;
+    if (share === 'working') return;
     setShare('working');
-    shareResultCard(run, passage)
+    shareResultCard(run, shareMeta)
       .then((outcome) => setShare(outcome))
       .catch(() => setShare('error'))
       .finally(() => {
@@ -154,6 +169,12 @@ export function ResultView({ run, test, onNext }: ResultViewProps): ReactElement
 
   return (
     <section aria-label="Result" className="animate-fade-in">
+      {/* §3.4: the big stats are visual; announce the outcome for screen readers
+          the moment the result view mounts (this view only appears on completion). */}
+      <p className="sr-only" role="status" aria-live="polite">
+        Run complete. {stats.wpm} words per minute, {stats.accuracy} percent accuracy,{' '}
+        {stats.consistency} percent consistency.
+      </p>
       <p className="subtitle text-smoke">result</p>
 
       <div className="relative mt-8 flex flex-wrap items-baseline gap-x-10 gap-y-4">
@@ -244,14 +265,24 @@ export function ResultView({ run, test, onNext }: ResultViewProps): ReactElement
         >
           watch replay
         </button>
+        <button
+          type="button"
+          onClick={onShare}
+          disabled={share === 'working'}
+          className="subtitle text-smoke transition-opacity duration-150 hover:text-bone"
+        >
+          {SHARE_LABEL[share]}
+        </button>
         {passage !== null ? (
           <button
             type="button"
-            onClick={onShare}
-            disabled={share === 'working'}
-            className="subtitle text-smoke transition-opacity duration-150 hover:text-bone"
+            aria-pressed={passageIsFavorite}
+            onClick={() => void useFavoritesStore.getState().toggle(passage.id)}
+            className={`subtitle transition-opacity duration-150 hover:text-bone ${
+              passageIsFavorite ? 'text-tungsten' : 'text-smoke'
+            }`}
           >
-            {SHARE_LABEL[share]}
+            {passageIsFavorite ? '★ favorited' : '☆ favorite'}
           </button>
         ) : null}
         {passage !== null ? (
