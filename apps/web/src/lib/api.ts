@@ -144,6 +144,20 @@ export async function submitTimedResult(input: SubmitTimedResultInput): Promise<
   return parseJson(response, postResultsResponseSchema, 'POST /results');
 }
 
+/**
+ * POST /results (custom) - submit a finished run over user-pasted text. The
+ * word-mode submission shape verbatim (self-reported text the server recomputes
+ * against), tagged with its own mode so stored history stays honest.
+ */
+export async function submitCustomResult(input: SubmitWordResultInput): Promise<PostResultsResponse> {
+  const response = await fetch(`${BASE}/results`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ mode: 'custom', ...input }),
+  });
+  return parseJson(response, postResultsResponseSchema, 'POST /results');
+}
+
 /** GET /profiles/:id/stats - aggregates + history for the stats page (§8). */
 export async function fetchProfileStats(profileId: string): Promise<ProfileStats> {
   const response = await fetch(`${BASE}/profiles/${profileId}/stats`);

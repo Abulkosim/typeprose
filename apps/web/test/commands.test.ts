@@ -17,6 +17,7 @@ function makeContext(overrides: Partial<CommandContext> = {}): CommandContext {
     startProse: vi.fn(),
     timedSeconds: 60,
     startTimed: vi.fn(),
+    openCustomText: vi.fn(),
     wordPunctuation: false,
     toggleWordPunctuation: vi.fn(),
     wordNumbers: false,
@@ -140,6 +141,16 @@ describe('buildCommands', () => {
     expect(ids).not.toContain('mode-timed');
     expect(ids).toContain('mode-prose');
     expect(ids).toContain('mode-words');
+  });
+
+  it('offers "Type custom text" in every mode (it opens the paste dialog)', () => {
+    for (const mode of ['prose', 'words', 'timed', 'custom'] as const) {
+      const ctx = makeContext({ mode });
+      const command = buildCommands(ctx).find((c) => c.id === 'mode-custom');
+      expect(command?.title).toBe('Type custom text');
+      command?.run();
+      expect(ctx.openCustomText).toHaveBeenCalledOnce();
+    }
   });
 
   it('names the punctuation toggle after the action it performs and wires it', () => {

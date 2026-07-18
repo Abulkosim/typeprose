@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactEle
 import { useLocation, useNavigate } from 'react-router';
 
 import { useCreditsStore } from '../credits/creditsStore';
+import { useCustomTextStore } from '../custom/customTextStore';
 import { useModeStore } from '../settings/mode';
 import { useMusicStore } from '../settings/music';
 import { useSoundStore } from '../settings/sound';
@@ -42,6 +43,8 @@ export function CommandPalette(): ReactElement | null {
       // While the credits title sequence is up, Esc belongs to it (it leaves
       // the theater) - same coordination the stage applies for this palette.
       if (useCreditsStore.getState().isOpen) return;
+      // Same for the custom-text dialog: its own Esc handler closes it.
+      if (useCustomTextStore.getState().isOpen) return;
       e.preventDefault();
       useCommandStore.getState().toggle();
     };
@@ -93,6 +96,9 @@ export function CommandPalette(): ReactElement | null {
           if (location.pathname !== '/') navigate('/');
           void useTypingStore.getState().loadTimed(seconds);
         },
+        // The dialog navigates to the stage itself on start, so opening it
+        // from another route needs no navigation here.
+        openCustomText: () => useCustomTextStore.getState().open(),
         wordPunctuation,
         toggleWordPunctuation: () => {
           const m = useModeStore.getState();

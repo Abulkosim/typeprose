@@ -89,9 +89,10 @@ test('switch to word mode via the palette, type, and see it in stats', async ({ 
 
   const result = page.locator('section[aria-label="Result"]');
   await expect(result).toBeVisible({ timeout: 15_000 });
-  // Word runs show a "words · 25" tag and no share (attribution) affordance.
+  // Word runs show a "words · 25" tag (no attribution epigraph) and, since the
+  // §3.5 share-card generalization, the share affordance too.
   await expect(result.getByText('words · 25')).toBeVisible();
-  await expect(result.getByText('share result')).toHaveCount(0);
+  await expect(result.getByText('share result')).toBeVisible();
 
   const response = await submitted;
   expect(response.ok()).toBeTruthy();
@@ -100,4 +101,56 @@ test('switch to word mode via the palette, type, and see it in stats', async ({ 
   await page.goto('/stats');
   await expect(page.getByRole('heading', { name: 'history' })).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText('words · 25').first()).toBeVisible();
+});
+
+/**
+ * Custom text: open the paste dialog via the palette, paste text with curly
+ * quotes (normalized on the way in), type the canonical result, and find the
+ * run in stats tagged "custom · N". Guards the dialog, normalization, and the
+ * custom submission path end to end.
+ */
+test('paste custom text via the dialog, type it, and see it in stats', async ({ page }) => {
+  await page.goto('/');
+  const board = page.getByTestId('passage');
+  await expect(board).toBeVisible();
+
+  // Esc opens the palette; "Type custom text" opens the paste dialog.
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog', { name: 'Command palette' })).toBeVisible();
+  await page.getByRole('textbox', { name: 'Search commands' }).fill('custom');
+  await page.keyboard.press('Enter');
+
+  // Paste text with curly quotes - the dialog normalizes them to straight ones.
+  const dialog = page.getByRole('dialog', { name: 'Custom text' });
+  await expect(dialog).toBeVisible();
+  await dialog
+    .getByRole('textbox', { name: 'Custom text to type' })
+    .fill('so “it goes” on and on');
+  await page.keyboard.press('Enter');
+
+  // The board holds the normalized paste.
+  const expected = 'so "it goes" on and on';
+  await expect(async () => {
+    expect(((await board.textContent()) ?? '').trim()).toBe(expected);
+  }).toPass({ timeout: 10_000 });
+
+  const submitted = page.waitForResponse(
+    (r) => r.url().includes('/api/v1/results') && r.request().method() === 'POST',
+    { timeout: 75_000 },
+  );
+
+  await page.locator('section[aria-label="Typing stage"]').click();
+  await page.keyboard.type(expected, { delay: 150 }); // short text: slow cadence keeps the run over 3s
+
+  const result = page.locator('section[aria-label="Result"]');
+  await expect(result).toBeVisible({ timeout: 15_000 });
+  await expect(result.getByText('custom · 6')).toBeVisible();
+
+  const response = await submitted;
+  expect(response.ok()).toBeTruthy();
+
+  await page.reload();
+  await page.goto('/stats');
+  await expect(page.getByRole('heading', { name: 'history' })).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText('custom · 6').first()).toBeVisible();
 });

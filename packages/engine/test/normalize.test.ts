@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { IllegalCharacterError, normalizeText } from '../lib/normalize.ts';
+import { IllegalCharacterError, normalizeText } from '../src/normalize.ts';
 
 describe('normalizeText', () => {
   it('converts curly quotes to straight quotes', () => {

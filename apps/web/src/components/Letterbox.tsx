@@ -3,6 +3,7 @@ import { NavLink } from 'react-router';
 
 import { CommandPalette } from '../command/CommandPalette';
 import { useCommandStore } from '../command/commandStore';
+import { CustomTextDialog } from '../custom/CustomTextDialog';
 import { TitleSequence } from '../credits/TitleSequence';
 import { useCreditsStore } from '../credits/creditsStore';
 import { useProfileStore } from '../lib/profileInfo';
@@ -143,6 +144,7 @@ export function Letterbox({ children }: { children: ReactNode }): ReactElement {
       </footer>
 
       <CommandPalette />
+      <CustomTextDialog />
       <TitleSequence />
     </div>
   );

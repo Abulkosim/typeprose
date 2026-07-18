@@ -272,6 +272,40 @@ describe('typingStore.loadTimed (§2.3)', () => {
   });
 });
 
+describe('typingStore.loadCustom', () => {
+  const CUSTOM_TEXT = 'a text of my own choosing, pasted in';
+
+  it('loads the pasted text, switches to custom mode, and persists the text', async () => {
+    installProfileStorage('profile-3');
+    await useTypingStore.getState().loadCustom(CUSTOM_TEXT);
+    const s = useTypingStore.getState();
+    expect(s.phase).toBe('typing');
+    expect(s.test).toEqual({ kind: 'custom', text: CUSTOM_TEXT });
+    expect(s.snapshot?.words).toHaveLength(CUSTOM_TEXT.split(' ').length);
+    expect(useModeStore.getState().mode).toBe('custom');
+    expect(useModeStore.getState().customText).toBe(CUSTOM_TEXT);
+  });
+
+  it('a bare loadNext in custom mode re-serves the same stored text', async () => {
+    installProfileStorage('profile-3');
+    await useTypingStore.getState().loadCustom(CUSTOM_TEXT);
+    await useTypingStore.getState().loadNext();
+    const s = useTypingStore.getState();
+    expect(s.test).toEqual({ kind: 'custom', text: CUSTOM_TEXT });
+    expect(fetchedUrls).toHaveLength(0); // nothing to fetch - the text is local
+  });
+
+  it('falls back to prose when custom mode has no stored text', async () => {
+    installProfileStorage('profile-3');
+    installFetch([makePassage(7, 'so it goes')]);
+    useModeStore.setState({ mode: 'custom', customText: null });
+    await useTypingStore.getState().loadNext();
+    const s = useTypingStore.getState();
+    expect(s.test).toMatchObject({ kind: 'passage', passage: { id: 7 } });
+    expect(useModeStore.getState().mode).toBe('prose');
+  });
+});
+
 describe('typingStore typing flow', () => {
   it('applies keystrokes synchronously and derives the snapshot', async () => {
     installFetch([makePassage(1, 'it is')]);

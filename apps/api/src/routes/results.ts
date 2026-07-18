@@ -118,9 +118,10 @@ export async function resultRoutes(app: FastifyInstance, opts: ResultRoutesOptio
       }
 
       // Resolve the run's text and the shape to persist from its mode: a prose
-      // run recomputes against the stored passage; a word/timed run against the
-      // client-submitted text (there is no stored passage to key on). A timed
-      // run also fixes the stat window to its submitted (validated) durationMs.
+      // run recomputes against the stored passage; a word/timed/custom run
+      // against the client-submitted text (there is no stored passage to key
+      // on). A timed run also fixes the stat window to its submitted
+      // (validated) durationMs.
       let text: string;
       let passageId: number | null;
       let wordText: string | null;

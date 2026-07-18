@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import { useCommandStore } from '../command/commandStore';
 import { Epigraph } from '../components/Epigraph';
 import { useCreditsStore } from '../credits/creditsStore';
+import { useCustomTextStore } from '../custom/customTextStore';
 import { isKeyboardless } from '../lib/device';
 import { ResultView } from '../result/ResultView';
 import { playThock } from '../settings/sound';
@@ -47,6 +48,7 @@ export function TypingStage(): ReactElement {
   const completedRun = useTypingStore((s) => s.completedRun);
   const paletteOpen = useCommandStore((s) => s.isOpen);
   const creditsOpen = useCreditsStore((s) => s.isOpen);
+  const customOpen = useCustomTextStore((s) => s.isOpen);
   const [keyboardless] = useState(() => isKeyboardless());
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -61,8 +63,10 @@ export function TypingStage(): ReactElement {
   // command palette or the credits sequence owns the keys; refocus the
   // textarea when they close.
   useEffect(() => {
-    if (phase === 'typing' && !paletteOpen && !creditsOpen) textareaRef.current?.focus();
-  }, [phase, paletteOpen, creditsOpen]);
+    if (phase === 'typing' && !paletteOpen && !creditsOpen && !customOpen) {
+      textareaRef.current?.focus();
+    }
+  }, [phase, paletteOpen, creditsOpen, customOpen]);
 
   // Native listeners on the hidden textarea: beforeinput gives inputType +
   // data with a cancelable event (React's synthetic onBeforeInput does not).
@@ -153,6 +157,7 @@ export function TypingStage(): ReactElement {
     const onDocKeyDown = (e: KeyboardEvent): void => {
       if (useCommandStore.getState().isOpen) return;
       if (useCreditsStore.getState().isOpen) return; // the title sequence owns the keys
+      if (useCustomTextStore.getState().isOpen) return; // keys belong to the paste box
       if (e.key === 'Tab') {
         e.preventDefault();
         void useTypingStore.getState().loadNext();
@@ -229,7 +234,9 @@ export function TypingStage(): ReactElement {
               ? `Type the following passage: ${test.passage.text}`
               : test.kind === 'timed'
                 ? `Timed test, ${String(test.seconds)} seconds. Type the following words: ${test.text}`
-                : `Type the following ${String(test.count)} words: ${test.text}`}
+                : test.kind === 'custom'
+                  ? `Type the following custom text: ${test.text}`
+                  : `Type the following ${String(test.count)} words: ${test.text}`}
           </p>
           <div className={`transition-opacity duration-150 ${unfocused ? 'opacity-30' : ''}`}>
             <Hud />

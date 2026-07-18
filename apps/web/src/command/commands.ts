@@ -43,6 +43,8 @@ export interface CommandContext {
   timedSeconds: TimedSeconds;
   /** Switch to timed mode at the given window (seconds) and start a fresh run. */
   startTimed: (seconds: TimedSeconds) => void;
+  /** Open the custom-text dialog (paste your own text to type). */
+  openCustomText: () => void;
   /** Word-mode punctuation/numbers toggles (§2.3), so their commands can name state and flip it. */
   wordPunctuation: boolean;
   toggleWordPunctuation: () => void;
@@ -119,6 +121,15 @@ export function buildCommands(ctx: CommandContext): Command[] {
       run: () => ctx.startTimed(ctx.timedSeconds),
     });
   }
+  // Custom text always opens the paste dialog (even in custom mode - the
+  // natural way to swap in a different text), so no ctx.mode guard.
+  commands.push({
+    id: 'mode-custom',
+    title: 'Type custom text',
+    hint: 'mode',
+    keywords: ['custom', 'paste', 'own', 'text', 'clipboard'],
+    run: ctx.openCustomText,
+  });
   for (const count of WORD_COUNTS) {
     commands.push({
       id: `words-${String(count)}`,

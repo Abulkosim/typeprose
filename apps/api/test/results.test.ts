@@ -1,5 +1,5 @@
 import { computeStats } from '@typeprose/engine';
-import { leaderboardSchema, type PostResultsResponse } from '@typeprose/schema';
+import { leaderboardSchema, MAX_CUSTOM_TEXT_LEN, type PostResultsResponse } from '@typeprose/schema';
 import type { FastifyInstance } from 'fastify';
 import { afterEach, describe, expect, it } from 'vitest';
 import { buildApp } from '../src/build.ts';
@@ -295,6 +295,49 @@ describe('POST /api/v1/results', () => {
       method: 'POST',
       url: '/api/v1/results',
       payload: timedBody({ durationMs: 45_000 }),
+    });
+    expect(res.statusCode).toBe(400);
+  });
+
+  // Custom mode: user-pasted text, submitted in the word-mode shape but tagged
+  // with its own mode so stored history stays honest about what was typed.
+  it('stores a custom run recomputed against the submitted text', async () => {
+    const { app, resultRepo } = await setup();
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/v1/results',
+      payload: wordBody({ mode: 'custom' }),
+    });
+    expect(res.statusCode).toBe(201);
+    const parsed = res.json<PostResultsResponse>();
+    expect(parsed.clientMatch).toBe(true);
+    const stored = resultRepo.inserted[0];
+    expect(stored?.mode).toBe('custom');
+    expect(stored?.passageId).toBeNull();
+    expect(stored?.wordText).toBe(WORD_TEXT);
+    // No passage → never a passage best, like a word run.
+    expect(parsed.isNewPassageBest).toBe(false);
+    expect(parsed.dailyStreak).toBeNull();
+  });
+
+  it('rejects a custom run with non-canonical text (400, not stored)', async () => {
+    const { app, resultRepo } = await setup();
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/v1/results',
+      // Double space is non-canonical → the engine's parsePassage throws.
+      payload: wordBody({ mode: 'custom', text: 'pasted  text with a double space here' }),
+    });
+    expect(res.statusCode).toBe(400);
+    expect(resultRepo.inserted).toHaveLength(0);
+  });
+
+  it('rejects a custom run over the text cap (schema 400)', async () => {
+    const { app } = await setup();
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/v1/results',
+      payload: wordBody({ mode: 'custom', text: 'a'.repeat(MAX_CUSTOM_TEXT_LEN + 1) }),
     });
     expect(res.statusCode).toBe(400);
   });

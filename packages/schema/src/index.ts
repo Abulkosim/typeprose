@@ -35,6 +35,7 @@ export {
   resultModeSchema,
   MAX_WORD_TEXT_LEN,
   MAX_TIMED_TEXT_LEN,
+  MAX_CUSTOM_TEXT_LEN,
   TIMED_SECONDS,
   TIMED_DURATIONS_MS,
   postResultsRequestSchema,

@@ -48,19 +48,30 @@ function Metric({ label, value }: { label: string; value: string }): ReactElemen
 
 /**
  * A run's attribution: the serif work/author epigraph for prose, or a plain
- * "words · N" tag for a word-mode run (which has no author/work).
+ * mode tag for a run without a passage - "words · N", "time · Ns" (the window
+ * from durationMs), or "custom · N".
  */
 function Attribution({
   item,
 }: {
-  item: { mode: ResultMode; wordCount: number | null; workTitle: string | null; authorName: string | null };
+  item: {
+    mode: ResultMode;
+    wordCount: number | null;
+    durationMs?: number;
+    workTitle: string | null;
+    authorName: string | null;
+  };
 }): ReactElement {
-  if (item.mode === 'words') {
-    return (
-      <span className="subtitle text-smoke">
-        words &middot; {item.wordCount ?? '-'}
-      </span>
-    );
+  if (item.mode !== 'prose') {
+    // A timed run's word count is its (mostly untyped) buffer - the window is
+    // the honest size. BestRun rows carry no durationMs; plain "time" there.
+    const label =
+      item.mode === 'timed'
+        ? item.durationMs === undefined
+          ? 'time'
+          : `time · ${String(Math.round(item.durationMs / 1000))}s`
+        : `${item.mode} · ${item.wordCount === null ? '-' : String(item.wordCount)}`;
+    return <span className="subtitle text-smoke">{label}</span>;
   }
   return (
     <span className="font-serif text-smoke italic">

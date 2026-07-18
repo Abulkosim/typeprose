@@ -43,6 +43,13 @@
       "when": 1784215343122,
       "tag": "0005_timed_mode",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1784300513480,
+      "tag": "0006_custom_mode",
+      "breakpoints": true
     }
   ]
 }

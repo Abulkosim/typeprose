@@ -266,9 +266,12 @@ later audit.
 large effort, likely a different input pipeline. Decide deliberately.
 - **Multiplayer races** — same-passage live races. Websockets, presence,
 anti-cheat; the per-passage leaderboard is the async version already.
-- **Custom text** — paste your own text to type. Cheap client-side, but
+- ~~**Custom text** — paste your own text to type. Cheap client-side, but
 interacts with results storage the same way word mode did (self-
-reported text); reuse the word-mode submission shape.
+reported text); reuse the word-mode submission shape.~~ ✅ shipped
+2026-07-17: a palette-opened paste dialog normalizes text with the
+ingest normalizer (moved into the engine package) and submits as
+`mode: 'custom'` — the word-mode shape with its own mode tag.
 - **PWA/offline** — manifest exists, no service worker. Offline prose
 needs passage caching; nice-to-have, not asked for yet.
 - **i18n / Cyrillic corpora** — already deferred per plan §13.3.
@@ -316,7 +319,12 @@ Open product work, in priority order:
   wire contract still holds. Words-shaped storage (`mode='timed'`,
   migration `0005`); the buffer is sized un-exhaustible so a run always
   ends on the clock. Details in `DECISIONS.md`.
-3. **Tier 4** stays decide-don't-drift: wait for post-launch signal
-  before committing to mobile input, multiplayer, custom text, or
+3. ~~**Custom text** — the cheapest Tier 4 bet.~~ ✅ shipped 2026-07-17:
+  paste dialog in the palette, ingest-grade normalization client-side
+  (the normalizer moved from `scripts/lib` into `@typeprose/engine`),
+  submitted as `mode: 'custom'` reusing the word-mode shape (migration
+  `0006`). Details in `DECISIONS.md`.
+4. **Tier 4 (rest)** stays decide-don't-drift: wait for post-launch
+  signal before committing to mobile input, multiplayer, or
   PWA/offline.
 

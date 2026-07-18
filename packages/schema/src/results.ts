@@ -17,13 +17,14 @@ export type RunStats = z.infer<typeof runStatsSchema>;
 
 /**
  * Which kind of test a run was: a curated corpus passage ('prose', the default),
- * a generated random-word set ('words', the Monkeytype-style mode), or a fixed
- * time window ('timed', §2.3). A prose run keys on a server passage id; a word
- * or timed run carries its generated text so the server can recompute against
- * it (there is no stored passage). A timed run additionally carries its window
- * `durationMs`, so the server measures WPM over that same fixed window.
+ * a generated random-word set ('words', the Monkeytype-style mode), a fixed
+ * time window ('timed', §2.3), or user-pasted text ('custom'). A prose run keys
+ * on a server passage id; every other mode carries its own text so the server
+ * can recompute against it (there is no stored passage). A timed run
+ * additionally carries its window `durationMs`, so the server measures WPM over
+ * that same fixed window.
  */
-export const resultModeSchema = z.enum(['prose', 'words', 'timed']);
+export const resultModeSchema = z.enum(['prose', 'words', 'timed', 'custom']);
 
 export type ResultMode = z.infer<typeof resultModeSchema>;
 
@@ -56,6 +57,14 @@ export const MAX_WORD_TEXT_LEN = 4000;
  * the longest (120s) window, so the buffer runs well past what's actually typed.
  */
 export const MAX_TIMED_TEXT_LEN = 8000;
+
+/**
+ * Upper bound on a custom-mode (user-pasted) text (chars). The 6000-event wire
+ * cap already makes text much beyond ~5000 chars uncompletable (each char costs
+ * at least one event), so a larger cap would only admit runs that can never
+ * finish; 5000 leaves ~1000 events of correction slack on a maximal paste.
+ */
+export const MAX_CUSTOM_TEXT_LEN = 5000;
 
 /** A prose run: recomputed server-side against the passage identified by id. */
 const proseResultRequestSchema = z.object({
@@ -95,11 +104,27 @@ const timedResultRequestSchema = z.object({
   charEvents: charEventsSchema,
 });
 
+/**
+ * A custom run (user-pasted text): the word-mode submission shape verbatim -
+ * self-reported text the server recomputes against - just tagged with its own
+ * mode so history/stats stay honest about what was typed. The text must already
+ * be canonical (§6.2, the client normalizes on paste); the server's
+ * `parsePassage` rejects anything else.
+ */
+const customResultRequestSchema = z.object({
+  mode: z.literal('custom'),
+  profileId: z.uuid(),
+  text: z.string().min(1).max(MAX_CUSTOM_TEXT_LEN),
+  clientStats: runStatsSchema,
+  charEvents: charEventsSchema,
+});
+
 /** POST /results request body (plan §8), discriminated on `mode`. */
 export const postResultsRequestSchema = z.discriminatedUnion('mode', [
   proseResultRequestSchema,
   wordsResultRequestSchema,
   timedResultRequestSchema,
+  customResultRequestSchema,
 ]);
 
 export type PostResultsRequest = z.infer<typeof postResultsRequestSchema>;

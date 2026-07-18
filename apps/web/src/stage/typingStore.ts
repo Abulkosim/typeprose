@@ -15,6 +15,7 @@ import {
   fetchPassageById,
   fetchProfileStats,
   submitResult,
+  submitCustomResult,
   submitTimedResult,
   submitWordResult,
   type PassageQuery,
@@ -59,6 +60,11 @@ export type ActiveTest =
       durationMs: number;
       punctuation?: boolean;
       numbers?: boolean;
+    }
+  | {
+      /** User-pasted text, already normalized to the canonical §6.2 shape. */
+      kind: 'custom';
+      text: string;
     };
 
 /** The engine input for a test, regardless of kind. */
@@ -67,12 +73,16 @@ function testText(test: ActiveTest): string {
 }
 
 /**
- * Attribution label for a generated (words or timed) test. A weak-key drill run
- * reads "drill · 50", a plain word run "words · 50", a timed run "time · 60s";
- * " · punctuation" / " · numbers" suffixes are appended when those toggles
- * (Batch C §2.3) were on for the run.
+ * Attribution label for a generated or pasted (non-prose) test. A weak-key
+ * drill run reads "drill · 50", a plain word run "words · 50", a timed run
+ * "time · 60s", a custom run "custom · 50" (its word count); " · punctuation" /
+ * " · numbers" suffixes are appended when those toggles (Batch C §2.3) were on
+ * for the run.
  */
-export function wordTestLabel(test: Extract<ActiveTest, { kind: 'words' | 'timed' }>): string {
+export function wordTestLabel(test: Exclude<ActiveTest, { kind: 'passage' }>): string {
+  if (test.kind === 'custom') {
+    return `custom · ${String(test.text.split(' ').length)}`;
+  }
   let label =
     test.kind === 'timed'
       ? `time · ${String(test.seconds)}s`
@@ -151,6 +161,12 @@ interface TypingState {
    * the countdown (see the timer in `typeChar`), never by finishing the text.
    */
   loadTimed: (seconds: TimedSeconds) => Promise<void>;
+  /**
+   * Load a run over user-pasted text (already normalized to the canonical
+   * shape by the custom-text dialog). Forces custom mode and persists the text
+   * so Tab/restart/reload re-serve the same run.
+   */
+  loadCustom: (text: string) => Promise<void>;
   /** Esc: restart the same passage from scratch. */
   restart: () => void;
   typeChar: (char: string, timestampMs: number) => void;
@@ -262,6 +278,14 @@ async function submitCompletedRun(
           charEvents: run.log,
         });
       }
+      if (test.kind === 'custom') {
+        return submitCustomResult({
+          profileId,
+          text: test.text,
+          clientStats: run.stats,
+          charEvents: run.log,
+        });
+      }
       return submitWordResult({
         profileId,
         text: test.text,
@@ -351,7 +375,18 @@ export const useTypingStore = create<TypingState>()((set, get) => ({
       return;
     }
     // No filter: follow the persisted mode.
-    const { mode, wordCount, timedSeconds, punctuation, numbers } = useModeStore.getState();
+    const { mode, wordCount, timedSeconds, customText, punctuation, numbers } =
+      useModeStore.getState();
+    if (mode === 'custom') {
+      // Tab in custom mode re-serves the same pasted text (a repeat, like
+      // restart - there is nothing to generate). With no stored text (cleared
+      // storage), fall through to prose rather than dead-end.
+      if (customText !== null) {
+        await loadInto(set, get, {}, () => Promise.resolve({ kind: 'custom', text: customText }));
+        return;
+      }
+      useModeStore.getState().setMode('prose');
+    }
     if (mode === 'timed') {
       await loadInto(set, get, {}, () =>
         Promise.resolve({
@@ -439,6 +474,15 @@ export const useTypingStore = create<TypingState>()((set, get) => ({
         numbers,
       }),
     );
+  },
+
+  loadCustom: async (text: string) => {
+    // Mode follows content, like loadTimed forcing timed. Persist the text so
+    // a later bare Tab (or a reload) re-serves this same run.
+    const modeStore = useModeStore.getState();
+    modeStore.setMode('custom');
+    modeStore.setCustomText(text);
+    await loadInto(set, get, {}, () => Promise.resolve({ kind: 'custom', text }));
   },
 
   restart: () => {

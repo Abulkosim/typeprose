@@ -17,7 +17,7 @@ import { createDbClient } from '../apps/api/src/db/client.ts';
 import { authors, passages, works } from '../apps/api/src/db/schema.ts';
 import { parseCorpus, type PassageEntry } from './lib/corpus.ts';
 import { computeDifficulty, resolveBand, type Band } from './lib/difficulty.ts';
-import { normalizeText, type FoldedWord } from './lib/normalize.ts';
+import { normalizeText, type FoldedWord } from '@typeprose/engine';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DEFAULT_CORPUS_PATH = path.join(REPO_ROOT, 'corpus', 'passages.yaml');

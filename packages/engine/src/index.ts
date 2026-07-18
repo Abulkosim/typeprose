@@ -17,6 +17,14 @@ export {
 
 export { parsePassage, type ParsedPassage, type PassageWord } from './passage.ts';
 
+export {
+  IllegalCharacterError,
+  describeChar,
+  normalizeText,
+  type FoldedWord,
+  type NormalizedText,
+} from './normalize.ts';
+
 export { MAX_EXTRA_CHARS, type CharState } from './state.ts';
 
 export {

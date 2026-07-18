@@ -1,5 +1,5 @@
 import { bandForScore, computeDifficulty, type Band } from './difficulty.ts';
-import { IllegalCharacterError, normalizeText } from './normalize.ts';
+import { IllegalCharacterError, normalizeText } from '@typeprose/engine';
 
 /**
  * Auto-excerpt proposer (Phase 3, plan §10.3). Given a public-domain source

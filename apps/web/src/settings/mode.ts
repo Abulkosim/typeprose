@@ -7,11 +7,12 @@ import { asWordCount, DEFAULT_WORD_COUNT, type WordCount } from '../lib/words';
  * The test mode (a deliberate departure from the spec's single quote mode).
  * 'prose' is the default - the curated literary corpus; 'words' is the
  * Monkeytype-style random-word set; 'timed' (§2.3) is a fixed-window run over
- * the same word stream. All opted into via the command palette. The choice and
- * its presets persist, mirroring the theme/sound settings (hand-rolled
- * localStorage rather than a persist middleware).
+ * the same word stream; 'custom' is user-pasted text. All opted into via the
+ * command palette. The choice and its presets persist, mirroring the
+ * theme/sound settings (hand-rolled localStorage rather than a persist
+ * middleware).
  */
-export type Mode = 'prose' | 'words' | 'timed';
+export type Mode = 'prose' | 'words' | 'timed' | 'custom';
 
 export const MODE_STORAGE_KEY = 'typeprose.mode';
 export const WORD_COUNT_STORAGE_KEY = 'typeprose.wordCount';
@@ -20,6 +21,8 @@ export const WORD_PUNCTUATION_STORAGE_KEY = 'typeprose.wordPunctuation';
 export const WORD_NUMBERS_STORAGE_KEY = 'typeprose.wordNumbers';
 /** Timed-mode window in seconds (§2.3). */
 export const TIMED_SECONDS_STORAGE_KEY = 'typeprose.timedSeconds';
+/** The last custom (user-pasted) text, already normalized, so Tab/reload re-serve it. */
+export const CUSTOM_TEXT_STORAGE_KEY = 'typeprose.customText';
 
 export const DEFAULT_TIMED_SECONDS: TimedSeconds = 60;
 
@@ -33,9 +36,25 @@ export function asTimedSeconds(value: number): TimedSeconds {
 function readMode(): Mode {
   try {
     const raw = localStorage.getItem(MODE_STORAGE_KEY);
-    return raw === 'words' || raw === 'timed' ? raw : 'prose';
+    return raw === 'words' || raw === 'timed' || raw === 'custom' ? raw : 'prose';
   } catch {
     return 'prose';
+  }
+}
+
+function readCustomText(): string | null {
+  try {
+    return localStorage.getItem(CUSTOM_TEXT_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function persistCustomText(text: string): void {
+  try {
+    localStorage.setItem(CUSTOM_TEXT_STORAGE_KEY, text);
+  } catch {
+    // Private mode: applies this session, not remembered.
   }
 }
 
@@ -104,12 +123,15 @@ interface ModeState {
   wordCount: WordCount;
   /** Timed-mode window in seconds (§2.3). */
   timedSeconds: TimedSeconds;
+  /** The last custom (user-pasted) text, already normalized; null before the first paste. */
+  customText: string | null;
   /** Word/timed-mode punctuation/numbers toggles (§2.3), off by default; drill runs never set these. */
   punctuation: boolean;
   numbers: boolean;
   setMode: (mode: Mode) => void;
   setWordCount: (count: WordCount) => void;
   setTimedSeconds: (seconds: TimedSeconds) => void;
+  setCustomText: (text: string) => void;
   setPunctuation: (punctuation: boolean) => void;
   setNumbers: (numbers: boolean) => void;
 }
@@ -118,6 +140,7 @@ export const useModeStore = create<ModeState>()((set) => ({
   mode: readMode(),
   wordCount: readWordCount(),
   timedSeconds: readTimedSeconds(),
+  customText: readCustomText(),
   punctuation: readFlag(WORD_PUNCTUATION_STORAGE_KEY),
   numbers: readFlag(WORD_NUMBERS_STORAGE_KEY),
   setMode: (mode) => {
@@ -131,6 +154,10 @@ export const useModeStore = create<ModeState>()((set) => ({
   setTimedSeconds: (timedSeconds) => {
     persistTimedSeconds(timedSeconds);
     set({ timedSeconds });
+  },
+  setCustomText: (customText) => {
+    persistCustomText(customText);
+    set({ customText });
   },
   setPunctuation: (punctuation) => {
     persistFlag(WORD_PUNCTUATION_STORAGE_KEY, punctuation);

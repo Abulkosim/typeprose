@@ -147,13 +147,14 @@ export const results = pgTable(
     index('results_profile_id_created_at_idx').on(table.profileId, table.createdAt.desc()),
     index('results_passage_id_idx').on(table.passageId),
     // A run is exactly one shape: prose keys on a passage with no word text;
-    // words and timed carry their generated text with no passage (§2.3 timed
+    // words, timed, and custom carry their own text with no passage (§2.3 timed
     // is words-shaped in storage - it differs only by its fixed-window duration,
-    // already captured in duration_ms).
+    // already captured in duration_ms - and custom is user-pasted text stored
+    // the same way).
     check(
       'results_mode_shape',
       sql`(${table.mode} = 'prose' AND ${table.passageId} IS NOT NULL AND ${table.wordText} IS NULL)
-        OR (${table.mode} IN ('words', 'timed') AND ${table.passageId} IS NULL AND ${table.wordText} IS NOT NULL)`,
+        OR (${table.mode} IN ('words', 'timed', 'custom') AND ${table.passageId} IS NULL AND ${table.wordText} IS NOT NULL)`,
     ),
   ],
 );

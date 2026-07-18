@@ -173,6 +173,8 @@ export function ResultView({ run, test, onNext }: ResultViewProps): ReactElement
     shareMeta = { caption: formatAttribution(test.passage), variant: 'prose', slug: test.passage.author.slug };
   } else if (test.kind === 'timed') {
     shareMeta = { caption: wordTestLabel(test), variant: 'words', slug: 'time' };
+  } else if (test.kind === 'custom') {
+    shareMeta = { caption: wordTestLabel(test), variant: 'words', slug: 'custom' };
   } else {
     shareMeta = { caption: wordTestLabel(test), variant: 'words', slug: test.drill === true ? 'drill' : 'words' };
   }

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { parseCorpus } from '../lib/corpus.ts';
 import { computeDifficulty, resolveBand } from '../lib/difficulty.ts';
-import { normalizeText } from '../lib/normalize.ts';
+import { normalizeText } from '@typeprose/engine';
 
 /** Small fixture in the exact §5 curation format. */
 const FIXTURE_YAML = `
