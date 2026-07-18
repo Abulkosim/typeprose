@@ -5,7 +5,9 @@ A typing practice app built on real prose - Dostoevsky, Woolf, Hammett, Aurelius
 ## What you get
 
 - **Prose mode** - type passages from public-domain books, filtered by author, theme, or difficulty (warmup → brutal)
-- **Word mode** - classic timed word sets, with punctuation and numbers toggles, when you just want to grind
+- **Word mode** - classic word sets (25–200 words), with punctuation and numbers toggles, when you just want to grind
+- **Timed mode** - 15/30/60/120-second runs against the clock
+- **Custom text** - paste your own text and type that, normalized the same way as the corpus
 - **Daily passage** - one shared text for the day, with a streak that survives claiming your profile
 - **Weak-key drill** - generates a word run biased toward the keys and bigrams you actually miss
 - **Monkeytype-compatible stats** - wpm, raw, accuracy, consistency

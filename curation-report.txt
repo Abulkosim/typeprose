@@ -1,5 +1,3 @@
-$ node --env-file-if-exists=.env scripts/ingest.ts
-
 TYPEPROSE ingest - curation report
 ==================================
 
@@ -123,4 +121,288 @@ TYPEPROSE ingest - curation report
   chars 355 · words 66 · difficulty 34.84 · band standard
   text: Experience was of no ethical value. It was merely the name men gave to t...
 
-Summary: 30 passages ingested · warmup 5 · standard 14 · hard 7 · brutal 4
+#31 H. G. Wells - The War of the Worlds
+  chars 280 · words 52 · difficulty 41.87 · band standard
+  text: And then he perceived that, very slowly, the circular top of the cylinde...
+
+#32 H. G. Wells - The War of the Worlds
+  chars 277 · words 57 · difficulty 39.38 · band standard
+  text: A large portion of the cylinder had been uncovered, though its lower end...
+
+#33 H. G. Wells - The War of the Worlds
+  chars 277 · words 46 · difficulty 47.47 · band hard
+  text: Seen nearer, the Thing was incredibly strange, for it was no mere insens...
+
+#34 H. G. Wells - The War of the Worlds
+  chars 284 · words 47 · difficulty 62.43 · band brutal
+  text: These canisters smashed on striking the ground - they did not explode - ...
+
+#35 H. G. Wells - The War of the Worlds
+  chars 275 · words 47 · difficulty 64.48 · band brutal
+  text: Keeping his footing on the heaving deck by clutching the bulwarks, my br...
+
+#36 H. G. Wells - The War of the Worlds
+  chars 285 · words 47 · difficulty 45.63 · band hard
+  text: The Martians wore no clothing. Their conceptions of ornament and decorum...
+
+#37 H. G. Wells - The War of the Worlds
+  chars 275 · words 51 · difficulty 36.29 · band standard
+  text: I felt intolerably lonely. My mind ran on old friends that I had forgott...
+
+#38 Charles Dickens - A Tale of Two Cities
+  chars 281 · words 46 · difficulty 69.23 · band brutal
+  text: The rough, irregular stones of the street, pointing every way, and desig...
+
+#39 Charles Dickens - A Tale of Two Cities
+  chars 281 · words 50 · difficulty 46.72 · band hard
+  text: So sunken and suppressed it was, that it was like a voice underground. S...
+
+#40 Charles Dickens - A Tale of Two Cities
+  chars 280 · words 43 · difficulty 63.81 · band brutal
+  text: The officiating undertakers made some protest against these changes in t...
+
+#41 Charles Dickens - A Tale of Two Cities
+  chars 280 · words 50 · difficulty 46.80 · band hard
+  text: The night was hot, and the shop, close shut and surrounded by so foul a ...
+
+#42 Charles Dickens - A Tale of Two Cities
+  chars 280 · words 45 · difficulty 63.41 · band brutal
+  text: From such household occupations as their bare poverty yielded, from thei...
+
+#43 Charles Dickens - A Tale of Two Cities
+  chars 281 · words 51 · difficulty 41.86 · band standard
+  text: The very children scarcely noticed him. A few passers turned their heads...
+
+#44 Charles Dickens - A Tale of Two Cities
+  chars 280 · words 56 · difficulty 42.11 · band standard
+  text: The horsemen abreast of that cart, frequently point out one man in it wi...
+
+#45 Mark Twain - The Adventures of Tom Sawyer
+  chars 280 · words 55 · difficulty 43.95 · band standard
+  text: Tom did play hookey, and he had a very good time. He got back home barel...
+
+#46 Mark Twain - The Adventures of Tom Sawyer
+  chars 288 · words 53 · difficulty 42.34 · band standard
+  text: Tom gave up the brush with reluctance in his face, but alacrity in his h...
+
+#47 Mark Twain - The Adventures of Tom Sawyer
+  chars 273 · words 48 · difficulty 41.34 · band standard
+  text: He was fully as uncomfortable as he looked; for there was a restraint ab...
+
+#48 Mark Twain - The Adventures of Tom Sawyer
+  chars 282 · words 53 · difficulty 45.16 · band hard
+  text: He released the tick and put him on the long flat desk. The creature pro...
+
+#49 Mark Twain - The Adventures of Tom Sawyer
+  chars 279 · words 52 · difficulty 28.29 · band warmup
+  text: For some time there was no noise but the grating sound of the spades dis...
+
+#50 Mark Twain - The Adventures of Tom Sawyer
+  chars 281 · words 45 · difficulty 38.79 · band standard
+  text: About midnight Joe awoke, and called the boys. There was a brooding oppr...
+
+#51 Mark Twain - The Adventures of Tom Sawyer
+  chars 285 · words 50 · difficulty 43.72 · band standard
+  text: Injun Joe was believed to have killed five citizens of the village, but ...
+
+#52 Jack London - The Call of the Wild
+  chars 274 · words 51 · difficulty 41.90 · band standard
+  text: And this was the manner of dog Buck was in the fall of 1897, when the Kl...
+
+#53 Jack London - The Call of the Wild
+  chars 281 · words 48 · difficulty 45.54 · band hard
+  text: It marked his adaptability, his capacity to adjust himself to changing c...
+
+#54 Jack London - The Call of the Wild
+  chars 285 · words 56 · difficulty 41.22 · band standard
+  text: And terrible they were, for every foot of them was accomplished at the r...
+
+#55 Jack London - The Call of the Wild
+  chars 281 · words 55 · difficulty 32.70 · band standard
+  text: They threw clubs at him. He dodged. They cursed him, and his fathers and...
+
+#56 Jack London - The Call of the Wild
+  chars 285 · words 52 · difficulty 33.62 · band standard
+  text: It had been all used, the last least bit of it. Every muscle, every fibr...
+
+#57 Jack London - The Call of the Wild
+  chars 286 · words 52 · difficulty 46.99 · band hard
+  text: Faithfulness and devotion, things born of fire and roof, were his; yet h...
+
+#58 Jack London - The Call of the Wild
+  chars 271 · words 50 · difficulty 42.70 · band standard
+  text: It caused him to feel a vague, sweet gladness, and he was aware of wild ...
+
+#59 Bram Stoker - Dracula
+  chars 389 · words 73 · difficulty 51.11 · band hard
+  text: Then a dog began to howl somewhere in a farmhouse far down the road--a l...
+
+#60 Bram Stoker - Dracula
+  chars 279 · words 55 · difficulty 37.94 · band standard
+  text: His hand actually seemed like a steel vice that could have crushed mine ...
+
+#61 Bram Stoker - Dracula
+  chars 282 · words 51 · difficulty 62.69 · band brutal
+  text: There was a deliberate voluptuousness which was both thrilling and repul...
+
+#62 Bram Stoker - Dracula
+  chars 281 · words 55 · difficulty 32.83 · band standard
+  text: The very thought drove me mad. A terrible desire came upon me to rid the...
+
+#63 Bram Stoker - Dracula
+  chars 279 · words 56 · difficulty 45.10 · band hard
+  text: He had, I knew, been very genuinely and devotedly attached to his father...
+
+#64 Bram Stoker - Dracula
+  chars 282 · words 51 · difficulty 63.94 · band brutal
+  text: When they become such, there comes with the change the curse of immortal...
+
+#65 Bram Stoker - Dracula
+  chars 280 · words 51 · difficulty 39.89 · band standard
+  text: But even in the minute that had elapsed the number of the rats had vastl...
+
+#66 L. Frank Baum - The Wonderful Wizard of Oz
+  chars 270 · words 54 · difficulty 38.52 · band standard
+  text: She was awakened by a shock, so sudden and severe that if Dorothy had no...
+
+#67 L. Frank Baum - The Wonderful Wizard of Oz
+  chars 278 · words 53 · difficulty 30.49 · band standard
+  text: When Dorothy was left alone she began to feel hungry. So she went to the...
+
+#68 L. Frank Baum - The Wonderful Wizard of Oz
+  chars 271 · words 55 · difficulty 37.71 · band standard
+  text: Just as he spoke there came from the forest a terrible roar, and the nex...
+
+#69 L. Frank Baum - The Wonderful Wizard of Oz
+  chars 263 · words 53 · difficulty 36.16 · band standard
+  text: Then the Guardian of the Gates put on his own glasses and told them he w...
+
+#70 L. Frank Baum - The Wonderful Wizard of Oz
+  chars 267 · words 53 · difficulty 28.40 · band warmup
+  text: The Winkies were not a brave people, but they had to do as they were tol...
+
+#71 L. Frank Baum - The Wonderful Wizard of Oz
+  chars 266 · words 49 · difficulty 37.12 · band standard
+  text: Afterward they passed on through the gate into the Emerald City. When th...
+
+#72 L. Frank Baum - The Wonderful Wizard of Oz
+  chars 276 · words 50 · difficulty 38.59 · band standard
+  text: Then she kissed the Tin Woodman, who was weeping in a way most dangerous...
+
+#73 Herman Melville - Moby-Dick; or, The Whale
+  chars 279 · words 52 · difficulty 62.54 · band brutal
+  text: His deep chest heaved as with a ground-swell; his tossed arms seemed the...
+
+#74 Herman Melville - Moby-Dick; or, The Whale
+  chars 280 · words 45 · difficulty 52.72 · band hard
+  text: Third among the harpooneers was Daggoo, a gigantic, coal-black negro-sav...
+
+#75 Herman Melville - Moby-Dick; or, The Whale
+  chars 281 · words 47 · difficulty 70.77 · band brutal
+  text: If, then, you properly put these statements together, and reason upon th...
+
+#76 Herman Melville - Moby-Dick; or, The Whale
+  chars 278 · words 45 · difficulty 48.64 · band hard
+  text: Now, one of the peculiar characteristics of the savage in his domestic h...
+
+#77 Herman Melville - Moby-Dick; or, The Whale
+  chars 281 · words 45 · difficulty 66.75 · band brutal
+  text: Besides all the other phenomena which the exterior of the Sperm Whale pr...
+
+#78 Herman Melville - Moby-Dick; or, The Whale
+  chars 279 · words 53 · difficulty 71.61 · band brutal
+  text: But why was it, think ye, that the Samuel Enderby, and some other Englis...
+
+#79 Herman Melville - Moby-Dick; or, The Whale
+  chars 280 · words 50 · difficulty 46.93 · band hard
+  text: Ere knocking at his state-room, he involuntarily paused before it a mome...
+
+#80 Robert Louis Stevenson - Treasure Island
+  chars 279 · words 53 · difficulty 41.69 · band standard
+  text: I felt in his pockets, one after another. A few small coins, a thimble, ...
+
+#81 Robert Louis Stevenson - Treasure Island
+  chars 270 · words 48 · difficulty 47.74 · band hard
+  text: I got her through my old friend, Blandly, who has proved himself through...
+
+#82 Robert Louis Stevenson - Treasure Island
+  chars 277 · words 53 · difficulty 45.37 · band hard
+  text: He was very tall and strong, with a face as big as a ham--plain and pale...
+
+#83 Robert Louis Stevenson - Treasure Island
+  chars 287 · words 49 · difficulty 45.63 · band hard
+  text: Grey-coloured woods covered a large part of the surface. This even tint ...
+
+#84 Robert Louis Stevenson - Treasure Island
+  chars 279 · words 52 · difficulty 40.19 · band standard
+  text: Suddenly, with a loud huzza, a little cloud of pirates leaped from the w...
+
+#85 Robert Louis Stevenson - Treasure Island
+  chars 274 · words 52 · difficulty 45.41 · band hard
+  text: On shore, I could see the glow of the great camp-fire burning warmly thr...
+
+#86 Robert Louis Stevenson - Treasure Island
+  chars 275 · words 51 · difficulty 43.20 · band standard
+  text: It was fine open walking here, upon the summit; our way lay a little dow...
+
+#87 Jane Austen - Pride and Prejudice
+  chars 277 · words 47 · difficulty 46.48 · band hard
+  text: Hurst, merely looked the gentleman; but his friend Mr. Darcy soon drew t...
+
+#88 Jane Austen - Pride and Prejudice
+  chars 279 · words 49 · difficulty 40.44 · band standard
+  text: Within a short walk of Longbourn lived a family with whom the Bennets we...
+
+#89 Jane Austen - Pride and Prejudice
+  chars 284 · words 49 · difficulty 42.57 · band standard
+  text: Their brother, indeed, was the only one of the party whom she could rega...
+
+#90 Jane Austen - Pride and Prejudice
+  chars 283 · words 47 · difficulty 48.64 · band hard
+  text: Gardiner was a sensible, gentlemanlike man, greatly superior to his sist...
+
+#91 Jane Austen - Pride and Prejudice
+  chars 282 · words 50 · difficulty 43.66 · band standard
+  text: This he considered sufficient encouragement, and the avowal of all that ...
+
+#92 Jane Austen - Pride and Prejudice
+  chars 280 · words 53 · difficulty 30.50 · band standard
+  text: Oh! why did she come? or, why did he thus come a day before he was expec...
+
+#93 Jane Austen - Pride and Prejudice
+  chars 281 · words 46 · difficulty 49.56 · band hard
+  text: In society so superior to what she had generally known, her improvement ...
+
+#94 Aesop - Aesop's Fables
+  chars 142 · words 31 · difficulty 23.50 · band warmup
+  text: A Lion asleep in his lair was waked up by a Mouse running over his face....
+
+#95 Aesop - Aesop's Fables
+  chars 146 · words 29 · difficulty 25.16 · band warmup
+  text: The shaft struck him full in the breast and pierced him through and thro...
+
+#96 Aesop - Aesop's Fables
+  chars 153 · words 35 · difficulty 26.60 · band warmup
+  text: A Fox fell into a well and was unable to get out again. By and by a thir...
+
+#97 Aesop - Aesop's Fables
+  chars 158 · words 37 · difficulty 27.17 · band warmup
+  text: There was once a man who had an Ass and a Lap-dog. The Ass was housed in...
+
+#98 Aesop - Aesop's Fables
+  chars 186 · words 39 · difficulty 27.67 · band warmup
+  text: One hot and thirsty day in the height of summer a Lion and a Boar came d...
+
+#99 Aesop - Aesop's Fables
+  chars 171 · words 34 · difficulty 27.99 · band warmup
+  text: But an Eagle espied him from high up in the sky, and swooped down and ca...
+
+#100 Aesop - Aesop's Fables
+  chars 159 · words 35 · difficulty 28.07 · band warmup
+  text: Thus it is the same with Grief as it is with the other gods. The more de...
+
+#101 Aesop - Aesop's Fables
+  chars 170 · words 37 · difficulty 28.98 · band warmup
+  text: An Old Man cut himself a bundle of faggots in a wood and started to carr...
+
+Summary: 101 passages ingested · warmup 15 · standard 45 · hard 26 · brutal 15

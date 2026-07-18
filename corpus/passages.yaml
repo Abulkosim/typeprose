@@ -1,9 +1,9 @@
-# DRAFT - pending curator review (Gate 0)
-#
-# 30 passages drafted verbatim from Project Gutenberg plain-text editions
-# (fetched 2026-07-07). Text is NOT pre-normalized: curly quotes, em dashes,
-# and original punctuation are kept as fetched; scripts/ingest.ts normalizes
-# per plan §6.3 and its curation report flags every fold for human veto.
+# 101 passages taken verbatim from Project Gutenberg plain-text editions
+# (seed batch of 30 fetched 2026-07-07, passed Gate 0 curator review;
+# batch #2 of 71 curated via `pnpm propose` 2026-07-13). Text is NOT
+# pre-normalized: curly quotes, em dashes, and original punctuation are
+# kept as fetched; scripts/ingest.ts normalizes per plan §6.3 and its
+# curation report flags every fold for human veto.
 #
 # Substitutions vs the plan §5 seed list (noted per instructions):
 #   - Faulkner, "As I Lay Dying" (PD 2026): not yet on Project Gutenberg -
