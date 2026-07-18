@@ -25,9 +25,11 @@ git log --oneline -10    # match the repo's message style
 
 If there is nothing to commit, stop and say so. Do not create empty commits.
 
-### 2. Group the changes logically (delegate to Sonnet)
+### 2. Group the changes logically
 
-Spawn a subagent with **`model: sonnet`** (via the Agent tool) to decide the grouping and write the messages. This keeps the planning cheap and consistent. Give the subagent the full `git status`, `git diff`, and recent `git log` output, and ask it to return **strict JSON only**:
+Decide the commit grouping and messages yourself from the survey output. If your harness supports cheap/fast subagents, you may delegate this planning step to one — pass it the full `git status`, `git diff`, and recent `git log`, and require **strict JSON only**. Otherwise produce the same plan inline.
+
+Plan shape:
 
 ```json
 {
@@ -41,7 +43,7 @@ Spawn a subagent with **`model: sonnet`** (via the Agent tool) to decide the gro
 }
 ```
 
-Rules to pass to the subagent:
+Rules:
 
 - **Group by intent, not by directory.** Each commit should be one coherent, self-contained change (a feature, a fix, a refactor, a chore, docs, config). A change and its tests belong in the same commit.
 - **Order matters.** Emit commits in dependency order - foundational/shared changes first, things that build on them after. They will be committed and pushed in array order.
@@ -51,7 +53,7 @@ Rules to pass to the subagent:
 - If a file is only partially related to two intents, keep it whole in the more relevant group (do not split hunks).
 - **Do not add a `Co-Authored-By` trailer** (or any other AI/agent attribution) to commit messages. Keep messages to the subject and, when needed, a plain body - nothing else.
 
-Parse the returned JSON. If it doesn't parse or a file is missing/duplicated, fix it yourself rather than re-prompting.
+If the plan has a missing/duplicated file, fix it before committing.
 
 ### 3. Commit and push each group, one by one
 
