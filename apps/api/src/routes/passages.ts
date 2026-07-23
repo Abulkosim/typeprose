@@ -81,6 +81,19 @@ export async function passageRoutes(
     return passage;
   });
 
+  // GET /passages/sync - the full corpus for the web app's offline store,
+  // with the server's daily pick so offline daily needs no algorithm port.
+  app.get('/passages/sync', async () => {
+    const dateKey = utcDateKey(new Date());
+    const [allPassages, daily] = await Promise.all([repo.listAll(), repo.findDaily(dateKey)]);
+    return {
+      syncedAt: new Date().toISOString(),
+      dailyDateKey: dateKey,
+      dailyPassageId: daily === null ? null : daily.id,
+      passages: allPassages,
+    };
+  });
+
   app.get('/passages/:id', async (request, reply) => {
     const parsed = idParamsSchema.safeParse(request.params);
     if (!parsed.success) {

@@ -1,6 +1,8 @@
 import type { Passage, ProfileStats } from '@typeprose/schema';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { writeCorpus } from '../src/lib/corpusStore';
+import { OUTBOX_STORAGE_KEY } from '../src/lib/outbox';
 import { PROFILE_STORAGE_KEY } from '../src/lib/profile';
 import { useModeStore } from '../src/settings/mode';
 import { COMPLETION_HOLD_MS, resetTypingStore, useTypingStore } from '../src/stage/typingStore';
@@ -367,5 +369,95 @@ describe('typingStore typing flow', () => {
     expect(s.snapshot?.words[0]?.typed).toBe('');
     expect(s.restarted).toBe(true);
     expect(fetchedUrls).toHaveLength(1); // no refetch on restart
+  });
+});
+
+describe('typingStore offline (PWA)', () => {
+  afterEach(() => {
+    // @ts-expect-error - tearing down the test-only global.
+    delete globalThis.localStorage;
+  });
+
+  /** Seed the synced corpus (lib/corpusStore) that the offline fallback reads. */
+  function installCorpus(passages: Passage[]): void {
+    writeCorpus({
+      syncedAt: '2026-07-23T10:00:00.000Z',
+      dailyDateKey: '2026-07-23',
+      dailyPassageId: passages[0]?.id ?? null,
+      passages,
+    });
+  }
+
+  it('loadNext falls back to the synced corpus when the fetch fails', async () => {
+    installProfileStorage('profile-9');
+    installCorpus([makePassage(41, 'stored prose lives here')]);
+    installFetch([new Error('network down')]);
+    await useTypingStore.getState().loadNext();
+    const s = useTypingStore.getState();
+    expect(s.phase).toBe('typing');
+    expect(s.test).toMatchObject({ kind: 'passage', passage: { id: 41 } });
+    expect(s.recentIds).toEqual([41]);
+  });
+
+  it('loadById falls back to the synced corpus when the fetch fails', async () => {
+    installProfileStorage('profile-9');
+    installCorpus([makePassage(41, 'stored prose'), makePassage(42, 'other prose')]);
+    installFetch([new Error('network down')]);
+    await useTypingStore.getState().loadById(42);
+    expect(useTypingStore.getState().test).toMatchObject({
+      kind: 'passage',
+      passage: { id: 42 },
+    });
+  });
+
+  it('still enters the quiet error phase when there is no synced corpus either', async () => {
+    installProfileStorage('profile-9');
+    installFetch([new Error('network down')]);
+    await useTypingStore.getState().loadNext();
+    expect(useTypingStore.getState().phase).toBe('error');
+  });
+
+  it('queues a completed run whose submission fails and marks it "will sync"', async () => {
+    installProfileStorage('profile-9');
+    // 1st response loads the passage; the submit attempt + its retry both fail.
+    installFetch([makePassage(1, 'it is'), new TypeError('network down')]);
+    await useTypingStore.getState().loadNext();
+    const store = useTypingStore.getState();
+    store.typeChar('i', 0);
+    store.typeChar('t', 500);
+    store.commitSpace(1000);
+    store.typeChar('i', 1500);
+    store.typeChar('s', 2000);
+    await vi.waitFor(() => {
+      expect(useTypingStore.getState().saveStatus).toBe('queued');
+    });
+    const raw = localStorage.getItem(OUTBOX_STORAGE_KEY);
+    expect(raw).not.toBeNull();
+    const outbox = JSON.parse(raw ?? '') as { entries: { payload: { mode: string } }[] };
+    expect(outbox.entries).toHaveLength(1);
+    expect(outbox.entries[0]?.payload).toMatchObject({ mode: 'prose', passageId: 1 });
+  });
+
+  it('falls back to "not saved" when the outbox cannot be written either', async () => {
+    // Profile present but setItem throws (private mode / quota).
+    const store = new Map<string, string>([[PROFILE_STORAGE_KEY, 'profile-9']]);
+    globalThis.localStorage = {
+      getItem: (k: string) => store.get(k) ?? null,
+      setItem: () => {
+        throw new Error('quota exceeded');
+      },
+      removeItem: (k: string) => void store.delete(k),
+    } as unknown as Storage;
+    installFetch([makePassage(1, 'it is'), new TypeError('network down')]);
+    await useTypingStore.getState().loadNext();
+    const s = useTypingStore.getState();
+    s.typeChar('i', 0);
+    s.typeChar('t', 500);
+    s.commitSpace(1000);
+    s.typeChar('i', 1500);
+    s.typeChar('s', 2000);
+    await vi.waitFor(() => {
+      expect(useTypingStore.getState().saveStatus).toBe('not-saved');
+    });
   });
 });

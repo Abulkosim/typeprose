@@ -6,6 +6,7 @@ import {
   leaderboardSchema,
   passageSchema,
   passageSummaryListSchema,
+  passageSyncResponseSchema,
   postProfilesResponseSchema,
   postResultsResponseSchema,
   profileStatsSchema,
@@ -18,6 +19,7 @@ import {
   type Leaderboard,
   type Passage,
   type PassageSummaryItem,
+  type PassageSyncResponse,
   type PostResultsResponse,
   type ProfileStats,
   type RunStats,
@@ -70,6 +72,12 @@ export async function fetchNextPassage(
 export async function fetchDailyPassage(): Promise<Passage> {
   const response = await fetch(`${BASE}/passages/daily`);
   return parseJson(response, passageSchema, 'GET /passages/daily');
+}
+
+/** GET /passages/sync - the full corpus + daily pick for the offline store (lib/passages.ts). */
+export async function fetchPassageSync(): Promise<PassageSyncResponse> {
+  const response = await fetch(`${BASE}/passages/sync`);
+  return parseJson(response, passageSyncResponseSchema, 'GET /passages/sync');
 }
 
 /** GET /passages/:id - load one specific passage, e.g. a library pick or a `?passage=` link. */

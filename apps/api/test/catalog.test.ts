@@ -17,6 +17,9 @@ function catalogRepo(): PassageRepository {
     async findById() {
       return null;
     },
+    async listAll() {
+      return [];
+    },
     async listAuthors() {
       return [
         { slug: 'dostoevsky', name: 'Fyodor Dostoevsky', era: 'russian-golden-age', passageCount: 4 },

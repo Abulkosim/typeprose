@@ -133,6 +133,11 @@ export function createDrizzlePassageRepository(db: Db): PassageRepository {
       return row === undefined ? null : passageSchema.parse(row);
     },
 
+    async listAll(): Promise<Passage[]> {
+      const rows = await baseQuery().orderBy(asc(passages.id));
+      return rows.map((row) => passageSchema.parse(row));
+    },
+
     async listAuthors(): Promise<AuthorListItem[]> {
       const rows = await db
         .select({

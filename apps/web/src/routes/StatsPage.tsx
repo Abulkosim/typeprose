@@ -5,6 +5,8 @@ import { Link } from 'react-router';
 import { fetchProfileStats } from '../lib/api';
 import { ProgressChart } from '../result/ProgressChart';
 import { usePageMeta } from '../lib/head';
+import { useNetworkStore } from '../lib/network';
+import { outboxCount } from '../lib/outbox';
 import { ensureProfileId } from '../lib/profile';
 
 /** How many problem keys / bigrams to list. */
@@ -125,6 +127,17 @@ function ProblemTable({
   );
 }
 
+/** Offline note: how many finished runs are queued and will sync on reconnect. */
+function OfflineQueueNote(): ReactElement | null {
+  const pending = outboxCount();
+  if (pending === 0) return null;
+  return (
+    <p className="mt-2 text-smoke">
+      {String(pending)} finished {pending === 1 ? 'run' : 'runs'} will sync when you reconnect.
+    </p>
+  );
+}
+
 /** `/stats` (§9.1, §8): a title card - history, aggregates, per-author table. */
 export function StatsPage(): ReactElement {
   usePageMeta({
@@ -133,6 +146,7 @@ export function StatsPage(): ReactElement {
     noindex: true,
   });
   const [state, setState] = useState<LoadState>({ status: 'loading' });
+  const online = useNetworkStore((s) => s.online);
 
   useEffect(() => {
     let cancelled = false;
@@ -163,8 +177,20 @@ export function StatsPage(): ReactElement {
     return (
       <section aria-label="Stats" className="animate-fade-in">
         <h1 className="subtitle text-smoke">stats</h1>
-        <p className="mt-6 text-bone">The reel is jammed.</p>
-        <p className="mt-2 text-smoke">Could not load your stats. Try again in a moment.</p>
+        {online ? (
+          <>
+            <p className="mt-6 text-bone">The reel is jammed.</p>
+            <p className="mt-2 text-smoke">Could not load your stats. Try again in a moment.</p>
+          </>
+        ) : (
+          <>
+            <p className="mt-6 text-bone">You&rsquo;re offline.</p>
+            <p className="mt-2 text-smoke">
+              Stats live on the server &mdash; they&rsquo;ll be here when the connection is back.
+            </p>
+            <OfflineQueueNote />
+          </>
+        )}
       </section>
     );
   }

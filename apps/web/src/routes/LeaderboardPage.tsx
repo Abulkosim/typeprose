@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router';
 
 import { fetchLeaderboard } from '../lib/api';
 import { usePageMeta } from '../lib/head';
+import { useNetworkStore } from '../lib/network';
 import { ensureProfileId } from '../lib/profile';
 
 type LoadState =
@@ -29,6 +30,7 @@ export function LeaderboardPage(): ReactElement {
   const passageId = passageParam !== null ? Number(passageParam) : undefined;
   const scoped = passageId !== undefined && Number.isFinite(passageId);
   const [state, setState] = useState<LoadState>({ status: 'loading' });
+  const online = useNetworkStore((s) => s.online);
   // Remembers the passage this page was reached with, even after toggling to
   // "global" (which drops ?passageId from the URL) - so the tabs stay usable
   // both ways instead of vanishing once you leave the scoped view.
@@ -68,8 +70,20 @@ export function LeaderboardPage(): ReactElement {
     return (
       <section aria-label="Leaderboard" className="animate-fade-in">
         <h1 className="subtitle text-smoke">leaderboard</h1>
-        <p className="mt-6 text-bone">The reel is jammed.</p>
-        <p className="mt-2 text-smoke">Could not load the leaderboard. Try again in a moment.</p>
+        {online ? (
+          <>
+            <p className="mt-6 text-bone">The reel is jammed.</p>
+            <p className="mt-2 text-smoke">Could not load the leaderboard. Try again in a moment.</p>
+          </>
+        ) : (
+          <>
+            <p className="mt-6 text-bone">You&rsquo;re offline.</p>
+            <p className="mt-2 text-smoke">
+              The leaderboard lives on the server &mdash; it&rsquo;ll be here when the connection is
+              back.
+            </p>
+          </>
+        )}
       </section>
     );
   }

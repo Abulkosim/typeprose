@@ -6,6 +6,7 @@ import { useCommandStore } from '../command/commandStore';
 import { CustomTextDialog } from '../custom/CustomTextDialog';
 import { TitleSequence } from '../credits/TitleSequence';
 import { useCreditsStore } from '../credits/creditsStore';
+import { useNetworkStore } from '../lib/network';
 import { useProfileStore } from '../lib/profileInfo';
 import { useMusicStore } from '../settings/music';
 import { useTypingStore } from '../stage/typingStore';
@@ -23,6 +24,18 @@ function BarLink({ to, label }: { to: string; label: string }): ReactElement {
       {label}
     </NavLink>
   );
+}
+
+/**
+ * Quiet "offline" tag in the bottom bar: honest labeling while disconnected,
+ * nothing more - typing keeps working from the synced corpus. Smoke, not
+ * tungsten (tungsten in this bar means the caps-lock alarm); static text, so
+ * reduced-motion needs nothing.
+ */
+function OfflineTag(): ReactElement | null {
+  const online = useNetworkStore((s) => s.online);
+  if (online) return null;
+  return <span className="subtitle text-smoke">offline</span>;
 }
 
 /** Caps Lock tag in the bottom bar (§9.3), fed by keydown/keyup getModifierState. */
@@ -59,11 +72,13 @@ function MusicTag(): ReactElement {
 }
 
 /**
- * Quiet "not saved" note in the bottom bar (§9.5): a failed result submission
- * surfaces here without blocking the next run. Only the failure state shows.
+ * Quiet save note in the bottom bar (§9.5): a failed result submission
+ * surfaces here without blocking the next run - "will sync" when the run is
+ * queued in the offline outbox, "not saved" when it was truly dropped.
  */
 function SaveStatusTag(): ReactElement | null {
   const saveStatus = useTypingStore((s) => s.saveStatus);
+  if (saveStatus === 'queued') return <span className="subtitle text-smoke">will sync</span>;
   if (saveStatus !== 'not-saved') return null;
   return <span className="subtitle text-smoke">not saved</span>;
 }
@@ -138,6 +153,7 @@ export function Letterbox({ children }: { children: ReactNode }): ReactElement {
           tab next &middot; esc commands
         </p>
         <div className="col-start-3 flex items-center gap-4 justify-self-end">
+          <OfflineTag />
           <CapsLockTag />
           <MusicTag />
         </div>

@@ -272,8 +272,12 @@ reported text); reuse the word-mode submission shape.~~ ✅ shipped
 2026-07-17: a palette-opened paste dialog normalizes text with the
 ingest normalizer (moved into the engine package) and submits as
 `mode: 'custom'` — the word-mode shape with its own mode tag.
-- **PWA/offline** — manifest exists, no service worker. Offline prose
-needs passage caching; nice-to-have, not asked for yet.
+- ~~**PWA/offline** — manifest exists, no service worker. Offline prose
+needs passage caching; nice-to-have, not asked for yet.~~ ✅ shipped
+2026-07-24: hand-written service worker (network-first shell, `/api`
+never intercepted), full-corpus sync into localStorage for offline
+prose/library/daily, and an offline result outbox that replays on
+reconnect ("will sync"). Details in `DECISIONS.md`.
 - **i18n / Cyrillic corpora** — already deferred per plan §13.3.
 
 ---
@@ -324,7 +328,9 @@ Open product work, in priority order:
   (the normalizer moved from `scripts/lib` into `@typeprose/engine`),
   submitted as `mode: 'custom'` reusing the word-mode shape (migration
   `0006`). Details in `DECISIONS.md`.
-4. **Tier 4 (rest)** stays decide-don't-drift: wait for post-launch
-  signal before committing to mobile input, multiplayer, or
-  PWA/offline.
+4. ~~**PWA/offline**~~ ✅ shipped 2026-07-24 (owner request): app-shell
+  service worker, offline prose via corpus sync, offline result queue.
+  Details in `DECISIONS.md`.
+5. **Tier 4 (rest)** stays decide-don't-drift: wait for post-launch
+  signal before committing to mobile input or multiplayer.
 

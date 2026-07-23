@@ -35,6 +35,11 @@ export interface PassageRepository {
   findDaily(dateKey: string): Promise<Passage | null>;
   /** A passage by id with full attribution, or null when absent. */
   findById(id: number): Promise<Passage | null>;
+  /**
+   * Every passage with full attribution, ordered by id - the offline sync
+   * payload (GET /passages/sync). Fine at the ~100-row corpus scale.
+   */
+  listAll(): Promise<Passage[]>;
   /** Authors that have at least one passage, with their passage counts (GET /authors). */
   listAuthors(): Promise<AuthorListItem[]>;
   /** Distinct themes across passages, with their passage counts (GET /themes). */

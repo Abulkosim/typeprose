@@ -23,11 +23,13 @@ export {
   themeListSchema,
   passageSummaryItemSchema,
   passageSummaryListSchema,
+  passageSyncResponseSchema,
   type Band,
   type Passage,
   type AuthorListItem,
   type ThemeListItem,
   type PassageSummaryItem,
+  type PassageSyncResponse,
 } from './passages.ts';
 
 export {

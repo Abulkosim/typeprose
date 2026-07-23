@@ -2,6 +2,7 @@ import type { PassageSummaryItem } from '@typeprose/schema';
 import { create } from 'zustand';
 
 import { addFavorite, fetchFavorites, removeFavorite } from './api';
+import { localSummariesByIds } from './passages';
 import { ensureProfileId, getStoredProfileId } from './profile';
 
 /**
@@ -11,6 +12,34 @@ import { ensureProfileId, getStoredProfileId } from './profile';
  * viewing a result must not conjure a profile); starring is an explicit action
  * so `toggle` may create one via ensureProfileId.
  */
+
+/**
+ * localStorage mirror of the favorite ids (in favorite order, newest first)
+ * from the last successful fetch, so the library's favorites section still
+ * lists offline - summaries come from the synced corpus. The server stays the
+ * source of truth; offline star/unstar keeps its fail-and-revert behavior.
+ */
+const FAVORITES_STORAGE_KEY = 'typeprose.favoriteIds';
+
+function persistFavoriteIds(items: PassageSummaryItem[]): void {
+  try {
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(items.map((p) => p.id)));
+  } catch {
+    // Private mode: favorites just aren't listed offline.
+  }
+}
+
+function readMirroredFavorites(): PassageSummaryItem[] | null {
+  try {
+    const raw = localStorage.getItem(FAVORITES_STORAGE_KEY);
+    if (raw === null) return null;
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed) || !parsed.every((id) => typeof id === 'number')) return null;
+    return localSummariesByIds(parsed);
+  } catch {
+    return null;
+  }
+}
 interface FavoritesState {
   ids: ReadonlySet<number>;
   items: PassageSummaryItem[] | null;
@@ -34,9 +63,16 @@ export const useFavoritesStore = create<FavoritesState>()((set, get) => ({
     }
     try {
       const items = await fetchFavorites(id);
+      persistFavoriteIds(items);
       set({ ids: new Set(items.map((p) => p.id)), items, loaded: true });
     } catch {
-      set({ loaded: true });
+      // Offline: serve the mirrored ids with summaries from the synced corpus.
+      const mirrored = readMirroredFavorites();
+      if (mirrored !== null && mirrored.length > 0) {
+        set({ ids: new Set(mirrored.map((p) => p.id)), items: mirrored, loaded: true });
+      } else {
+        set({ loaded: true });
+      }
     }
   },
 
@@ -52,6 +88,7 @@ export const useFavoritesStore = create<FavoritesState>()((set, get) => ({
       else await addFavorite(profileId, passageId);
       // Refresh the cached summaries so the library section stays authoritative.
       const items = await fetchFavorites(profileId);
+      persistFavoriteIds(items);
       set({ ids: new Set(items.map((p) => p.id)), items });
     } catch {
       // Revert the optimistic flip on failure.

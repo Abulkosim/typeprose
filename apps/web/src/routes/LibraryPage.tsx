@@ -2,8 +2,9 @@ import type { AuthorListItem, Band, PassageSummaryItem, ThemeListItem } from '@t
 import { useEffect, useState, type ReactElement } from 'react';
 import { Link, useNavigate } from 'react-router';
 
-import { fetchAuthors, fetchPassages, fetchThemes, type PassageQuery } from '../lib/api';
+import type { PassageQuery } from '../lib/api';
 import { useFavoritesStore } from '../lib/favorites';
+import { getAuthors, getPassageSummaries, getThemes } from '../lib/passages';
 import { usePageMeta } from '../lib/head';
 
 /** The four difficulty bands, warm-up first (§6.4). */
@@ -45,7 +46,7 @@ function PassageDisclosure({ query }: { query: PassageQuery }): ReactElement {
       return;
     }
     setState({ status: 'loading' });
-    fetchPassages(query)
+    getPassageSummaries(query)
       .then((items) => setState({ status: 'open', items }))
       .catch(() => setState({ status: 'error' }));
   };
@@ -157,7 +158,7 @@ export function LibraryPage(): ReactElement {
     let cancelled = false;
     void (async () => {
       try {
-        const [authors, themes] = await Promise.all([fetchAuthors(), fetchThemes()]);
+        const [authors, themes] = await Promise.all([getAuthors(), getThemes()]);
         if (!cancelled) setState({ status: 'ready', authors, themes });
       } catch {
         if (!cancelled) setState({ status: 'error' });

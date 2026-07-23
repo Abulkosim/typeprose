@@ -81,3 +81,19 @@ export type PassageSummaryItem = z.infer<typeof passageSummaryItemSchema>;
 
 /** GET /passages response body. */
 export const passageSummaryListSchema = z.array(passageSummaryItemSchema);
+
+/**
+ * GET /passages/sync: the full corpus in one response, for the web app's
+ * offline store. Small by design (~150KB at the current ~100-passage corpus;
+ * add pagination/ETag if it ever grows ~10x). Carries the server-computed
+ * daily pick so offline daily works without porting the md5 selection -
+ * valid only while dailyDateKey matches the client's UTC date.
+ */
+export const passageSyncResponseSchema = z.object({
+  syncedAt: z.iso.datetime(),
+  dailyDateKey: z.string().min(1),
+  dailyPassageId: z.int().positive().nullable(),
+  passages: z.array(passageSchema),
+});
+
+export type PassageSyncResponse = z.infer<typeof passageSyncResponseSchema>;

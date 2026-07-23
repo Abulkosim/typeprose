@@ -46,6 +46,7 @@ export function TypingStage(): ReactElement {
   const test = useTypingStore((s) => s.test);
   const snapshot = useTypingStore((s) => s.snapshot);
   const completedRun = useTypingStore((s) => s.completedRun);
+  const errorMessage = useTypingStore((s) => s.errorMessage);
   const paletteOpen = useCommandStore((s) => s.isOpen);
   const creditsOpen = useCreditsStore((s) => s.isOpen);
   const customOpen = useCustomTextStore((s) => s.isOpen);
@@ -219,7 +220,7 @@ export function TypingStage(): ReactElement {
 
       {phase === 'error' ? (
         <div>
-          <p className="subtitle text-smoke">could not load a passage</p>
+          <p className="subtitle text-smoke">{errorMessage ?? 'could not load a passage'}</p>
           <p className="subtitle mt-4 text-smoke">tab to retry</p>
         </div>
       ) : null}

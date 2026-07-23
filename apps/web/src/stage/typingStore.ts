@@ -10,9 +10,6 @@ import { create } from 'zustand';
 import type { TimedSeconds } from '@typeprose/schema';
 
 import {
-  fetchDailyPassage,
-  fetchNextPassage,
-  fetchPassageById,
   fetchProfileStats,
   submitResult,
   submitCustomResult,
@@ -21,6 +18,8 @@ import {
   type PassageQuery,
 } from '../lib/api';
 import { extractWeakTargets, generateDrillText, type WeakTargets } from '../lib/drill';
+import { enqueueResult, flushOutbox, shouldQueue, type PendingResult } from '../lib/outbox';
+import { getDailyPassage, getNextPassage, getPassageById } from '../lib/passages';
 import { ensureProfileId } from '../lib/profile';
 import { pushRecent } from '../lib/recent';
 import { generateWordText, timedBufferWordCount } from '../lib/words';
@@ -92,8 +91,11 @@ export function wordTestLabel(test: Exclude<ActiveTest, { kind: 'passage' }>): s
   return label;
 }
 
-/** Result-submission state (§9.5). Only 'not-saved' surfaces in the UI. */
-export type SaveStatus = 'idle' | 'saving' | 'saved' | 'not-saved';
+/**
+ * Result-submission state (§9.5). Only 'queued' ("will sync" - the run is in
+ * the offline outbox) and 'not-saved' surface in the UI.
+ */
+export type SaveStatus = 'idle' | 'saving' | 'saved' | 'queued' | 'not-saved';
 
 /**
  * Personal-best info for the just-submitted run, straight from the server's
@@ -246,10 +248,43 @@ async function loadInto(
         test.kind === 'passage' ? pushRecent(get().recentIds, test.passage.id) : get().recentIds,
     });
   } catch {
-    set({ phase: 'error', test: null, errorMessage: 'could not load a test' });
+    // Only reachable when the offline corpus fallback (lib/passages.ts) came
+    // up empty too - name the real problem when the browser knows it's offline.
+    set({
+      phase: 'error',
+      test: null,
+      errorMessage: navigator.onLine
+        ? 'could not load a test'
+        : 'offline — connect once to download passages',
+    });
   } finally {
     inFlight = false;
   }
+}
+
+/** The queued-outbox body for a completed run - the submit branches, minus profileId. */
+function toPendingResult(test: ActiveTest, run: CompletedRun): PendingResult {
+  if (test.kind === 'passage') {
+    return {
+      mode: 'prose',
+      passageId: test.passage.id,
+      clientStats: run.stats,
+      charEvents: run.log,
+    };
+  }
+  if (test.kind === 'timed') {
+    return {
+      mode: 'timed',
+      text: test.text,
+      durationMs: test.durationMs,
+      clientStats: run.stats,
+      charEvents: run.log,
+    };
+  }
+  if (test.kind === 'custom') {
+    return { mode: 'custom', text: test.text, clientStats: run.stats, charEvents: run.log };
+  }
+  return { mode: 'words', text: test.text, clientStats: run.stats, charEvents: run.log };
 }
 
 /** Submit a finished run fire-and-forget with one retry (§9.5). */
@@ -312,8 +347,13 @@ async function submitCompletedRun(
         },
       });
     }
-  } catch {
-    if (token === submitToken) set({ saveStatus: 'not-saved' });
+    // The network demonstrably works - drain any runs queued while offline.
+    void flushOutbox();
+  } catch (err) {
+    // Queue regardless of the token: the run happened and deserves to sync
+    // even if the typist already tabbed on. Only the UI update is token-guarded.
+    const queued = shouldQueue(err) && enqueueResult(toPendingResult(test, run));
+    if (token === submitToken) set({ saveStatus: queued ? 'queued' : 'not-saved' });
   }
 }
 
@@ -370,7 +410,7 @@ export const useTypingStore = create<TypingState>()((set, get) => ({
       useModeStore.getState().setMode('prose');
       await loadInto(set, get, filter, async () => ({
         kind: 'passage',
-        passage: await fetchNextPassage(get().recentIds, filter),
+        passage: await getNextPassage(get().recentIds, filter),
       }));
       return;
     }
@@ -415,7 +455,7 @@ export const useTypingStore = create<TypingState>()((set, get) => ({
     const nextFilter = get().filter;
     await loadInto(set, get, nextFilter, async () => ({
       kind: 'passage',
-      passage: await fetchNextPassage(get().recentIds, nextFilter),
+      passage: await getNextPassage(get().recentIds, nextFilter),
     }));
   },
 
@@ -423,14 +463,14 @@ export const useTypingStore = create<TypingState>()((set, get) => ({
     // The daily is a prose passage; switch to prose and clear the filter so a
     // later bare Tab loads a normal random passage rather than a word set.
     useModeStore.getState().setMode('prose');
-    await loadInto(set, get, {}, async () => ({ kind: 'passage', passage: await fetchDailyPassage() }));
+    await loadInto(set, get, {}, async () => ({ kind: 'passage', passage: await getDailyPassage() }));
   },
 
   loadById: async (id: number) => {
     // Same convention as loadDaily: a specific pick forces prose and clears
     // the filter so a later bare Tab returns to a normal random passage.
     useModeStore.getState().setMode('prose');
-    await loadInto(set, get, {}, async () => ({ kind: 'passage', passage: await fetchPassageById(id) }));
+    await loadInto(set, get, {}, async () => ({ kind: 'passage', passage: await getPassageById(id) }));
   },
 
   loadDrill: async () => {

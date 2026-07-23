@@ -86,6 +86,9 @@ export function createStubPassageRepo(fixtures: Passage[]): PassageRepository {
     async findById(id: number): Promise<Passage | null> {
       return fixtures.find((p) => p.id === id) ?? null;
     },
+    async listAll(): Promise<Passage[]> {
+      return [...fixtures];
+    },
     async listAuthors() {
       return [];
     },

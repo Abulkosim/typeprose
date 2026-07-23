@@ -12,6 +12,9 @@
 
 	handle {
 		root * /srv
+		# Browsers cap sw.js caching at 24h; no-cache makes a deploy's new
+		# worker propagate on the next navigation instead.
+		header /sw.js Cache-Control no-cache
 		try_files {path} /index.html
 		file_server
 	}

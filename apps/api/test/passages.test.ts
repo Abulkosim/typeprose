@@ -1,4 +1,9 @@
-import { passageSchema, passageSummaryItemSchema, type Passage } from '@typeprose/schema';
+import {
+  passageSchema,
+  passageSummaryItemSchema,
+  passageSyncResponseSchema,
+  type Passage,
+} from '@typeprose/schema';
 import type { FastifyInstance } from 'fastify';
 import { afterEach, describe, expect, it } from 'vitest';
 import { buildApp } from '../src/build.ts';
@@ -82,6 +87,9 @@ function createStubRepo(fixtures: Passage[]): PassageRepository & {
     },
     async findById(id: number): Promise<Passage | null> {
       return fixtures.find((p) => p.id === id) ?? null;
+    },
+    async listAll(): Promise<Passage[]> {
+      return [...fixtures];
     },
     async listAuthors() {
       const bySlug = new Map<string, { slug: string; name: string; era: string | null; count: number }>();
@@ -301,6 +309,28 @@ describe('passage routes', () => {
       const res = await app.inject({ method: 'GET', url: '/api/v1/passages/daily' });
       expect(res.statusCode).toBe(404);
       expect(res.json()).toMatchObject({ error: 'NotFound' });
+    });
+  });
+
+  describe('GET /api/v1/passages/sync', () => {
+    it('returns the full corpus with a daily pick matching the shared DTO', async () => {
+      const { app } = await setup();
+      const res = await app.inject({ method: 'GET', url: '/api/v1/passages/sync' });
+      expect(res.statusCode).toBe(200);
+      const body = passageSyncResponseSchema.parse(res.json());
+      expect(body.passages).toEqual([dostoevskyPassage, hammettPassage]);
+      // The daily pick must be one of the corpus ids, keyed to today's UTC date.
+      expect(body.passages.map((p) => p.id)).toContain(body.dailyPassageId);
+      expect(body.dailyDateKey).toBe(new Date().toISOString().slice(0, 10));
+    });
+
+    it('returns an empty corpus and null daily pick when there are no passages', async () => {
+      const { app } = await setup([]);
+      const res = await app.inject({ method: 'GET', url: '/api/v1/passages/sync' });
+      expect(res.statusCode).toBe(200);
+      const body = passageSyncResponseSchema.parse(res.json());
+      expect(body.passages).toEqual([]);
+      expect(body.dailyPassageId).toBeNull();
     });
   });
 
