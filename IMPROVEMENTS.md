@@ -334,3 +334,35 @@ Open product work, in priority order:
 5. **Tier 4 (rest)** stays decide-don't-drift: wait for post-launch
   signal before committing to mobile input or multiplayer.
 
+---
+
+
+
+## Pre-launch cleanup pass (added 2026-07-25)
+
+A cleanup/polish audit (2026-07-25) found the codebase clean: zero
+TODO/FIXME markers, knip ~97% false positives (test surface, the
+string-referenced service worker, workspace-hoisted deps), the large
+files large from docs + domain not mess. Every page already carries
+loading/error/empty-data states with online-vs-offline copy, and the 3.4
+a11y pass holds. Three genuinely-valuable, low-risk items remain, in
+priority order:
+
+1. **Corpus growth** — highest real value; the corpus exhausts in ~a week
+   of regular use. Curate a third batch via `pnpm propose` (weight the
+   thin bands), ingest, refresh the library counts. Pure product upside,
+   near-zero risk, needs no users.
+
+2. **A11y re-audit of the two newest features** — PWA/offline and
+   custom-text both shipped *after* the 3.4 a11y pass, so they were never
+   swept. Confirmed gaps: (a) the custom-text dialog sets
+   `aria-modal="true"` but never traps focus — Tab escapes to the nav
+   behind it; (b) the offline save-status tag ("will sync" / "not saved")
+   is a plain span, silent to screen readers. Reduced-motion is already
+   clean (the dialog's `animate-fade-in` is killed by the global
+   `prefers-reduced-motion` block). ← **in progress**
+
+3. **Bundle / perf pass** — build the app, measure bundle size and run a
+   Lighthouse pass; may surface concrete wins. No known gap yet, so this
+   is investigation, not a fix.
+
