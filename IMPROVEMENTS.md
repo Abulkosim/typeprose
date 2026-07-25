@@ -372,3 +372,15 @@ priority order:
    Lighthouse pass; may surface concrete wins. No known gap yet, so this
    is investigation, not a fix.
 
+4. **Ingest batch 3 at deploy** (caveat from corpus batch 3) — the 39 new
+   passages (PR #20) are curated and schema-valid but not in Postgres;
+   `pnpm ingest` was unrunnable here (no reachable DB). Run it as part of
+   the next deploy / first-run so the batch actually goes live.
+
+5. **Fill the warmup band** (caveat from corpus batch 3) — warmup is still
+   the thinnest (17). `pnpm propose` targets ~280-char excerpts, at which
+   literary prose rarely scores below 30, so batches barely move warmup.
+   Add a char-target / `--max-chars` option to `propose` for shorter
+   warmup-range excerpts, or curate from short-sentence sources (more
+   Aesop-style fables), to balance the band.
+
