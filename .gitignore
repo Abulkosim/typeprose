@@ -24,6 +24,9 @@ test-results/
 *.log
 .DS_Store
 
+# regenerable ingest output (run `pnpm ingest` locally when curating)
+curation-report.txt
+
 # per-user agent state (project settings/skills ARE committed)
 .claude/settings.local.json
 .claude/scheduled_tasks.lock

@@ -2,8 +2,7 @@
 <!--
   Public, indexable routes only. /stats is per-profile and /claim is a
   transactional magic-link landing, so both are intentionally omitted
-  (and set noindex client-side via usePageMeta). Replace the host when a
-  real domain is chosen.
+  (and set noindex client-side via usePageMeta).
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
