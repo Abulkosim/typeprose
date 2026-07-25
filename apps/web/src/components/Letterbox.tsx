@@ -74,13 +74,20 @@ function MusicTag(): ReactElement {
 /**
  * Quiet save note in the bottom bar (§9.5): a failed result submission
  * surfaces here without blocking the next run - "will sync" when the run is
- * queued in the offline outbox, "not saved" when it was truly dropped.
+ * queued in the offline outbox, "not saved" when it was truly dropped. Rendered
+ * as a persistent polite live region (empty while idle) so a screen reader
+ * announces the queue/fail moment - the outcome is otherwise silent to it, the
+ * result view only announces the wpm. The empty span costs no visible layout
+ * (it trails CreditsTag in the left grid column, left-justified).
  */
-function SaveStatusTag(): ReactElement | null {
+function SaveStatusTag(): ReactElement {
   const saveStatus = useTypingStore((s) => s.saveStatus);
-  if (saveStatus === 'queued') return <span className="subtitle text-smoke">will sync</span>;
-  if (saveStatus !== 'not-saved') return null;
-  return <span className="subtitle text-smoke">not saved</span>;
+  const label = saveStatus === 'queued' ? 'will sync' : saveStatus === 'not-saved' ? 'not saved' : null;
+  return (
+    <span className="subtitle text-smoke" role="status" aria-live="polite">
+      {label}
+    </span>
+  );
 }
 
 /**
