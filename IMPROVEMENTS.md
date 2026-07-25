@@ -368,9 +368,22 @@ priority order:
    `animate-fade-in` is killed by the global `prefers-reduced-motion`
    block).
 
-3. **Bundle / perf pass** — build the app, measure bundle size and run a
-   Lighthouse pass; may surface concrete wins. No known gap yet, so this
-   is investigation, not a fix.
+3. ~~**Bundle / perf pass**~~ ✅ shipped 2026-07-25 (PR, `perf/bundle-pass`)
+   — three no-behavior-change wins. (a) Fonts import latin + latin-ext
+   subsets only, dropping the cyrillic/greek/vietnamese subsets the
+   top-level `400.css` pulled (English app; latin-ext keeps accented
+   author names). (b) The SW precache skips `.woff` (every SW-capable
+   browser uses the `.woff2` from the same src) — precached font bytes
+   fell ~516 KB → ~122 KB, a big PWA-install win. (c) Route + overlay
+   code splitting: the five secondary routes and the two rarely-open
+   overlays (credits, custom-text) became `lazy()` chunks (still
+   precached, so offline keeps them); the stage and command palette stay
+   eager. Main chunk 413 KB → 384 KB (125 → 119 KB gzip), ~35 KB deferred.
+   Bundle-analysis based; a Lighthouse run belongs at deploy (no
+   browser/server here). Remaining opportunity noted, not done: split the
+   click-only canvas share-card + replay engine out of the eager result
+   view (needs `shareCard.ts` factored so the eager `formatAttribution`
+   stops pulling the heavy canvas code).
 
 4. **Ingest batch 3 at deploy** (caveat from corpus batch 3) — the 39 new
    passages (PR #20) are curated and schema-valid but not in Postgres;
