@@ -1,6 +1,6 @@
 import { IllegalCharacterError, describeChar, normalizeText } from '@typeprose/engine';
 import { MAX_CUSTOM_TEXT_LEN } from '@typeprose/schema';
-import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactElement } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
 import { useModeStore } from '../settings/mode';
@@ -57,6 +57,7 @@ export function CustomTextDialog(): ReactElement | null {
   const navigate = useNavigate();
   const location = useLocation();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const [raw, setRaw] = useState('');
 
   // Seed from the last custom text and focus on each open, so reopening the
@@ -97,6 +98,30 @@ export function CustomTextDialog(): ReactElement | null {
     void useTypingStore.getState().loadCustom(normalized.text);
   };
 
+  // Trap Tab within the dialog: `aria-modal` promises focus can't reach the
+  // page behind, but this dialog (unlike the palette, which intercepts Tab in
+  // its input) has a real button, so Tab would otherwise escape to the nav. The
+  // only focusables are the textarea and the start button (absent while
+  // disabled); wrap between first and last.
+  const trapTab = (e: KeyboardEvent<HTMLDivElement>): void => {
+    if (e.key !== 'Tab') return;
+    const focusable = containerRef.current?.querySelectorAll<HTMLElement>(
+      'textarea, button:not([disabled])',
+    );
+    if (focusable === undefined || focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (first === undefined || last === undefined) return;
+    const active = document.activeElement;
+    if (e.shiftKey && active === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && active === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  };
+
   return (
     <div
       className="animate-fade-in fixed inset-0 z-50 flex items-start justify-center bg-black/75 px-6 pt-[18vh]"
@@ -107,7 +132,7 @@ export function CustomTextDialog(): ReactElement | null {
         if (e.target === e.currentTarget) close();
       }}
     >
-      <div className="w-full max-w-[68ch] bg-stage">
+      <div ref={containerRef} className="w-full max-w-[68ch] bg-stage" onKeyDown={trapTab}>
         <textarea
           ref={textareaRef}
           value={raw}
