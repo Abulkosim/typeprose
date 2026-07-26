@@ -348,21 +348,39 @@ loading/error/empty-data states with online-vs-offline copy, and the 3.4
 a11y pass holds. Three genuinely-valuable, low-risk items remain, in
 priority order:
 
-1. **Corpus growth** — highest real value; the corpus exhausts in ~a week
-   of regular use. Curate a third batch via `pnpm propose` (weight the
-   thin bands), ingest, refresh the library counts. Pure product upside,
-   near-zero risk, needs no users.
+1. ~~**Corpus growth**~~ ✅ curated 2026-07-25 — batch 3 adds 39 passages
+   from 10 new public-domain works/authors (Grahame, Montgomery, Burnett,
+   C. Brontë, Hawthorne, Shelley, Thoreau, Eliot, Hardy, Chopin), selected
+   via `pnpm propose` and biased toward the thin bands. Corpus is now 140
+   passages · warmup 17 · standard 61 · hard 31 · brutal 31 (brutal, the
+   thinnest band, doubled from 15). Appended to `corpus/passages.yaml`,
+   validated through the real schema and re-scored; two new eras
+   (`edwardian`, `transcendentalism`). `pnpm ingest` runs at deploy/first
+   run (needs Postgres, unavailable in this environment).
 
-2. **A11y re-audit of the two newest features** — PWA/offline and
-   custom-text both shipped *after* the 3.4 a11y pass, so they were never
-   swept. Confirmed gaps: (a) the custom-text dialog sets
-   `aria-modal="true"` but never traps focus — Tab escapes to the nav
-   behind it; (b) the offline save-status tag ("will sync" / "not saved")
-   is a plain span, silent to screen readers. Reduced-motion is already
-   clean (the dialog's `animate-fade-in` is killed by the global
-   `prefers-reduced-motion` block). ← **in progress**
+2. ~~**A11y re-audit of the two newest features**~~ ✅ shipped 2026-07-25
+   (PR #19) — PWA/offline and custom-text both shipped *after* the 3.4
+   a11y pass. Fixed: (a) the custom-text dialog set `aria-modal="true"`
+   but never trapped focus — Tab escaped to the nav behind it, now wrapped
+   within the dialog; (b) the offline save-status tag ("will sync" / "not
+   saved") was a plain span silent to screen readers, now a persistent
+   polite live region. Reduced-motion was already clean (the dialog's
+   `animate-fade-in` is killed by the global `prefers-reduced-motion`
+   block).
 
 3. **Bundle / perf pass** — build the app, measure bundle size and run a
    Lighthouse pass; may surface concrete wins. No known gap yet, so this
    is investigation, not a fix.
+
+4. **Ingest batch 3 at deploy** (caveat from corpus batch 3) — the 39 new
+   passages (PR #20) are curated and schema-valid but not in Postgres;
+   `pnpm ingest` was unrunnable here (no reachable DB). Run it as part of
+   the next deploy / first-run so the batch actually goes live.
+
+5. **Fill the warmup band** (caveat from corpus batch 3) — warmup is still
+   the thinnest (17). `pnpm propose` targets ~280-char excerpts, at which
+   literary prose rarely scores below 30, so batches barely move warmup.
+   Add a char-target / `--max-chars` option to `propose` for shorter
+   warmup-range excerpts, or curate from short-sentence sources (more
+   Aesop-style fables), to balance the band.
 
