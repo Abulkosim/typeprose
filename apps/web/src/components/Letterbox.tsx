@@ -1,15 +1,25 @@
-import { useEffect, type ReactElement, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, type ReactElement, type ReactNode } from 'react';
 import { NavLink } from 'react-router';
 
 import { CommandPalette } from '../command/CommandPalette';
 import { useCommandStore } from '../command/commandStore';
-import { CustomTextDialog } from '../custom/CustomTextDialog';
-import { TitleSequence } from '../credits/TitleSequence';
+import { useCustomTextStore } from '../custom/customTextStore';
 import { useCreditsStore } from '../credits/creditsStore';
 import { useNetworkStore } from '../lib/network';
 import { useProfileStore } from '../lib/profileInfo';
 import { useMusicStore } from '../settings/music';
 import { useTypingStore } from '../stage/typingStore';
+
+// Overlays that are always available but rarely open: split into their own
+// chunks and mounted only while open (both already self-gate on their store's
+// isOpen, and are opened by buttons elsewhere, so deferring the mount is safe).
+// The command palette stays eager - it's core, reached on every Esc.
+const CustomTextDialog = lazy(() =>
+  import('../custom/CustomTextDialog').then((m) => ({ default: m.CustomTextDialog })),
+);
+const TitleSequence = lazy(() =>
+  import('../credits/TitleSequence').then((m) => ({ default: m.TitleSequence })),
+);
 
 function BarLink({ to, label }: { to: string; label: string }): ReactElement {
   return (
@@ -115,6 +125,8 @@ function CreditsTag(): ReactElement {
  */
 export function Letterbox({ children }: { children: ReactNode }): ReactElement {
   const profileInfo = useProfileStore((s) => s.info);
+  const customTextOpen = useCustomTextStore((s) => s.isOpen);
+  const creditsOpen = useCreditsStore((s) => s.isOpen);
   useEffect(() => {
     // One passive refresh per app mount - the claimed-state indicator below
     // reads whatever localStorage already holds, it never creates a profile.
@@ -167,8 +179,16 @@ export function Letterbox({ children }: { children: ReactNode }): ReactElement {
       </footer>
 
       <CommandPalette />
-      <CustomTextDialog />
-      <TitleSequence />
+      {customTextOpen ? (
+        <Suspense fallback={null}>
+          <CustomTextDialog />
+        </Suspense>
+      ) : null}
+      {creditsOpen ? (
+        <Suspense fallback={null}>
+          <TitleSequence />
+        </Suspense>
+      ) : null}
     </div>
   );
 }

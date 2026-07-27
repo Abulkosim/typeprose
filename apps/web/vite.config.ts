@@ -34,7 +34,10 @@ function swPrecache(): Plugin {
         throw new Error('sw.js chunk missing from bundle');
       }
       const assets = Object.keys(bundle)
-        .filter((name) => name !== 'sw.js' && name !== 'index.html')
+        // Skip .woff: every service-worker-capable browser picks the .woff2
+        // from the same @font-face src, so precaching .woff only ever wastes
+        // install bandwidth. The files stay in dist for ancient browsers online.
+        .filter((name) => name !== 'sw.js' && name !== 'index.html' && !name.endsWith('.woff'))
         .map((name) => `/${name}`);
       const precache = [...PUBLIC_PRECACHE, ...assets];
       const hash = createHash('sha256').update(JSON.stringify(precache)).digest('hex').slice(0, 8);
