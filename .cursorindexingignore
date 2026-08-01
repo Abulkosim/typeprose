@@ -1,5 +1,4 @@
 # Excluded from Cursor's index (still readable when referenced explicitly).
 pnpm-lock.yaml
-curation-report.txt
 apps/api/drizzle/meta/
 apps/web/public/music/

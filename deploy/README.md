@@ -1,11 +1,12 @@
 # Deployment
 
-Phase 3 deployment hardening (plan §12): a single-host Docker Compose stack -
-Postgres (named volume), one-shot migrations, the Fastify API, the static web
-app behind Caddy (automatic HTTPS), and a nightly `pg_dump` backup.
+Single-host Docker Compose stack: Postgres (named volume), one-shot
+migrations, the Fastify API, the static web app behind Caddy (automatic
+HTTPS), and a nightly `pg_dump` backup.
 
-This is the intended production shape from the plan's appendix; it is config,
-not a running claim - provision a host with Docker before relying on it.
+The live host already runs this shape (Hetzner; compose project id and
+remote path deliberately still use the legacy `prosetype` names — see
+`DECISIONS.md`). The steps below are for a fresh host or a rebuild.
 
 ## First deploy
 
@@ -33,6 +34,17 @@ provisions and renews certificates automatically. For local testing use
 `SITE_ADDRESS=localhost` (Caddy serves a local CA cert) or edit the Caddyfile to
 `:80`.
 
+Canonical host: `typeprose.com` (`CORS_ORIGIN` / `SITE_ADDRESS` in
+`deploy/.env.example`).
+
+## Email (Resend)
+
+Account-claim magic links use Resend when both `RESEND_API_KEY` and
+`EMAIL_FROM` are set; otherwise the API logs the link (console mailer).
+For production: create a Resend account, verify the `typeprose.com`
+sending domain (SPF/DKIM), mint an API key, and set both vars in
+`deploy/.env`.
+
 ## Backups
 
 `db-backup` writes `pg_dump` gzips to the `backups` volume nightly and prunes
@@ -57,7 +69,4 @@ New migrations are applied by the `migrate` step before the API restarts.
 
 ## Not included (future work)
 
-- Real email transport for account claim: the API ships a console mailer
-  (logs the magic link). Implement `Mailer` in `apps/api/src/mail/` and inject
-  it in `build.ts`, then add SMTP/provider env to `.env`.
 - Off-host backup shipping, monitoring/alerting, and log aggregation.
